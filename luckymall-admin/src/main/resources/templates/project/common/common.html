@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>通用模块</title>
+</head>
+<body>
+<!--
+    这里包含了每个页面的公共模块
+-->
+<!--头部 导航条模块-->
+<div class="layui-header header" th:fragment="head">
+    <!-- 加载layui内置的layer和element模块 -->
+    <script>
+        var layer;
+        layui.use(["layer", "element"], function () {
+            layer = layui.layer;
+        });
+    </script>
+    <div class="layui-main" style="width: 95%">
+        <a class="logo" href="/mallIndex">
+            <img th:src="@{/image/mall/logo2.png}"/>
+        </a>
+        <section class="webdesigntuts-workshop">
+            <div id="searchForm">
+                <input type="search" placeholder="商品搜索" id="search" autocomplete="false">
+                <button id="searchBtn">搜索</button>
+            </div>
+        </section>
+        <script>
+            layui.use(["layer", "element"], function () {
+                var layer = layui.layer;
+                $(function () {
+                    $("button#searchBtn").click(function () {
+                        var key = $("#search").val();
+                        if ($.trim(key) == "") {
+                            layer.msg('请输入搜索关键词', {
+                                icon: 5,//1:正确；2:错误；3:询问；4:锁定；5:失败；6：成功；7:警告
+                                shift: 6,
+                                time: 2000,
+                                offset: '100px'
+                            });
+                        } else {
+                            location.href = "/product/findProductByKey?key=" + $.trim(key);
+                        }
+                    });
+                });
+            });
+        </script>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item" style="color:#393D49;">
+                <a href="javascript:;">分类</a>
+                <dl class="layui-nav-child" id="category">
+
+                </dl>
+                <script>
+                    //加载分类
+                    $.ajax({
+                        type: 'get',
+                        url: "/productType/listType",
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(data)
+                            var list = $("#category");
+                            if (data.msg == "success") {
+                                $.each(data.data, function (index, item) {
+                                    var cate = $("<dd><a href='/product/findProductByType?id=" + item.id + "&name=" + item.name + "'>" + item.name + "</a></dd>");
+                                    list.append(cate);
+                                })
+                                return;
+                            }
+                            alert(data.msg);
+                        },
+                        error: function (jqXHR) {
+                            alert("ajax请求出错");
+                        }
+                    });
+                </script>
+            </li>
+            <li class="layui-nav-item" style="margin-right: 0px">
+                <a href="javascript:;">
+                    <span th:if="${session.user == null}"><i class="fa fa-user-circle"></i>&nbsp;请登录</span>
+                    <span th:if="${session.user != null}">
+                        <a href="/user_index">
+                            <img th:src="${session.user.avatar}" alt="用户头像"
+                                 style="width: 45px;height: 45px;border-radius: 50px;border-color: rgba(0,0,0,0)">
+                        </a>
+                    </span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd th:if="${session.user != null}"><a href="/user_index"><i class="fa fa-home"></i>
+                        个人中心</a></dd>
+                    <dd th:if="${session.user != null}"><a href="/user/order"><i class="fa fa-list"></i>
+                        我的订单</a></dd>
+                    <dd th:if="${session.user != null}"><a href="/user/cart"><i class="fa fa-shopping-cart"></i>
+                        购物车</a></dd>
+                    <dd th:if="${session.user != null}"><a href="/user/logout"><i class="fa fa-sign-out"></i>
+                        退出登录</a></dd>
+                    <dd th:if="${session.user == null}"><a href="/login"><i class="fa fa-sign-in"></i>
+                        登录</a></dd>
+                    <dd th:if="${session.user == null}"><a href="/register"><i
+                            class="fa fa-user-plus"></i> 注册</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!--底部模块-->
+<div class="footer footer-index" th:fragment="foot">
+    <hr style="height: 1px;color: rgba(170,171,155,0.31)">
+    <!-- 底部固定区域 -->
+    © dong 2020
+    <a style="cursor: pointer" id="adminLogin">LuckyMall后台管理系统</a>
+    <input type="hidden" th:value="${session.admin==null?'null':session.admin.name}" id="admin">
+    <script>
+        layui.use(["layer", "element"], function () {
+            layer = layui.layer;
+            $("#adminLogin").on("click", doLayer);
+            // 弹出登录窗口
+            function doLayer() {
+                // 若用户已登录
+                if($("#admin").val()!='null'){
+                    location.href="/admin/index";
+                    return;
+                }
+                // 打开登陆窗口
+                layer.open({
+                    title: false,       // 标题
+                    type: 2,
+                    area: ['600px', '600px'],
+                    content: ['/admin/login', 'no'],
+                    closeBtn: 0,        // 关闭按钮 0,1,2
+                    shade: 0.5,         // 遮罩
+                    shadeClose: true,   // 是否点击遮罩关闭
+                    scrollbar: false,   // 屏幕滚动
+                    resize: false,      // 是否允许拉伸
+                    maxmin: true,       // 最大最小化
+                });
+            }
+        });
+    </script>
+</div>
+
+<!--用户个人中心左侧导航栏-->
+<div class="layui-side layui-bg-black" style="position: absolute;top: 60px;" th:fragment="leftside">
+    <div class="layui-side-scroll">
+        <ul class="layui-nav layui-nav-tree" lay-filter="test">
+            <li class="layui-nav-item">
+                <a href="/user_index"><i class="layui-icon layui-icon-user"
+                                         style="font-size: 14px;margin-right: 10px">
+                </i>个人信息</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/editUser"><i class="layui-icon layui-icon-edit"
+                                       style="font-size: 14px;margin-right: 10px">
+                </i>信息修改</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/editPassword"><i class="layui-icon layui-icon-password"
+                                           style="font-size: 14px;margin-right: 10px">
+                </i>密码修改</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/user/cart"><i class="layui-icon layui-icon-cart" style="font-size: 14px;margin-right: 10px">
+                </i>购物车</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/user/order"><i class="layui-icon layui-icon-form" style="font-size: 14px;margin-right: 10px">
+                </i>我的订单</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="/user/score"><i class="layui-icon layui-icon-dollar"
+                                         style="font-size: 14px;margin-right: 10px">
+                </i>我的积分</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
