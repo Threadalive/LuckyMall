@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LuckyMall | 登录</title>
+    <link rel="icon" th:href="@{/image/mall/logo.ico}">
+    <link rel="stylesheet" th:href="@{/bootstrap-3.3.7-dist/css/bootstrap.css}">
+</head>
+<style>
+    .large-header {
+        position: relative;
+        width: 100%;
+        background: url(image/page/bg.jpg) no-repeat;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center center;
+        z-index: 1;
+    }
+
+    .container {
+        position: absolute;
+        top: 15%;
+        width: 100%;
+        z-index: 99;
+    }
+
+    .box {
+        position: relative;
+        width: 450px;
+        z-index: 99;
+        height: auto;
+        box-shadow: 0px 3px 6px #333333;
+        background: url(image/page/bg_03.png) repeat;
+        border-radius: 5px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px 40px;
+    }
+
+    .form-horizontal .form-group {
+        margin: 20px 0;
+    }
+
+    .input-group {
+        width: 100%;
+        height: 45px;
+    }
+
+    .form-control{
+        height: 45px;
+    }
+
+    #register {
+        text-align: right;
+    }
+
+    #register a {
+        color: white;
+        display: block;
+    }
+
+    #register a:hover {
+        color: white;
+    }
+
+    .logo {
+        position: absolute;
+        top: 30px;
+        margin-left: 30px;
+        z-index: 999;
+    }
+    .logo img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .tip {
+        margin: 10px 0px;
+    }
+
+    .tip .prompt {
+        background: #ffffff;
+        border: 1px solid #F94D50;
+        color: #F94D50;
+        text-align: left;
+        padding-left: 40px;
+        height: 30px;
+        line-height: 28px;
+        border-radius: 3px;
+        position: relative
+    }
+
+    .tip .tip_icon {
+        background: url(image/page/bz_16x16.png) no-repeat;
+        display: block;
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        top: 5px;
+        left: 15px;
+    }
+</style>
+<body>
+<div id="large-header" class="large-header">
+    <canvas id="demo-canvas" width="1590" height="711"></canvas>
+    <div class="logo">
+        <a href="/"><img th:src="@{image/mall/logo.png}" alt="Logo"></a>
+    </div>
+    <div class="container">
+        <div class="box">
+            <h2 style="color: white;margin-bottom: 45px;margin-top: 0px">账户登录</h2>
+            <form class="form-horizontal" id="loginForm">
+                <div class="form-group">
+                    <div class="input-group">
+                            <span class="input-group-addon">
+                                  <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="用户名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                           <span class="input-group-addon">
+	                          <span class="glyphicon glyphicon-lock"></span>
+                           </span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                    </div>
+                </div>
+                <div class="tip" id="tip"></div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="button" class="form-control btn btn-success" id="submit" value="登录">
+                    </div>
+                </div>
+                <div id="register"><a href="/register">立即注册</a></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+<script th:src="@{js/TweenLite/TweenLite.min.js}"></script>
+<script th:src="@{js/TweenLite/EasePack.min.js}"></script>
+<script th:src="@{js/TweenLite/rAF.js}"></script>
+<script th:src="@{js/TweenLite/demo-1.js}"></script>
+<script>
+    $(function () {
+        $("#submit").on("click",checkLogin)
+        function checkType(){
+            var username = $("#username").val();
+            var password = $("#password").val();
+            if (username==""||password==""){
+                return false;
+            }
+            $.ajax({
+                type:'post',
+                url:"/user/loginUser",
+                dataType:'json',
+                data:{"username":username,"password":password},
+                success:function(data){
+                    console.log(data)
+                    if(data.msg=="success") {
+                        window.location.href = "/index";
+                        return;
+                    }
+                    if(data.msg=="disable"){
+                        addTip("该账号已被禁用，请用其他账号登录");
+                        return;
+                    }
+                    addTip("用户名或密码错误");
+
+
+                },
+                error: function (jqXHR) {
+                    addTip("ajax请求出错");
+                }
+            })
+        }
+
+        function checkLogin() {
+            $("#tip").hide();
+            var username = $.trim($("#username").val());
+            var password = $("#password").val();
+
+            if ($.trim(username) == "") {
+                addTip('请输入用户名');
+                $("#username").focus();
+                return;
+            }
+            if ($.trim(password) == "") {
+                addTip('请输入密码！');
+                $("#password").focus();
+                return;
+            }
+            checkType();
+        }
+
+        function addTip(msg) {
+            $("#tip").show().html("<div class='prompt'><i class='tip_icon'></i>"+msg+"</div>");
+        }
+    });
+</script>
+</body>
+</html>

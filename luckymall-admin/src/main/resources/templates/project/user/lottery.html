@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>LuckyMall | 积分抽奖</title>
+    <link rel="icon" th:href="@{/image/mall/logo.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/search.css}">
+    <link rel="stylesheet" th:href="@{/css/normalize.css}">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+</head>
+<style type="text/css">
+    #lottery {
+        width: 570px;
+        height: 510px;
+        margin: 0px auto;
+        border: 4px solid #ba1809;
+    }
+
+    #lottery table {
+        background-color: yellow;
+    }
+
+    #lottery table td {
+        position: relative;
+        width: 190px;
+        height: 170px;
+        text-align: center;
+        color: #333;
+        font-index: -999
+    }
+
+    #lottery table td img {
+        display: block;
+        width: 190px;
+        height: 170px;
+    }
+
+    #lottery table td.active .mask {
+        display: block;
+    }
+
+    .mask {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: rgba(252, 211, 4, 0.5);
+        display: none;
+    }
+</style>
+<body>
+<!--加载头部模块-->
+<div th:replace="common/common::head"></div>
+
+<!--加载左侧导航栏-->
+<div th:replace="common/common::leftside"></div>
+
+<!-- 内容主体区域 -->
+<div class="layui-body" style="position: absolute;top: 60px;">
+    <div style="padding: 15px;">
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            积分抽奖
+                            <span style="font: normal 16px 'Kaiti';color: red;margin-left: 10px;">100积分/次</span>
+                        </div>
+                        <div class="layui-card-body" pad15="">
+                            <div th:if="${session.user}!=null">
+                                <blockquote class="layui-elem-quote layui-quote-nm">
+                                    <div>
+                                        总积分：
+                                        <span th:text="${session.user.score}" id="score"
+                                              style="font: bold 20px 'Microsoft YaHei UI';color:green; margin-left: 5px;margin-right: 100px">100
+                                        </span>
+                                    </div>
+                                </blockquote>
+
+                            </div>
+                            <div th:if="${session.user}==null">
+                                <script>
+                                    window.location.href = "/login";
+                                </script>
+                            </div>
+                        </div>
+                        <div class="layui-card-body">
+                            <blockquote class="layui-elem-quote layui-quote-nm">
+                                <div id="lottery">
+                                    <table border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td class="lottery-unit lottery-unit-0"><img th:src="${list.get(0).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                            <td class="lottery-unit lottery-unit-1"><img th:src="${list.get(1).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                            <td class="lottery-unit lottery-unit-2"><img th:src="${list.get(2).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="lottery-unit lottery-unit-7"><img th:src="${list.get(7).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                            <td class="btn"><img th:src="@{/image/page/lottery.jpg}"></td>
+                                            <td class="lottery-unit lottery-unit-3"><img th:src="${list.get(3).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="lottery-unit lottery-unit-6"><img th:src="${list.get(6).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                            <td class="lottery-unit lottery-unit-5"><img th:src="${list.get(5).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                            <td class="lottery-unit lottery-unit-4"><img th:src="${list.get(4).image}">
+                                                <div class="mask"></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script th:inline="javascript">
+    $(function () {
+        var lottery = {
+            place: 0, //请求后指定停留在某个位置
+            click: false, //默认值为false可抽奖，防止重复点击
+            index: -1, //当前转动到哪个位置，起点位置
+            count: 0, //总共有多少个位置
+            timer: 0, //setTimeout的ID，用clearTimeout清除
+            speed: 20, //初始转动速度
+            times: 0, //转动次数
+            cycle: 50, //转动基本次数：即至少需要转动多少次再进入抽奖环节
+            prize: -1, //中奖位置
+            init: function (id) {
+                if ($("#" + id).find(".lottery-unit").length > 0) {
+                    $lottery = $("#" + id);
+                    $units = $lottery.find(".lottery-unit");
+                    this.obj = $lottery;
+                    this.count = $units.length;
+                    $lottery.find(".lottery-unit-" + this.index).addClass("active");
+                }
+                ;
+            },
+            roll: function () {
+                var index = this.index,
+                    count = this.count,
+                    lottery = this.obj;
+                $(lottery).find(".lottery-unit-" + index).removeClass("active");
+                index += 1;
+                if (index > count - 1) {
+                    index = 0;
+                }
+                ;
+                $(lottery).find(".lottery-unit-" + index).addClass("active");
+                this.index = index;
+                return false;
+            },
+            stop: function () {
+                lottery.times += 1;
+                lottery.roll(); //转动过程调用的是lottery的roll方法，这里是第一次调用初始化
+                if (lottery.times > lottery.cycle + 10 && lottery.prize == lottery.index) {
+                    clearTimeout(lottery.timer);
+                    lottery.prize = -1;
+                    lottery.times = 0;
+                    lottery.click = false;
+                    //可以在这个位置写上中奖弹框，这个是转盘停止时触发事件
+                    console.log('您抽中了第' + lottery.place + '个奖品');
+                    doLottery(lottery.place);
+                } else {
+                    if (lottery.times < lottery.cycle) {
+                        lottery.speed -= 10;
+                    } else if (lottery.times == lottery.cycle) {
+                        lottery.place = Math.random() * (lottery.count) | 0; //案例中奖物品通过一个随机数生成
+                        lottery.prize = lottery.place;
+                        // lottery.prize = lottery.place;  //这个可以通过ajax请求回来的数据赋值给lottery.place
+                    } else {
+                        if (lottery.times > lottery.cycle + 10 && ((lottery.prize == 0 && lottery.index == 7) || lottery.prize == lottery.index + 1)) {
+                            lottery.speed += 110;
+                        } else {
+                            lottery.speed += 20;
+                        }
+                    }
+                    if (lottery.speed < 40) {
+                        lottery.speed = 40;
+                    }
+                    ;
+                    lottery.timer = setTimeout(lottery.stop, lottery.speed); //循环调用
+                }
+                return false;
+            },
+            getLottery: function () {//ajax请求中奖接口，本案例注释便于案例正常展示效果，实际中可参考注释的代码
+                lottery.speed = 100;
+                lottery.stop(); //转圈过程不响应click事件，会将click置为false
+                lottery.click = true; //一次抽奖完成后，设置click为true，可继续抽奖
+            }
+        };
+
+        $("#lottery .btn").on('click', function (event) {
+            event.preventDefault();
+            var score = parseInt($("#score").text());
+            lottery.init('lottery');
+            if (score < 100) {
+                showMsg("积分不足", 5, 6);
+            } else {
+                if (lottery.click) { //click控制一次抽奖过程中不能重复点击抽奖按钮，后面的点击不响应
+                    return false;
+                } else {
+                    lottery.getLottery();
+                    return false;
+                }
+            }
+        });
+
+        // 抽奖结束处理
+        function doLottery(id) {
+            // 获取抽奖商品列表
+            var list = [[${list}]];
+            $.ajax({
+                url: '/user/doLottery',
+                type: 'post',
+                dataType: 'json',
+                data: list[id],
+                success: function (data) {
+                    if (data.msg == "success") {
+                        showMsg("恭喜您抽中了" + list[id].name, 6, 0);
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000)
+                    } else {
+                        showMsg("出错啦" + list[id].name, 5, 0);
+                    }
+                },
+                error: function () {
+                    showMsg("ajax请求出错", 5, 6);
+                }
+            });
+        }
+
+        // 提示消息弹框
+        function showMsg(msg, icon, shift) {
+            layer.msg(msg, {
+                icon: icon,//1:正确；2:错误；3:询问；4:锁定；5:失败；6：成功；7:警告
+                shift: shift, //平滑放大。默认 1	:从上掉落 2:从最底部往上滑入 3:从左滑入 4:从左翻滚 5;渐显 6:抖动
+                time: 3000,  // 0: 不自动关闭
+            });
+        }
+    });
+</script>
+</body>
+</html>

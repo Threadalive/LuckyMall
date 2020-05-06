@@ -56,7 +56,7 @@
                 <script>
                     //加载分类
                     $.ajax({
-                        type: 'get',
+                        type: 'post',
                         url: "/productType/listType",
                         dataType: 'json',
                         success: function (data) {
@@ -88,15 +88,15 @@
                     </span>
                 </a>
                 <dl class="layui-nav-child">
-                    <dd th:if="${session.user != null}"><a href="/user_index"><i class="fa fa-home"></i>
+                    <dd th:if="${session.user != null}"><a href="/userIndex"><i class="fa fa-home"></i>
                         个人中心</a></dd>
-                    <dd th:if="${session.user != null}"><a href="/user/order"><i class="fa fa-list"></i>
+                    <dd th:if="${session.user != null}"><a href="/order"><i class="fa fa-list"></i>
                         我的订单</a></dd>
                     <dd th:if="${session.user != null}"><a href="/user/cart"><i class="fa fa-shopping-cart"></i>
                         购物车</a></dd>
                     <dd th:if="${session.user != null}"><a href="/user/logout"><i class="fa fa-sign-out"></i>
                         退出登录</a></dd>
-                    <dd th:if="${session.user == null}"><a href="/login"><i class="fa fa-sign-in"></i>
+                    <dd th:if="${session.user == null}"><a href="/clientLogin"><i class="fa fa-sign-in"></i>
                         登录</a></dd>
                     <dd th:if="${session.user == null}"><a href="/register"><i
                             class="fa fa-user-plus"></i> 注册</a></dd>
@@ -166,7 +166,7 @@
                 </i>购物车</a>
             </li>
             <li class="layui-nav-item">
-                <a href="/user/order"><i class="layui-icon layui-icon-form" style="font-size: 14px;margin-right: 10px">
+                <a href="/order"><i class="layui-icon layui-icon-form" style="font-size: 14px;margin-right: 10px">
                 </i>我的订单</a>
             </li>
             <li class="layui-nav-item">

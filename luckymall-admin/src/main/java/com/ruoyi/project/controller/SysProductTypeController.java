@@ -52,7 +52,7 @@ public class SysProductTypeController extends BaseController
      * 查询【请填写功能名称】列表
      */
     @RequiresPermissions("system:type:list")
-    @PostMapping("/list")
+    @PostMapping("/listType")
     @ResponseBody
     public Result<List<SysProductType>> list()
     {

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>LuckyMall | 我的积分</title>
+    <link rel="icon" th:href="@{/image/mall/logo.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/search.css}">
+    <link rel="stylesheet" th:href="@{/css/normalize.css}">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+</head>
+<style>
+    #lottery {
+        width: 600px;
+        height: 600px;
+        margin: 20px auto 0;
+        background: url(/image/page/scorebg.jpg) no-repeat;
+        /*background-size: 400px 400px;*/
+        padding: 50px 55px;
+    }
+
+    #lottery table td {
+        width: 142px;
+        height: 142px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 24px;
+        color: #333;
+        font-index: -999
+    }
+
+    #lottery table td a {
+        width: 284px;
+        height: 284px;
+        line-height: 150px;
+        display: block;
+        text-decoration: none;
+    }
+
+    #lottery table td.active {
+        background-color: #ea0000;
+    }
+</style>
+<body>
+<!--加载头部模块-->
+<div th:replace="common/common::head"></div>
+
+<!--加载左侧导航栏-->
+<div th:replace="common/common::leftside"></div>
+
+<!-- 内容主体区域 -->
+<div class="layui-body" style="position: absolute;top: 60px;">
+    <div style="padding: 15px;">
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">积分明细</div>
+                        <div class="layui-card-body" pad15="">
+                            <div th:if="${session.user}!=null">
+                                <blockquote class="layui-elem-quote layui-quote-nm">
+                                    <div>
+                                        总积分：
+                                        <span th:text="${score}"
+                                              style="font: bold 20px 'Microsoft YaHei UI';color:green; margin-left: 5px;margin-right: 100px">100</span>
+                                        <span class="score">
+                                             <a href="/user/lottery" style="color: red">积分抽奖</a>
+                                        </span>
+                                    </div>
+                                </blockquote>
+                                <table class="layui-table" lay-skin="line">
+                                    <colgroup>
+                                        <col width="100">
+                                        <col width="200">
+                                        <col width="200">
+                                        <col width="200">
+                                    </colgroup>
+                                    <thead>
+                                    <tr>
+                                        <th>积分id</th>
+                                        <th>获取时间</th>
+                                        <th>获得积分</th>
+                                        <th>订单详情</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="scoreRecord:${list}">
+                                        <td th:text="${scoreRecord.id}">id</td>
+                                        <td th:text="${scoreRecord.addTime}">1998-01-01 00:00:00</td>
+                                        <td th:text="${scoreRecord.point}"></td>
+                                        <td>
+                                            <button type="button" class="layui-btn layui-btn-warm"
+                                                    th:onclick="'orderDetail('+${scoreRecord.orderId}+')'">订单详情
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div th:if="${session.user}==null">
+                                <script>
+                                    window.location.href = "/login";
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // 订单详情
+    function orderDetail(orderId) {
+        //iframe层-禁滚动条
+        layer.open({
+            title: '订单详情',
+            type: 2,
+            area: ['600px', '450px'],
+            skin: 'layui-layer-rim', //加上边框
+            content: '/user/orderDetail?orderId=' + orderId
+        });
+    }
+</script>
+</body>
+</html>

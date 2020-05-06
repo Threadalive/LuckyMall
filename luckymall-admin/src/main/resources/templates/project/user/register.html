@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LuckyMall | 注册</title>
+    <link rel="icon" th:href="@{/image/mall/logo.ico}">
+    <link rel="stylesheet" th:href="@{/bootstrap-3.3.7-dist/css/bootstrap.css}">
+</head>
+<style>
+    .large-header {
+        position: relative;
+        width: 100%;
+        background: url(image/page/bg.jpg) no-repeat;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center center;
+        z-index: 1;
+    }
+
+    .container {
+        position: absolute;
+        top: 10%;
+        width: 100%;
+        z-index: 99;
+    }
+
+    .box {
+        position: relative;
+        width: 450px;
+        z-index: 99;
+        height: auto;
+        box-shadow: 0px 3px 6px #333333;
+        background: url(image/page/bg_03.png) repeat;
+        border-radius: 5px;
+        margin: 0 auto;
+        text-align: center;
+        padding: 20px 40px;
+    }
+
+    .form-horizontal .form-group {
+        margin: 20px 0;
+    }
+
+    .input-group {
+        width: 100%;
+        height: 40px;
+    }
+
+    .form-control {
+        height: 40px;
+    }
+
+    #login {
+        text-align: right;
+    }
+
+    #login a {
+        color: white;
+        display: block;
+    }
+
+    #login a:hover {
+        color: white;
+    }
+
+    .logo {
+        position: absolute;
+        top: 30px;
+        margin-left: 30px;
+        z-index: 999;
+    }
+
+    .logo img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .tip {
+        margin: 10px 0px;
+    }
+
+    .tip .prompt {
+        background: #ffffff;
+        border: 1px solid #F94D50;
+        color: #F94D50;
+        text-align: left;
+        padding-left: 40px;
+        height: auto;
+        line-height: 28px;
+        border-radius: 3px;
+        position: relative
+    }
+
+    .tip .tip_icon {
+        background: url(image/page/bz_16x16.png) no-repeat;
+        display: block;
+        width: 16px;
+        height: 16px;
+        position: absolute;
+        top: 5px;
+        left: 15px;
+    }
+</style>
+<body>
+<div id="large-header" class="large-header">
+    <canvas id="demo-canvas" width="1590" height="711"></canvas>
+    <div class="logo">
+        <a href="/"><img th:src="@{image/mall/logo.png}" alt="Logo"></a>
+    </div>
+    <div class="container">
+        <div class="box">
+            <h2 style="color: white;margin-bottom: 20px;margin-top: 0px">账户注册</h2>
+            <form class="form-horizontal" id="registerForm">
+                <div class="form-group">
+                    <div class="input-group">
+                            <span class="input-group-addon">
+                                  <span class="glyphicon glyphicon-user"></span>
+                            </span>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="用户名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                           <span class="input-group-addon">
+	                          <span class="glyphicon glyphicon-lock"></span>
+                           </span>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                           <span class="input-group-addon">
+	                          <span class="glyphicon glyphicon-lock"></span>
+                           </span>
+                        <input type="password" class="form-control" id="repassword" name="repassword"
+                               placeholder="确认密码">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                           <span class="input-group-addon">
+	                          <span class="glyphicon glyphicon-phone"></span>
+                           </span>
+                        <input type="tel" class="form-control" id="phone" name="phone" placeholder="电话">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                           <span class="input-group-addon">
+	                          <span class="glyphicon glyphicon-envelope"></span>
+                           </span>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="邮箱">
+                    </div>
+                </div>
+                <div class="tip" id="tip"></div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="button" class="form-control btn btn-success" id="submit" value="注册">
+                    </div>
+                </div>
+                <div id="login"><a href="/login">已有账号?前往登录</a></div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{jquery-validation-1.14.0/lib/jquery.js}"></script>
+<script th:src="@{/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
+<script th:src="@{js/TweenLite/TweenLite.min.js}"></script>
+<script th:src="@{js/TweenLite/EasePack.min.js}"></script>
+<script th:src="@{js/TweenLite/rAF.js}"></script>
+<script th:src="@{js/TweenLite/demo-1.js}"></script>
+<script>
+    $(function () {
+        $("#submit").on("click", checkRegister);
+        $("#username").on("blur", checkUsername);
+
+        // 验证用户名是否存在
+        function checkUsername() {
+            var username = $("#username").val();
+
+            $.ajax({
+                type: 'post',
+                url: '/user/hasUsername',
+                dataType: 'json',
+                data: {"username": username},
+                success: function (data) {
+                    if (data.msg == "success") {
+                        addTip("用户名已存在");
+                        $("#submit").attr("disabled", "disabled");
+                        return;
+                    }
+                    if (data.msg == "error") {
+                        $("#tip").hide();
+                        $("#submit").removeAttr("disabled");
+                        return;
+                    }
+                },
+                error: function (jqXHR) {
+                    addTip("ajax请求出错");
+                }
+            });
+        }
+
+        // 注册
+        function doRegister() {
+            var username = $.trim($("#username").val());
+            var password = $("#password").val();
+            var phone = $("#phone").val();
+            var email = $("#email").val();
+            $.ajax({
+                type: 'post',
+                url: "/user/registerUser",
+                dataType: 'json',
+                data: {"username": username, "password": password, "phone": phone, "email": email},
+                success: function (data) {
+                    console.log(data)
+                    if (data.msg == "success") {
+                        window.location.href = "/index";
+                        return;
+                    }
+                    addTip("注册失败，请检查注册信息是否有误");
+                },
+                error: function (jqXHR) {
+                    addTip("ajax请求出错");
+                }
+            })
+        }
+
+        // 验证表单输入数据格式
+        function checkRegister() {
+            var flag = false;
+            // 用户名正则表达式，4到16位，至少包含字母，数字，下划线，减号任意一种
+            var usernamePattern = /^[a-zA-Z0-9_-]{4,16}$/;
+            // 密码正则表达式，6到20位，至少包含字母、数字、特殊字符任意两种组合
+            var passwordPattern = /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$)^.{6,20}$/;
+            // 手机号码正则表达式
+            var phonePattern = /^1[3|4|5|7|8]\d{9}$/;
+            // 邮箱正则表达式
+            var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+
+            var username = $.trim($("#username").val());
+            var password = $("#password").val();
+            var repassword = $("#repassword").val();
+            var phone = $("#phone").val();
+            var email = $("#email").val();
+
+            if ($.trim(username) == "") {
+                addTip('请输入用户名');
+                $("#username").focus();
+                return flag;
+            }
+            if (!usernamePattern.test(username)) {
+                addTip("用户名非法，请输入4到16位用户名，至少包含字母，数字，下划线，减号中的一种");
+                $("#username").focus();
+                return flag;
+            }
+            if ($.trim(password) == "") {
+                addTip('请输入密码');
+                $("#password").focus();
+                return flag;
+            }
+            if (!passwordPattern.test(password)) {
+                addTip("密码格式错误，请输入6到20位密码，至少包含字母、数字、特殊字符任意两种组合");
+                $("#password").focus();
+                return flag;
+            }
+            if ($.trim(repassword) == "") {
+                addTip('请再次确认密码');
+                $("#repassword").focus();
+                return flag;
+            }
+            if ($.trim(repassword) != $.trim(password)) {
+                addTip("两次输入的密码不一致");
+                $("#password").val("");
+                $("#repassword").val("");
+                $("#password").focus();
+                return flag;
+            }
+            if ($.trim(phone) == "") {
+                addTip('请输入电话');
+                $("#phone").focus();
+                return flag;
+            }
+            if (!phonePattern.test(phone)) {
+                addTip("请输入正确的电话号码");
+                $("#phone").focus();
+                return flag;
+            }
+            if ($.trim(email) == "") {
+                addTip('请输入邮箱');
+                $("#email").focus();
+                return flag;
+            }
+            if (!emailPattern.test(email)) {
+                addTip("请输入正确的邮箱");
+                $("#email").focus();
+                return flag;
+            }
+
+            $("#tip").hide();
+            doRegister();
+        }
+
+        function addTip(msg) {
+            $("#tip").hide();
+            $("#tip").show().html("<div class='prompt'><i class='tip_icon'></i>" + msg + "</div>");
+        }
+    });
+</script>
+</body>
+</html>

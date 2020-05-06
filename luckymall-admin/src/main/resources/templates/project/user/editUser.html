@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>LuckyMall | 用户信息修改</title>
+    <link rel="icon" th:href="@{/image/mall/logo.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/search.css}">
+    <link rel="stylesheet" th:href="@{/css/normalize.css}">
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+</head>
+
+<body>
+<!--包含 头部模块-->
+<div th:replace="common/common::head"></div>
+
+<!--加载左侧导航栏-->
+<div th:replace="common/common::leftside"></div>
+
+<!-- 内容主体区域 -->
+<div class="layui-body" style="position: absolute;top: 60px;">
+    <div style="padding: 15px;">
+        <div class="layui-fluid">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">修改个人资料</div>
+                        <div class="layui-card-body" pad15="">
+
+                            <form th:if="${session.user}!=null" class="layui-form" id="userForm" name="userForm"
+                                  lay-filter="userForm" enctype="mutipart/form-data">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">头像</label>
+                                    <!-- 图片上传功能-->
+                                    <div class="layui-input-inline">
+                                        <img th:src="${session.user.image}" class="layui-upload-img layui-circle"
+                                             id="photo" width="100" height="100">
+                                        <p id="demoText"></p>
+                                        <input type="file" id="img_url" name="file"
+                                               style="width: 188px;margin-top: 15px;display: block;height: 38px;line-height: 2.3;border: 1px solid #e6e6e6;background-color: #fff;border-radius: 2px;">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">用户名</label>
+                                    <div class="layui-input-inline">
+                                        <input th:if="${session.user}!=null" type="text" name="username" id="username"
+                                               th:value="${session.user.username}" readonly
+                                               class="layui-input">
+                                    </div>
+                                    <div class="layui-form-mid layui-word-aux">不可修改</div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">昵称</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="nickname" id="nickname"
+                                               th:value="${session.user.nickname}"
+                                               autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">手机</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="phone" id="phone" th:value="${session.user.phone}"
+                                               autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">邮箱</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="email" id="email" th:value="${session.user.email}"
+                                               autocomplete="off" class="layui-input">
+                                    </div>
+                                </div>
+
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button type="button" class="layui-btn"
+                                                name="submitBtn" id="submitBtn">确认修改
+                                        </button>
+                                        <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <div th:if="${session.user}==null">
+                                <script>
+                                    window.location.href = "/login";
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('layer', function () {
+        var layer = layui.layer;
+
+        $(function () {
+            <!--图片预览-->
+            $.fn.extend({
+                uploadPreview: function (opts) {
+                    var _self = this,
+                        _this = $(this);
+                    opts = jQuery.extend({
+                        Img: "photo",
+                        Width: 100,
+                        Height: 100,
+                        ImgType: ["gif", "jpeg", "jpg", "bmp", "png"],
+                        Callback: function () {
+                        }
+                    }, opts || {});
+                    _self.getObjectURL = function (file) {
+                        var url = null;
+                        if (window.createObjectURL != undefined) {
+                            url = window.createObjectURL(file)
+                        } else if (window.URL != undefined) {
+                            url = window.URL.createObjectURL(file)
+                        } else if (window.webkitURL != undefined) {
+                            url = window.webkitURL.createObjectURL(file)
+                        }
+                        return url
+                    };
+                    _this.change(function () {
+                        if (this.value) {
+                            if (!RegExp("\.(" + opts.ImgType.join("|") + ")$", "i").test(this.value.toLowerCase())) {
+                                alert("选择文件错误,图片类型必须是" + opts.ImgType.join("，") + "中的一种");
+                                this.value = "";
+                                return false
+                            }
+                            //高版本Jquey使用  if ($.support.leadingWhitespace)
+                            if ($.support.leadingWhitespace) { //低版本jquery中使用$.browser.msie
+                                try {
+                                    $("#" + opts.Img).attr('src', _self.getObjectURL(this.files[0]))
+                                } catch (e) {
+                                    var src = "";
+                                    var obj = $("#" + opts.Img);
+                                    var div = obj.parent("div")[0];
+                                    _self.select();
+                                    if (top != self) {
+                                        window.parent.document.body.focus()
+                                    } else {
+                                        _self.blur()
+                                    }
+                                    src = document.selection.createRange().text;
+                                    document.selection.empty();
+                                    obj.hide();
+                                    obj.parent("div").css({
+                                        'filter': 'progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale)',
+                                        'width': opts.Width + 'px',
+                                        'height': opts.Height + 'px'
+                                    });
+                                    div.filters.item("DXImageTransform.Microsoft.AlphaImageLoader").src = src
+                                }
+                            } else {
+                                $("#" + opts.Img).attr('src', _self.getObjectURL(this.files[0]))
+                            }
+                            opts.Callback()
+                        }
+                    })
+                }
+            });
+            $("#img_url").uploadPreview({
+                Img: "photo"
+            });
+
+            $("#submitBtn").on("click", checkForm);
+
+            function checkForm() {
+                var flag = false;
+                // 用户名正则表达式，4到16位，至少包含字母，数字，下划线，减号任意一种
+                var usernamePattern = /^[a-zA-Z0-9_-]{4,16}$/;
+                // 手机号码正则表达式
+                var phonePattern = /^1[3|4|5|7|8]\d{9}$/;
+                // 邮箱正则表达式
+                var emailPattern = /^(\w)+(\.\w+)*@(\w)+((\.\w{2,3}){1,3})$/;
+
+                var nickname = $.trim($("#nickname").val());
+                var phone = $("#phone").val();
+                var email = $("#email").val();
+
+                if ($.trim(nickname) == "") {
+                    showMsg('昵称不能为空', 5);
+                    $("#nickname").focus();
+                    return flag;
+                }
+                if (!usernamePattern.test(nickname)) {
+                    showMsg("请输入4到16位昵称", 5);
+                    $("#nickname").focus();
+                    return flag;
+                }
+                if ($.trim(phone) == "") {
+                    showMsg('请输入电话号码', 5);
+                    $("#phone").focus();
+                    return flag;
+                }
+                if (!phonePattern.test(phone)) {
+                    showMsg("请输入正确的电话号码", 5);
+                    $("#phone").focus();
+                    return flag;
+                }
+                if ($.trim(email) == "") {
+                    showMsg('请输入邮箱', 5);
+                    $("#email").focus();
+                    return flag;
+                }
+                if (!emailPattern.test(email)) {
+                    showMsg("请输入正确的邮箱", 5);
+                    $("#email").focus();
+                    return flag;
+                }
+
+                updateInfo();
+            }
+
+            function updateInfo() {
+                var formData = new FormData($("#userForm")[0]);
+                $.ajax({
+                    url: '/user/editUser',
+                    type: 'post',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data.msg == 'success') {
+                            layer.msg("信息修改成功", {
+                                icon: 6,
+                                time: 1000,
+                                offset: ['350px', '650px'],
+                            });
+                            //加载层-默认风格
+                            layer.load();
+                            //此处演示关闭
+                            setTimeout(function () {
+                                window.location.href = "/user_index";
+                            }, 500);
+
+                        } else {
+                            showMsg("信息修改失败", 5);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        showMsg("ajax请求出错", 2);
+                    }
+                });
+            }
+
+            function showMsg(msg, icon) {
+                layer.msg(msg, {
+                    icon: icon,//1:正确；2:错误；3:询问；4:锁定；5:失败；6：成功；7:警告
+                    shift: 6, //平滑放大。默认 1	:从上掉落 2:从最底部往上滑入 3:从左滑入 4:从左翻滚 5;渐显 6:抖动
+                    time: 2000,
+                    offset: ['350px', '650px'],
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>
