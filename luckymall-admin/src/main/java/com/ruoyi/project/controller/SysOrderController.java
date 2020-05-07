@@ -1,6 +1,8 @@
 package com.ruoyi.project.controller;
 
 import java.util.List;
+
+import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,7 +45,19 @@ public class SysOrderController extends BaseController
         return orderModel;
     }
 
-
+    /**
+     * 方法说明：商品详情页点击立即购买
+     * @param id    商品id
+     * @param number 商品数量
+     * @return com.luckymall.common.Result 结果
+     */
+//    @RequestMapping("/buy")
+//    @ResponseBody
+//    public Result buy(int id, int number){
+//        Result result = sysOrderService.buy(id,number);
+//        return result;
+//    }
+//
     /**
      * 查询订单列表
      */

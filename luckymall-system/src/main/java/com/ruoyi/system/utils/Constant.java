@@ -1,4 +1,4 @@
-package com.ruoyi.project.common;
+package com.ruoyi.system.utils;
 
 /**
  * @Description: 常量类

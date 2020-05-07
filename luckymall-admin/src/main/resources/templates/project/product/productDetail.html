@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LuckyMall | 商品详情</title>
+    <link rel="icon" th:href="@{/image/mall/logo.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.css}">
+    <link rel="stylesheet" th:href="@{/font-awesome-4.7.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/css/search.css}">
+    <link rel="stylesheet" th:href="@{/css/normalize.css}">
+
+    <script th:src="@{/js/jquery.min.js}"></script>
+    <script th:src="@{/layui/layui.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var showproduct = {
+                "boxid":"showbox",
+                "sumid":"showsum",
+                "boxw":400,//宽度,该版本中请把宽高填写成一样
+                "boxh":400,//高度,该版本中请把宽高填写成一样
+                "sumw":60,//列表每个宽度,该版本中请把宽高填写成一样
+                "sumh":60,//列表每个高度,该版本中请把宽高填写成一样
+                "sumi":7,//列表间隔
+                "sums":5,//列表显示个数
+                "sumsel":"sel",
+                "sumborder":1,//列表边框，没有边框填写0，边框在css中修改
+                "lastid":"showlast",
+                "nextid":"shownext"
+            };//参数定义
+            $.ljsGlasses.pcGlasses(showproduct);//方法调用，务必在加载完后执行
+        });
+        jQuery.ljsGlasses = {
+            pcGlasses:function(_obj){
+                var _box = $("#"+_obj.boxid);
+                var _sum = $("#"+_obj.sumid);
+                var _last,_next;
+                var _imgarr = _box.find("img");
+                var _length = _imgarr.length;
+                var _index = 0;
+                var _arr = new Array();
+                _sum.append("<p style='position:absolute;left:0;top:0;'></p>");
+                var _sumbox = _sum.find("p");
+
+                for(var i=0;i<_length;i++){
+                    _arr[i] = new Array();
+                    _arr[i][0] = _imgarr.eq(i).attr("src");
+                    _arr[i][1] = _imgarr.eq(i).attr("width");
+                    _arr[i][2] = _imgarr.eq(i).attr("height");
+                    var _scale = _arr[i][1]/_arr[i][2];
+                    if(_scale == 1){
+                        _arr[i][3] = _obj.boxw;//width
+                        _arr[i][4] = _obj.boxh;//height
+                        _arr[i][5] = 0;//top
+                        _arr[i][6] = 0;//left
+                        _arr[i][7] = _obj.boxw/2;
+                        _arr[i][8] = _obj.boxw*2;//width
+                        _arr[i][9] = _obj.boxh*2;//height
+                        _sumbox.append("<span><img src='"+_imgarr.eq(i).attr("src")+"' width='"+_obj.sumw+"' height='"+_obj.sumh+"' /></span>");
+                    }
+                    if(_scale > 1){
+                        _arr[i][3] = _obj.boxw;//width
+                        _arr[i][4] = _obj.boxw/_scale;
+                        _arr[i][5] = (_obj.boxh-_arr[i][4])/2;
+                        _arr[i][6] = 0;//left
+                        _arr[i][7] = _arr[i][4]/2;
+                        _arr[i][8] = _obj.boxh*2*_scale;//width
+                        _arr[i][9] = _obj.boxh*2;//height
+                        var _place = _obj.sumh - (_obj.sumw/_scale);
+                        _place = _place/2;
+                        _sumbox.append("<span><img src='"+_imgarr.eq(i).attr("src")+"' width='"+_obj.sumw+"' style='top:"+_place+"px;' /></span>");
+                    }
+                    if(_scale < 1){
+                        _arr[i][3] = _obj.boxh*_scale;//width
+                        _arr[i][4] = _obj.boxh;//height
+                        _arr[i][5] = 0;//top
+                        _arr[i][6] = (_obj.boxw-_arr[i][3])/2;
+                        _arr[i][7] = _arr[i][3]/2;
+                        _arr[i][8] = _obj.boxw*2;//width
+                        _arr[i][9] = _obj.boxw*2/_scale;
+                        var _place = _obj.sumw - (_obj.sumh*_scale);
+                        _place = _place/2;
+                        _sumbox.append("<span><img src='"+_imgarr.eq(i).attr("src")+"' height='"+_obj.sumh+"' style='left:"+_place+"px;' /></span>");
+                    }
+                }
+                _imgarr.remove();
+
+                _sum.append("<div style='clear:both;width:100%;'></div>");
+                var _sumarr = _sum.find("span");
+                var _sumimg = _sum.find("img");
+                _sumarr.eq(_index).addClass(_obj.sumsel);
+                var _border = _obj.sumborder*2 + _obj.sumh;
+                var _sumwidth = (_border+_obj.sumi)*_obj.sums;
+                var _sumboxwidth = (_border+_obj.sumi)*_length;
+                _sum.css({
+                    "overflow":"hidden",
+                    "height":_border+"px",
+                    "width":_sumwidth+"px",
+                    "position":"relative"
+                });
+                _sumbox.css({
+                    "width":_sumboxwidth+"px"
+                });
+                _sumarr.css({
+                    "float":"left",
+                    "margin-left":_obj.sumi+"px",
+                    "width":_obj.sumw+"px",
+                    "height":_obj.sumh+"px",
+                    "overflow":"hidden",
+                    "position":"relative"
+                });
+                _sumimg.css({
+                    "max-width":"100%",
+                    "max-height":"100%",
+                    "position":"relative"
+                });
+
+                _box.append("<div style='position:relative;'><b style='display:block;'><img style='display:block;' src='' /></b><span style='position:absolute;left:0;top:0;display:none;z-index:5;'></span></div><p style='position:absolute;overflow:hidden;top:0;display:none;'><img style='max-width:none;max-height:none;position:relative;left:0;top:0;z-index: 5;' src='' /></p>");
+                var _glass = _box.find("span");
+                var _boximg = _box.find("b img");
+                var _imgout = _box.find("div");
+                var _showbox = _box.find("p");
+                var _showimg = _box.find("p img");
+
+                _box.css({
+                    "width":_obj.boxw+"px",
+                    "height":_obj.boxh+"px",
+                    "position":"relative"
+                });
+                var _showboxleft = _obj.boxw + 66;
+                _showbox.css({
+                    "width":_obj.boxw+"px",
+                    "height":_obj.boxh+"px",
+                    "left":_showboxleft+"px"
+                });
+
+                var imgPlaces = function(){
+                    _showimg.attr("src",_arr[_index][0]);
+                    _boximg.attr("src",_arr[_index][0]);
+                    _boximg.css({
+                        "width":_arr[_index][3]+"px",
+                        "height":_arr[_index][4]+"px"
+                    });
+                    _imgout.css({
+                        "width":_arr[_index][3]+"px",
+                        "height":_arr[_index][4]+"px",
+                        "top":_arr[_index][5]+"px",
+                        "left":_arr[_index][6]+"px",
+                        "position":"relative"
+                    });
+                    _glass.css({
+                        "width":_arr[_index][7]+"px",
+                        "height":_arr[_index][7]+"px"
+                    });
+                    _showimg.css({
+                        "width":_arr[_index][8]+"px",
+                        "height":_arr[_index][9]+"px"
+                    });
+
+                };
+                imgPlaces();
+
+                _imgout.mousemove(function(e){
+                    var _gl_w = _glass.width()/2;
+                    var _maxX = _imgout.width() - _gl_w;
+                    var _maxY = _imgout.height() - _gl_w;
+                    var _moveX = 0,_moveY = 0;
+                    var _nowX = e.pageX - _imgout.offset().left;
+                    var _nowY = e.pageY - _imgout.offset().top;
+                    var _moveX = _nowX-_gl_w,_moveY = _nowY-_gl_w;
+
+                    if(_nowX <= _gl_w){ _moveX = 0; }
+                    if(_nowX >= _maxX){ _moveX = _maxX-_gl_w; }
+                    if(_nowY <= _gl_w){ _moveY = 0;}
+                    if(_nowY >= _maxY){ _moveY = _maxY-_gl_w;}
+                    _glass.css({"left":_moveX+"px","top":_moveY+"px"});
+
+                    var _imgX = -_moveX*_showbox.width()/_glass.width();
+                    var _imgY = -_moveY*_showbox.width()/_glass.width();
+                    _showimg.css({"left":_imgX+"px","top":_imgY+"px"});
+
+                });//mouse END
+
+                _imgout.mouseenter(function(){
+                    _glass.css("display","block");
+                    _showbox.css("display","block");
+                });
+                _imgout.mouseleave(function(){
+                    _glass.css("display","none");
+                    _showbox.css("display","none");
+                });
+
+                //列表部分
+                var _nextbtn = $("#"+_obj.nextid);
+                var _lastbtn = $("#"+_obj.lastid);
+                var _moveindex = 0;//索引移动
+
+                var _sumListMove = function(){
+                    var _leftmove = -_moveindex*(_border+_obj.sumi);
+                    if(_sumbox.is(":animated")){_sumbox.stop(true,true);}
+                    _sumbox.animate({left:_leftmove+"px"},300);
+                    _sumarr.eq(_index).addClass(_obj.sumsel).siblings().removeClass(_obj.sumsel);
+                    imgPlaces();
+                };//fun END
+
+                if(_length <= _obj.sums){
+                    var _place = (_obj.sums-_length)*_border/2;
+                    _sumbox.css("left",_place+"px");
+                    _nextbtn.click(function(){
+                        _index++;
+                        if(_index >= _length){ _index=_length-1;}
+                        _sumarr.eq(_index).addClass(_obj.sumsel).siblings().removeClass(_obj.sumsel);
+                        imgPlaces();
+                    });
+                    _lastbtn.click(function(){
+                        _index--;
+                        if(_index <= 0){ _index=0;}
+                        _sumarr.eq(_index).addClass(_obj.sumsel).siblings().removeClass(_obj.sumsel);
+                        imgPlaces();
+                    });
+                }else{
+                    var _maxNum = _length-_obj.sums;
+                    _nextbtn.click(function(){
+                        _moveindex++;
+                        if(_moveindex >= _maxNum){ _moveindex=_maxNum; }
+                        if(_index <= _moveindex){ _index=_moveindex;}
+                        _sumListMove();
+                    });
+                    _lastbtn.click(function(){
+                        _moveindex--;
+                        if(_moveindex <= 0){ _moveindex=0;}
+                        if(_index >= _moveindex+_obj.sums){ _index=_moveindex+_obj.sums-1;}
+                        _sumListMove();
+                    });
+                }//if END
+
+                _sumarr.hover(function(){
+                    _index = $(this).index();
+                    _sumarr.eq(_index).addClass(_obj.sumsel).siblings().removeClass(_obj.sumsel);
+                    imgPlaces();
+                });
+
+            }//pcGlasses END
+        }//ljsGlasses END
+    </script>
+</head>
+<body>
+<!--包含 头部模块-->
+<div th:replace="project/common/common::head"></div>
+
+<!--商品展示模块-->
+<div class="layui-container" th:object="${product}"
+     style="height: 500px;margin: 20px 100px;">
+    <div>
+        <div class="layui-col-md5">
+            <!--页面必要代码,img标签上请务必带上图片真实尺寸px-->
+            <div id="showbox">
+                <img th:src="*{productPhoto}" width="400" height="400">
+            </div><!--展示图片盒子-->
+        </div>
+        <div class="layui-col-md7">
+            <div class="layui-row">
+                <div class="layui-col-md7" style="font: bold 36px  'Microsoft Yahei';margin: 20px 0px;">
+                    <span th:text="*{produceName}">商品名</span>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md7"
+                     style="height: 100px;background-color: white;font: normal 26px  'Microsoft Yahei';">
+                    <div style="margin-top: 30px">
+                        <span style="color: #9F9F9F;font-size: 20px">价格</span> <span th:text="'￥'+*{productPrice}"
+                                                                                     style="color: red;font-weight: bold">价格</span>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md7" style="height: 60px;margin-top: 30px">
+                    <!--商品id-->
+                    <input type="hidden" th:value="*{id}" id="id">
+                    <!--商品库存-->
+                    <input type="hidden" th:value="*{productCount}" id="stock">
+
+                    <!--数量减-->
+                    <span><button class="layui-btn layui-btn-xs" id="minusBtn"><i
+                            class="fa fa-minus"></i></button></span>
+                    <!--数量-->
+                    <span style="margin: 0px 1px;"><input type="text" id="num"
+                                                          style="text-align:center;width: 30px;height: 20px"
+                                                          value="1"></span>
+                    <!--数量加-->
+                    <span><button class="layui-btn layui-btn-xs" id="plusBtn"><i class="fa fa-plus"></i></button></span>
+                    <!--库存-->
+                    <span th:text="'库存'+*{productCount}" style="color: #000;margin-left: 5px">库存</span>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md7" style="height: 100px;">
+                    <span><button type="button" id="buyBtn" class="layui-btn layui-btn-danger">立即购买</button></span>
+                    <span><button type="button" id="cartBtn" class="layui-btn layui-btn-normal">加入购物车</button></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--底部-->
+<div th:replace="project/common/common::foot"></div>
+
+<script>
+    <!--加载layer模块-->
+    layui.use('layer', function () {
+        var layer = layui.layer;
+        $(function () {
+            $("#num").on("keypress keyup change", checkNum);
+            $("#minusBtn").on("click", numSub);
+            $("#plusBtn").on("click", numAdd);
+            $("#cartBtn").on("click", addCart);
+            $("#buyBtn").on("click", buy);
+
+            // 库存
+            var stock = parseInt($("#stock").val());
+
+            // 检查数量是否合法
+            function checkNum() {
+                var num = $("#num");
+                var numPattern = /^[1-9]\d*$/
+                if (!numPattern.test(num.val()) || num.val() < Number(1) || num.val() > stock) {
+                    num.val("1");
+                }
+                var number = parseInt(num.val());
+                if (number == 1) {
+                    $("#minusBtn").attr("disabled", "disabled");
+                }
+                if (number == stock) {
+                    $("#plusBtn").attr("disabled", "disabled");
+                }
+                if (number > Number(1) && number < stock) {
+                    $("#minusBtn").removeAttr("disabled");
+                }
+            }
+
+            // 数量加1
+            function numAdd() {
+                if ($("#num").val() < stock) {
+                    var num = $("#num").val();
+                    $("#num").val(Number(num) + 1);
+                }
+            }
+
+            // 数量减1
+            function numSub() {
+                if ($("#num").val() > 1) {
+                    var num = $("#num").val();
+                    $("#num").val(Number(num) - 1);
+                }
+            }
+
+            // 加入购物车
+            function addCart() {
+                // 商品数量
+                var number = parseInt($("#num").val());
+                // 商品id
+                var id = parseInt($("#id").val());
+                $.ajax({
+                    type: 'post',
+                    url: "/shoppingCar/addToShoppingCar",
+                    dataType: 'json',
+                    data: {"id": id, "number": number},
+                    success: function (data) {
+                        if (data.msg == "nouser") {
+                            layer.msg("用户未登录，请登录后重试", {offset: '70px'});
+                        } else if (data.msg == "success") {
+                            layer.msg("成功加入购物车，是否前往购物车", {
+                                time: 5000,
+                                icon: 6,
+                                shift: 0,
+                                btn: ['立即前往', '下次再说'],
+                                yes: function (index) {
+                                    layer.close(index);
+                                    location.href = "/shoppingCar/shoppingCar";
+                                },
+                                offset: '70px',
+                                end: function () {
+                                    window.location.reload();
+                                }
+                            });
+                        } else {
+                            showMsg("加入购物车失败，请重试", 5, 6);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        showMsg("Ajax请求出错", 2, 6)
+                    }
+                });
+            }
+
+            // 立即购买
+            function buy() {
+                // 商品数量
+                var number = parseInt($("#num").val());
+                // 商品id
+                var id = parseInt($("#id").val());
+                $.ajax({
+                    type: 'post',
+                    url: '/order/buy',
+                    dataType: 'json',
+                    data: {"id": id, "number": number},
+                    success: function (data) {
+                        if (data.msg == "nouser") {
+                            layer.msg("用户未登录，请登录后重试", {offset: '70px'});
+                        } else if (data.msg == "success") {
+                            layer.msg("下单成功，是否查看订单", {
+                                time: 5000,
+                                icon: 6,
+                                shift: 0,
+                                btn: ['立即前往', '下次再说'],
+                                yes: function (index) {
+                                    layer.close(index);
+                                    location.href = "/order";
+                                },
+                                offset: '70px',
+                                end: function () {
+                                    window.location.reload();
+                                }
+                            });
+                        } else {
+                            showMsg("购买失败，请重试", 5, 6);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        showMsg("Ajax请求出错", 2, 6)
+                    }
+                });
+            }
+
+            // 提示消息弹框
+            function showMsg(msg, icon, shift) {
+                layer.msg(msg, {
+                    icon: icon,//1:正确；2:错误；3:询问；4:锁定；5:失败；6：成功；7:警告
+                    shift: shift, //平滑放大。默认 1	:从上掉落 2:从最底部往上滑入 3:从左滑入 4:从左翻滚 5;渐显 6:抖动
+                    time: 2000,  // 0: 不自动关闭
+                    offset: '65px',
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

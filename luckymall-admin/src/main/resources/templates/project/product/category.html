@@ -17,7 +17,7 @@
 </head>
 <body>
 <!--包含 头部模块-->
-<div th:replace="common/common::head"></div>
+<div th:replace="project/common/common::head"></div>
 
 <!--商品展示模块-->
 <div class="layui-container" id="content">
@@ -34,14 +34,14 @@
                 <div class='card layui-anim layui-anim-scale'>
                     <div class='product_image'>
                         <a th:href="@{/product/detail(id=${product.id})}">
-                            <img th:src="${product.image}" width="200" height="200"/>
+                            <img th:src="${product.productPhoto}" width="200" height="200"/>
                         </a>
                     </div>
-                    <div class='product_title' th:text="${product.name}">
+                    <div class='product_title' th:text="${product.produceName}">
                         商品名
                     </div>
                     <div style='text-align: center;'>
-                        <span class='price1' th:text="'￥'+${product.price}"></span>
+                        <span class='price1' th:text="'￥'+${product.productPrice}"></span>
                     </div>
                 </div>
             </div>
@@ -51,6 +51,6 @@
 </div>
 
 <!--底部-->
-<div th:replace="common/common::foot"></div>
+<div th:replace="project/common/common::foot"></div>
 </body>
 </html>

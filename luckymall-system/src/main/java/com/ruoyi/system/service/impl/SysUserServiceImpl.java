@@ -2,6 +2,11 @@ package com.ruoyi.system.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSON;
+import com.ruoyi.system.utils.Constant;
+import com.ruoyi.system.utils.FileUploadUtil;
+import com.ruoyi.system.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,10 @@ import com.ruoyi.system.mapper.SysUserPostMapper;
 import com.ruoyi.system.mapper.SysUserRoleMapper;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * 用户 业务层处理
@@ -53,6 +62,13 @@ public class SysUserServiceImpl implements ISysUserService
 
     @Autowired
     private ISysConfigService configService;
+
+    /**
+     * 客户端请求
+     */
+    @Autowired
+    private HttpServletRequest request;
+
 
     /**
      * 根据条件分页查询用户列表
@@ -214,8 +230,41 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public boolean registerUser(SysUser user)
     {
+        log.info("===============用户注册==============");
+        log.info("注册用户信息：" + JSON.toJSONString(user));
+//        user.setScore(0);
+        user.setStatus("0");
+        user.setAvatar(Constant.DEFAULT_IMAGE);
+        user.setLoginName(user.getUserName());
         user.setUserType(UserConstants.REGISTER_USER_TYPE);
+        // flag=1/数据插入成功 flag=0/数据插入失败
         return userMapper.insertUser(user) > 0;
+    }
+
+    @Override
+    @Transactional
+    public Result updateUser(MultipartFile file, SysUser user) {
+        log.info("===============用户信息修改==============");
+        Result result = new Result();
+        HttpSession session = request.getSession();
+        SysUser oldUser = (SysUser) session.getAttribute("user");
+        oldUser.setLoginName(user.getLoginName());
+        oldUser.setPhonenumber(user.getPhonenumber());
+        oldUser.setEmail(user.getEmail());
+        // 若上传了图片则对图片进行转存，并更新用户的头像
+        if (!file.isEmpty()) {
+            String imageUrl = FileUploadUtil.savaFile(file, Constant.USER_IMAGE_PATH);
+            oldUser.setAvatar(imageUrl);
+        }
+        int flag = userMapper.updateUser(oldUser);
+        if (flag == 1) {
+            session.setAttribute("user", oldUser);
+            result.setMsg(Constant.SUCCESS_MSG);
+        } else {
+            result.setMsg(Constant.ERROR_MSG);
+        }
+        log.info("修改后用户信息：" + JSON.toJSONString(oldUser));
+        return result;
     }
 
     /**
@@ -277,10 +326,29 @@ public class SysUserServiceImpl implements ISysUserService
         return updateUserInfo(user);
     }
 
+    @Override
+    public Result editPassword(String oldPassword, String password) {
+        log.info("===============用户密码修改==============");
+        Result result = new Result();
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        log.info("旧密码：" + JSON.toJSONString(oldPassword));
+        // 若输入的密码错误，返回错误信息
+        if (!oldPassword.equals(user.getPassword())) {
+            result.setMsg(Constant.ERROR_MSG);
+        } else {
+            user.setPassword(password);
+            userMapper.updateUser(user);
+            session.setAttribute("user", user);
+            result.setMsg(Constant.SUCCESS_MSG);
+        }
+        log.info("新密码：" + JSON.toJSONString(password));
+        return result;
+    }
+
     /**
      * 新增用户角色信息
      * 
-     * @param user 用户对象
      */
     public void insertUserRole(Long userId, Long[] roleIds)
     {

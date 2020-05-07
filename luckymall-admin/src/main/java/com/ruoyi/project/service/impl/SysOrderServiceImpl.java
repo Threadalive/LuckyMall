@@ -1,6 +1,8 @@
 package com.ruoyi.project.service.impl;
 
 import java.util.List;
+
+import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysUser;
 import org.slf4j.Logger;
@@ -56,6 +58,23 @@ public class SysOrderServiceImpl implements ISysOrderService
         modelAndView.addObject("allOrderList", allOrderList);
         modelAndView.addObject("paidOrderList", paidOrderList);
         modelAndView.addObject("unpaidOrderList", unpaidOrderList);
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView userOrderDetail(Long orderId) {
+        LOGGER.info("===============用户查看订单详情==============");
+        ModelAndView modelAndView = new ModelAndView("project/order/orderDetail");
+        SysOrder order = sysOrderMapper.selectSysOrderById(orderId);
+        LOGGER.info("订单：" + JSON.toJSONString(order));
+//        List<OrderItem> orderItemList = orderItemMapper.findOrderItemByOrderId(orderId);
+//        Map<Product, OrderItem> map = new HashMap<>(Constant.ORDERITEM_MAP_CAPACITY);
+//        for (OrderItem orderItem : orderItemList) {
+//            Product product = productMapper.findProductById(orderItem.getProductId());
+//            map.put(product, orderItem);
+//        }
+        modelAndView.addObject("order", order);
+//        modelAndView.addObject("map", map);
         return modelAndView;
     }
 

@@ -42,16 +42,6 @@ public class MallIndexController {
     }
 
     /**
-     * 方法说明：跳转注册界面
-     *
-     * @return 注册界面地址
-     */
-    @RequestMapping("/register")
-    public String register() {
-        return PREFIX+"user/register";
-    }
-
-    /**
      * 方法说明：跳转用户个人中心页面
      *
      * @return 个人中心地址
@@ -59,26 +49,6 @@ public class MallIndexController {
     @RequestMapping("/userIndex")
     public String userIndex() {
         return PREFIX+"user/userIndex";
-    }
-
-    /**
-     * 方法说明：跳转用户信息修改页面
-     *
-     * @return 用户信息修改页面
-     */
-    @RequestMapping("/editUser")
-    public String userEdit() {
-        return PREFIX+"user/editUser";
-    }
-
-    /**
-     * 方法说明：跳转用户密码修改页面
-     *
-     * @return 用户密码修改页面
-     */
-    @RequestMapping("/editPassword")
-    public String passwordEdit() {
-        return PREFIX+"user/editPassword";
     }
 
     /**

@@ -13,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 public interface ISysOrderService 
 {
     public ModelAndView getUserOrder();
+
+    public ModelAndView userOrderDetail(Long orderId);
     /**
      * 查询订单
      * 

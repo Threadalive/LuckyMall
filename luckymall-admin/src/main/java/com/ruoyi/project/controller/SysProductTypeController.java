@@ -3,10 +3,10 @@ package com.ruoyi.project.controller;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
-import com.ruoyi.project.common.Constant;
-import com.ruoyi.project.common.Result;
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.service.ISysProductTypeService;
+import com.ruoyi.system.utils.Constant;
+import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

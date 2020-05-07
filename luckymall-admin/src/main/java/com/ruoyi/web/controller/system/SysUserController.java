@@ -57,6 +57,7 @@ public class SysUserController extends BaseController
         return prefix + "/user";
     }
 
+
     @RequiresPermissions("system:user:list")
     @PostMapping("/list")
     @ResponseBody

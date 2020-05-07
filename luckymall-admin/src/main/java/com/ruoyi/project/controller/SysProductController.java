@@ -56,6 +56,20 @@ public class SysProductController extends BaseController
     }
 
     /**
+     * 方法说明：跳转到商品详情页
+     *
+     * @param id 商品id
+     * @return org.springframework.web.servlet.ModelAndView 返回视图
+     */
+    @RequestMapping("/detail")
+    public ModelAndView productDetail(String id) {
+        ModelAndView modelAndView = new ModelAndView(prefix+"/productDetail");
+        SysProduct productDetail = sysProductService.selectSysProductById(id);
+        modelAndView.addObject("product",productDetail);
+        return modelAndView;
+    }
+
+    /**
      * 查询【请填写功能名称】列表
      */
     @RequiresPermissions("system:product:list")

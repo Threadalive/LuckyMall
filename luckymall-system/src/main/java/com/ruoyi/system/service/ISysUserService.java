@@ -1,8 +1,11 @@
 package com.ruoyi.system.service;
 
 import java.util.List;
+
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.domain.SysUserRole;
+import com.ruoyi.system.utils.Result;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用户 业务层
@@ -117,6 +120,13 @@ public interface ISysUserService
     public int updateUser(SysUser user);
 
     /**
+     * 连同头像更新用户
+     * @param file
+     * @param user
+     * @return
+     */
+    public Result updateUser(MultipartFile file,SysUser user);
+    /**
      * 修改用户详细信息
      * 
      * @param user 用户信息
@@ -140,6 +150,13 @@ public interface ISysUserService
      */
     public int resetUserPwd(SysUser user);
 
+    /**
+     * 修改密码
+     * @param oldPassword
+     * @param password
+     * @return
+     */
+    public Result editPassword(String oldPassword, String password);
     /**
      * 校验用户名称是否唯一
      * 

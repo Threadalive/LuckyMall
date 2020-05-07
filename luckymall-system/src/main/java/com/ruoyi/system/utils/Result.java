@@ -1,4 +1,4 @@
-package com.ruoyi.project.common;
+package com.ruoyi.system.utils;
 
 /**
  * @Description: 返回数据封装类
