@@ -71,6 +71,33 @@ public class SysUserServiceImpl implements ISysUserService
 
 
     /**
+     * 方法说明：用户登录接口
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return com.luckymall.common.Result 返回验证信息 success/登陆成功 error/验证失败
+     */
+    @Override
+    public Result loginUser(String userName, String password) {
+        log.info("===============用户登录==============");
+        HttpSession session = request.getSession();
+        Result result = new Result();
+        // 根据用户名和密码查找用户
+        SysUser user = userMapper.findUserByNameAndPassword(userName, password);
+        log.info("查询的用户信息：" + JSON.toJSONString(user));
+        if (user == null) {
+            result.setMsg(Constant.ERROR_MSG);
+            return result;
+        } else if ("1".equals(user.getStatus())) {
+            result.setMsg(Constant.DISABLED_MSG);
+            return result;
+        }
+        session.setAttribute("user", user);
+        result.setMsg(Constant.SUCCESS_MSG);
+        return result;
+    }
+
+    /**
      * 根据条件分页查询用户列表
      * 
      * @param user 用户信息

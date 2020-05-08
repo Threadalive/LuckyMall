@@ -11,7 +11,7 @@
     .large-header {
         position: relative;
         width: 100%;
-        background: url(image/page/bg.jpg) no-repeat;
+        background: url(/image/page/bg.jpg) no-repeat;
         overflow: hidden;
         background-size: cover;
         background-position: center center;
@@ -31,7 +31,7 @@
         z-index: 99;
         height: auto;
         box-shadow: 0px 3px 6px #333333;
-        background: url(image/page/bg_03.png) repeat;
+        background: url(/image/page/bg_03.png) repeat;
         border-radius: 5px;
         margin: 0 auto;
         text-align: center;
@@ -92,7 +92,7 @@
     }
 
     .tip .tip_icon {
-        background: url(image/page/bz_16x16.png) no-repeat;
+        background: url(/image/page/bz_16x16.png) no-repeat;
         display: block;
         width: 16px;
         height: 16px;
@@ -105,7 +105,7 @@
 <div id="large-header" class="large-header">
     <canvas id="demo-canvas" width="1590" height="711"></canvas>
     <div class="logo">
-        <a href="/"><img th:src="@{image/mall/logo.png}" alt="Logo"></a>
+        <a href="/mallIndex"><img th:src="@{/image/mall/logo.png}" alt="Logo"></a>
     </div>
     <div class="container">
         <div class="box">
@@ -116,7 +116,7 @@
                             <span class="input-group-addon">
                                   <span class="glyphicon glyphicon-user"></span>
                             </span>
-                        <input type="text" class="form-control" id="username" name="username" placeholder="用户名">
+                        <input type="text" class="form-control" id="userName" name="userName" placeholder="用户名">
                     </div>
                 </div>
                 <div class="form-group">
@@ -141,28 +141,28 @@
 
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/bootstrap-3.3.7-dist/js/bootstrap.js}"></script>
-<script th:src="@{js/TweenLite/TweenLite.min.js}"></script>
-<script th:src="@{js/TweenLite/EasePack.min.js}"></script>
-<script th:src="@{js/TweenLite/rAF.js}"></script>
-<script th:src="@{js/TweenLite/demo-1.js}"></script>
+<script th:src="@{/js/TweenLite/TweenLite.min.js}"></script>
+<script th:src="@{/js/TweenLite/EasePack.min.js}"></script>
+<script th:src="@{/js/TweenLite/rAF.js}"></script>
+<script th:src="@{/js/TweenLite/demo-1.js}"></script>
 <script>
     $(function () {
         $("#submit").on("click",checkLogin)
         function checkType(){
-            var username = $("#username").val();
+            var username = $("#userName").val();
             var password = $("#password").val();
             if (username==""||password==""){
                 return false;
             }
             $.ajax({
                 type:'post',
-                url:"/user/loginUser",
+                url:"/user/login",
                 dataType:'json',
-                data:{"username":username,"password":password},
+                data:{"userName":username,"password":password},
                 success:function(data){
                     console.log(data)
                     if(data.msg=="success") {
-                        window.location.href = "/index";
+                        window.location.href = "/mallIndex";
                         return;
                     }
                     if(data.msg=="disable"){
@@ -181,12 +181,12 @@
 
         function checkLogin() {
             $("#tip").hide();
-            var username = $.trim($("#username").val());
+            var username = $.trim($("#userName").val());
             var password = $("#password").val();
 
             if ($.trim(username) == "") {
                 addTip('请输入用户名');
-                $("#username").focus();
+                $("#userName").focus();
                 return;
             }
             if ($.trim(password) == "") {

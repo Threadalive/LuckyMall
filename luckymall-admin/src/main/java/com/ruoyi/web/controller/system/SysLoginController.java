@@ -44,24 +44,6 @@ public class SysLoginController extends BaseController
         return "login";
     }
 
-    /**
-     * 前台用户登录界面
-     * @param request
-     * @param response
-     * @return
-     */
-    @GetMapping("/clientLogin")
-    public String clientLogin(HttpServletRequest request, HttpServletResponse response)
-    {
-        // 如果是Ajax请求，返回Json字符串。
-        if (ServletUtils.isAjaxRequest(request))
-        {
-            return ServletUtils.renderString(response, "{\"code\":\"1\",\"msg\":\"未登录或登录超时。请重新登录\"}");
-        }
-        return "clientLogin";
-    }
-
-
 
     @PostMapping("/login")
     @ResponseBody

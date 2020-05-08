@@ -53,6 +53,31 @@ public class UserController {
     private ISysOrderService sysOrderService;
 
     /**
+     * 方法说明：跳转登录界面
+     *
+     * @return 登录界面地址
+     */
+    @GetMapping("/login")
+    public String login() {
+        return PREFIX+"/login";
+    }
+    /**
+     * 方法说明：用户登录验证
+     *
+     * @param userName 用户名
+     * @param password 密码
+     * @return com.luckymall.common.Result  返回验证信息 success/验证成功 error/验证失败
+     */
+    @PostMapping("/login")
+    @ResponseBody
+    public Result loginUser(String userName, String password) {
+        Result result = new Result();
+        // 根据用户名和密码查找用户
+        result = userService.loginUser(userName, password);
+        return result;
+    }
+
+    /**
      * 方法说明：用户注册验证
      *
      * @param user 用户

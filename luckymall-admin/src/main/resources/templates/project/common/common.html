@@ -99,7 +99,7 @@
                         购物车</a></dd>
                     <dd th:if="${session.user != null && session.user.userType != '00'}"><a href="/logout"><i class="fa fa-sign-out"></i>
                         退出登录</a></dd>
-                    <dd th:if="${session.user == null || session.user.userType == '00'}"><a href="/clientLogin"><i class="fa fa-sign-in"></i>
+                    <dd th:if="${session.user == null || session.user.userType == '00'}"><a href="/user/login"><i class="fa fa-sign-in"></i>
                         登录</a></dd>
                     <dd th:if="${session.user == null || session.user.userType == '00'}"><a href="/user/registerUser"><i
                             class="fa fa-user-plus"></i> 注册</a></dd>

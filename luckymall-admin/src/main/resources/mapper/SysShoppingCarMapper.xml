@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.mapper.SysShoppingCarMapper">
+    
+    <resultMap type="SysShoppingCar" id="SysShoppingCarResult">
+        <result property="id"    column="id"    />
+        <result property="addTime"    column="add_time"    />
+        <result property="number"    column="number"    />
+        <result property="productId"    column="product_id"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+
+    <sql id="selectSysShoppingCarVo">
+        select id, add_time, number, product_id, user_id from sys_shopping_car
+    </sql>
+
+    <select id="selectSysShoppingCarList" parameterType="SysShoppingCar" resultMap="SysShoppingCarResult">
+        <include refid="selectSysShoppingCarVo"/>
+        <where>  
+            <if test="addTime != null  and addTime != ''"> and add_time = #{addTime}</if>
+            <if test="number != null "> and number = #{number}</if>
+            <if test="productId != null  and productId != ''"> and product_id = #{productId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysShoppingCarById" parameterType="String" resultMap="SysShoppingCarResult">
+        <include refid="selectSysShoppingCarVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysShoppingCar" parameterType="SysShoppingCar">
+        insert into sys_shopping_car
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="addTime != null  and addTime != ''">add_time,</if>
+            <if test="number != null ">number,</if>
+            <if test="productId != null  and productId != ''">product_id,</if>
+            <if test="userId != null ">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="addTime != null  and addTime != ''">#{addTime},</if>
+            <if test="number != null ">#{number},</if>
+            <if test="productId != null  and productId != ''">#{productId},</if>
+            <if test="userId != null ">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysShoppingCar" parameterType="SysShoppingCar">
+        update sys_shopping_car
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="addTime != null  and addTime != ''">add_time = #{addTime},</if>
+            <if test="number != null ">number = #{number},</if>
+            <if test="productId != null  and productId != ''">product_id = #{productId},</if>
+            <if test="userId != null ">user_id = #{userId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysShoppingCarById" parameterType="String">
+        delete from sys_shopping_car where id = #{id}
+    </delete>
+
+    <delete id="deleteSysShoppingCarByIds" parameterType="String">
+        delete from sys_shopping_car where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

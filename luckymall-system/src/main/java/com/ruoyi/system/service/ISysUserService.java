@@ -15,6 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ISysUserService
 {
     /**
+     * 方法说明：用户登录验证
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return com.luckymall.common.Result  返回验证信息 success/验证成功 error/验证失败
+     */
+    public Result loginUser(String username, String password);
+    /**
      * 根据条件分页查询用户列表
      * 
      * @param user 用户信息

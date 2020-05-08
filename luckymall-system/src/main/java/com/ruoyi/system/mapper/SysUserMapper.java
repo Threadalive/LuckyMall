@@ -2,6 +2,7 @@ package com.ruoyi.system.mapper;
 
 import java.util.List;
 import com.ruoyi.system.domain.SysUser;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 用户表 数据层
@@ -10,6 +11,7 @@ import com.ruoyi.system.domain.SysUser;
  */
 public interface SysUserMapper
 {
+    public SysUser findUserByNameAndPassword(@Param("userName") String userName, @Param("password") String password);
     /**
      * 根据条件分页查询用户列表
      * 
