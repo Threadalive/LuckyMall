@@ -20,7 +20,7 @@ public class SysProduct extends BaseEntity
 
     /** 商品名 */
     @Excel(name = "商品名")
-    private String produceName;
+    private String productName;
 
     /** 商品价格 */
     @Excel(name = "商品价格")
@@ -36,7 +36,7 @@ public class SysProduct extends BaseEntity
 
     /** 商品类别 */
     @Excel(name = "商品类别")
-    private Long productType;
+    private Integer productType;
 
     /** 商品图片路径 */
     @Excel(name = "商品图片路径")
@@ -51,14 +51,14 @@ public class SysProduct extends BaseEntity
     {
         return id;
     }
-    public void setProduceName(String produceName) 
+    public void setProductName(String productName)
     {
-        this.produceName = produceName;
+        this.productName = productName;
     }
 
-    public String getProduceName() 
+    public String getProductName()
     {
-        return produceName;
+        return productName;
     }
     public void setProductPrice(Double productPrice) 
     {
@@ -83,16 +83,16 @@ public class SysProduct extends BaseEntity
         this.productStatus = productStatus;
     }
 
-    public Long getProductStatus() 
+    public Long getProductStatus()
     {
         return productStatus;
     }
-    public void setProductType(Long productType) 
+    public void setProductType(Integer productType)
     {
         this.productType = productType;
     }
 
-    public Long getProductType() 
+    public Integer getProductType()
     {
         return productType;
     }
@@ -110,7 +110,7 @@ public class SysProduct extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("produceName", getProduceName())
+            .append("productName", getProductName())
             .append("productPrice", getProductPrice())
             .append("productCount", getProductCount())
             .append("productStatus", getProductStatus())

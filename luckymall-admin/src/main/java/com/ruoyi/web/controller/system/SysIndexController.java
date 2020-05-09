@@ -58,4 +58,9 @@ public class SysIndexController extends BaseController
         mmap.put("version", Global.getVersion());
         return "main";
     }
+    @GetMapping("/system/main_v1")
+    public String mainV1()
+    {
+        return "main_v1";
+    }
 }

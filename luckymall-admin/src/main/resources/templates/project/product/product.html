@@ -12,7 +12,7 @@
                         <ul>
                             <li>
                                 <label>商品名：</label>
-                                <input type="text" name="produceName"/>
+                                <input type="text" name="productName"/>
                             </li>
                             <li>
                                 <label>商品价格：</label>
@@ -23,21 +23,17 @@
                                 <input type="text" name="productCount"/>
                             </li>
                             <li>
-                                <label>商品状态：0：下架；1：上架：</label>
+                                <label>商品状态：</label>
                                 <select name="productStatus">
-                                    <option value="">所有</option>
+                                    <option value="1">上架</option>
+                                    <option value="0">下架</option>
                                 </select>
                             </li>
                             <li>
                                 <label>商品类别：</label>
-                                <select name="productType" th:with="type=${@dict.getType('')}">
-                                    <option value="">所有</option>
-                                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                                <select name="productType" >
+                                    <option th:each="type : ${productTypeList}" th:text="${type.name}" th:value="${type.id}"></option>
                                 </select>
-                            </li>
-                            <li>
-                                <label>商品图片路径：</label>
-                                <input type="text" name="productPhoto"/>
                             </li>
                             <li>
                                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
@@ -71,7 +67,7 @@
     <script th:inline="javascript">
         var editFlag = [[${@permission.hasPermi('system:product:edit')}]];
         var removeFlag = [[${@permission.hasPermi('system:product:remove')}]];
-        var prefix = ctx + "system/product";
+        var prefix = ctx + "product";
 
         $(function() {
             var options = {
@@ -90,7 +86,7 @@
                     visible: false
                 },
                 {
-                    field: 'produceName', 
+                    field: 'productName',
                     title: '商品名'
                 },
                 {
@@ -103,7 +99,7 @@
                 },
                 {
                     field: 'productStatus', 
-                    title: '商品状态：0：下架；1：上架'
+                    title: '商品状态'
                 },
                 {
                     field: 'productType', 

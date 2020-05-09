@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="SysProduct" id="SysProductResult">
         <result property="id"    column="id"    />
-        <result property="produceName"    column="produce_name"    />
+        <result property="productName"    column="product_name"    />
         <result property="productPrice"    column="product_price"    />
         <result property="productCount"    column="product_count"    />
         <result property="productStatus"    column="product_status"    />
@@ -15,7 +15,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectSysProductVo">
-        select id, produce_name, product_price, product_count, product_status, product_type, product_photo from sys_product
+        select id, product_name, product_price, product_count, product_status, product_type, product_photo from sys_product
     </sql>
 
     <select id="findProductByType" parameterType="SysProduct" resultMap="SysProductResult">
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectSysProductList" parameterType="SysProduct" resultMap="SysProductResult">
         <include refid="selectSysProductVo"/>
         <where>  
-            <if test="produceName != null  and produceName != ''"> and produce_name like concat('%', #{produceName}, '%')</if>
+            <if test="productName != null  and productName != ''"> and product_name like concat('%', #{productName}, '%')</if>
             <if test="productPrice != null "> and product_price = #{productPrice}</if>
             <if test="productCount != null "> and product_count = #{productCount}</if>
             <if test="productStatus != null "> and product_status = #{productStatus}</if>
@@ -44,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into sys_product
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null  and id != ''">id,</if>
-            <if test="produceName != null  and produceName != ''">produce_name,</if>
+            <if test="productName != null  and productName != ''">product_name,</if>
             <if test="productPrice != null ">product_price,</if>
             <if test="productCount != null ">product_count,</if>
             <if test="productStatus != null ">product_status,</if>
@@ -53,7 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null  and id != ''">#{id},</if>
-            <if test="produceName != null  and produceName != ''">#{produceName},</if>
+            <if test="productName != null  and productName != ''">#{productName},</if>
             <if test="productPrice != null ">#{productPrice},</if>
             <if test="productCount != null ">#{productCount},</if>
             <if test="productStatus != null ">#{productStatus},</if>
@@ -65,7 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateSysProduct" parameterType="SysProduct">
         update sys_product
         <trim prefix="SET" suffixOverrides=",">
-            <if test="produceName != null  and produceName != ''">produce_name = #{produceName},</if>
+            <if test="productName != null  and productName != ''">product_name = #{productName},</if>
             <if test="productPrice != null ">product_price = #{productPrice},</if>
             <if test="productCount != null ">product_count = #{productCount},</if>
             <if test="productStatus != null ">product_status = #{productStatus},</if>

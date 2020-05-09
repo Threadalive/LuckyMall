@@ -1,12 +1,26 @@
 package com.ruoyi.project.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import com.ruoyi.project.domain.SysProduct;
+import com.ruoyi.project.service.ISysProductService;
+import com.ruoyi.system.domain.SysUser;
+import com.ruoyi.system.utils.Constant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.project.mapper.SysShoppingCarMapper;
 import com.ruoyi.project.domain.SysShoppingCar;
 import com.ruoyi.project.service.ISysShoppingCarService;
 import com.ruoyi.common.core.text.Convert;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * 购物车Service业务层处理
@@ -19,6 +33,37 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
 {
     @Autowired
     private SysShoppingCarMapper sysShoppingCarMapper;
+
+    @Autowired
+    private ISysProductService productService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SysShoppingCarServiceImpl.class);
+    /**
+     * 客户端请求
+     */
+    @Autowired
+    private HttpServletRequest request;
+
+    @Override
+    public ModelAndView userCar() {
+        LOGGER.info("===============查看购物车==============");
+        ModelAndView modelAndView = new ModelAndView("project/shoppingcar/cart");
+        HttpSession session=request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        // Map<商品，该商品的购物车>
+        Map<SysProduct,SysShoppingCar> productCartMap = new HashMap<>(Constant.CART_MAP_CAPACITY);
+        // List<用户的购物车>
+        SysShoppingCar car = new SysShoppingCar();
+        car.setUserId(user.getUserId());
+        List<SysShoppingCar> cartList = this.selectSysShoppingCarList(car);
+        for(SysShoppingCar cart:cartList){
+            SysProduct product = productService.selectSysProductById(cart.getProductId());
+            productCartMap.put(product,cart);
+        }
+        LOGGER.info("购物车map：" + JSON.toJSONString(productCartMap));
+        modelAndView.addObject("cartMap",productCartMap);
+        return modelAndView;
+    }
 
     /**
      * 查询购物车

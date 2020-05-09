@@ -2,6 +2,7 @@ package com.ruoyi.project.service;
 
 import java.util.List;
 import com.ruoyi.project.domain.SysShoppingCar;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 购物车Service接口
@@ -11,6 +12,8 @@ import com.ruoyi.project.domain.SysShoppingCar;
  */
 public interface ISysShoppingCarService 
 {
+
+    public ModelAndView userCar();
     /**
      * 查询购物车
      * 

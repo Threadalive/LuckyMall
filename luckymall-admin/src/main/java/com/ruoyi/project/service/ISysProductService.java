@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.domain.SysProductType;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -41,7 +42,7 @@ public interface ISysProductService
      * @param sysProduct 【请填写功能名称】
      * @return 结果
      */
-    public int insertSysProduct(SysProduct sysProduct);
+    public int insertSysProduct(MultipartFile file,SysProduct sysProduct);
 
     /**
      * 修改【请填写功能名称】

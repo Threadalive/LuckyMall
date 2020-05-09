@@ -18,10 +18,10 @@
 
 <body>
 <!--加载头部模块-->
-<div th:replace="common/common::head"></div>
+<div th:replace="project/common/common::head"></div>
 
 <!--加载左侧导航栏-->
-<div th:replace="common/common::leftside"></div>
+<div th:replace="project/common/common::leftside"></div>
 
 <!-- 内容主体区域 -->
 <div class="layui-body" style="position: absolute;top: 60px;">
@@ -32,7 +32,7 @@
                     <div class="layui-card">
                         <div class="layui-card-header">购物车</div>
                         <div class="layui-card-body" pad15="">
-                            <div th:if="${session.user}!=null">
+                            <div th:if="${session.user != null && session.user.userType != '00'}">
                                 <table class="layui-table" lay-skin="line">
                                     <colgroup>
                                         <col width="120">
@@ -59,14 +59,14 @@
                                         <!--商品图片-->
                                         <td>
                                             <input type="hidden" class="productId" th:value="${map.key.id}">
-                                            <img th:src="${map.key.image}" alt="商品图片">
+                                            <img th:src="${map.key.productPhoto}" alt="商品图片">
                                         </td>
                                         <!--商品名-->
-                                        <td th:text="${map.key.name}">商品名</td>
+                                        <td th:text="${map.key.productName}">商品名</td>
                                         <td>
-                                            <span th:text="'￥'+${map.key.price}">单价</span>
-                                            <input type="hidden" class="price" th:id="'price'+${map.key.id}"
-                                                   th:value="${map.key.price}">
+                                            <span th:text="'￥'+${map.key.productPrice}">单价</span>
+                                            <input type="hidden" class="price" th:id="'productPrice'+${map.key.id}"
+                                                   th:value="${map.key.productPrice}">
                                         </td>
                                         <td>
                                             <!--数量减-->
@@ -85,16 +85,16 @@
                                         </td>
                                         <td>
                                             <!--商品库存-->
-                                            <input type="hidden" th:value="${map.key.number}"
+                                            <input type="hidden" th:value="${map.key.productCount}"
                                                    th:id="'stock'+${map.key.id}">
-                                            <span th:text="${map.key.number}"
+                                            <span th:text="${map.key.productCount}"
                                                   style="color: #000;margin-left: 5px">库存</span>
                                         </td>
                                         <td>
                                             ￥<span class="liPrice" th:id="'liPrice'+${map.key.id}" th:text="${#numbers.formatDecimal(map.key.price*map.value.number,0,2)}">0</span>
                                         </td>
                                         <td>
-                                            <a th:href="@{/cart/deleteCart(cartId=${map.value.id})}" class="
+                                            <a th:href="@{/shoppingCar/remove(cartId=${map.value.id})}" class="
                                                delete">删除</a>
                                         </td>
                                     </tr>
@@ -119,9 +119,9 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div th:if="${session.user}==null">
+                            <div th:if="${session.user == null || session.user.userType == '00'}">
                                 <script>
-                                    window.location.href = "/login";
+                                    window.location.href = "/user/login";
                                 </script>
                             </div>
                         </div>

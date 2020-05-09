@@ -1,6 +1,9 @@
 package com.ruoyi.project.controller;
 
 import java.util.List;
+
+import com.ruoyi.project.domain.SysProductType;
+import com.ruoyi.project.service.ISysProductTypeService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -35,10 +39,17 @@ public class SysProductController extends BaseController
     @Autowired
     private ISysProductService sysProductService;
 
+    @Autowired
+    private ISysProductTypeService productTypeService;
+
     @RequiresPermissions("system:product:view")
-    @GetMapping()
-    public String product()
+    @GetMapping("/productAdmin")
+    public String product(ModelMap modelMap)
     {
+        SysProductType productType = new SysProductType();
+
+        List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
+        modelMap.put("productTypeList",productTypeList);
         return prefix + "/product";
     }
 
@@ -100,8 +111,12 @@ public class SysProductController extends BaseController
      * 新增【请填写功能名称】
      */
     @GetMapping("/add")
-    public String add()
+    public String add(ModelMap modelMap)
     {
+        SysProductType productType = new SysProductType();
+
+        List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
+        modelMap.put("productTypeList",productTypeList);
         return prefix + "/add";
     }
 
@@ -112,9 +127,10 @@ public class SysProductController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(SysProduct sysProduct)
+    public AjaxResult addSave(MultipartFile file, SysProduct sysProduct)
     {
-        return toAjax(sysProductService.insertSysProduct(sysProduct));
+
+        return toAjax(sysProductService.insertSysProduct(file,sysProduct));
     }
 
     /**

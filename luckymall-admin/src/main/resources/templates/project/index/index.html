@@ -60,7 +60,8 @@
         <div class="layui-row">
             <div class="layui-col-md12">
                 <h1 class="site-h1">
-                    <span th:text="${mapStat.index+1}+'F '+${map.key.name}"
+                    <!--${mapStat.index+1}+'F '+-->
+                    <span th:text="${map.key.name}"
                           style="padding-left: 11px;border-left: 11px solid #658bf6;color:#658bf6 ">
                         类别</span>
                     <span class="more">
@@ -78,7 +79,7 @@
                             <img th:src="${product.productPhoto}" width="200" height="200"/>
                         </a>
                     </div>
-                    <div class='product_title' th:text="${product.produceName}">
+                    <div class='product_title' th:text="${product.productName}">
                         商品名
                     </div>
                     <div style='text-align: center;'>

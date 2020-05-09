@@ -3,11 +3,14 @@ package com.ruoyi.project.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.mapper.SysProductMapper;
 import com.ruoyi.project.mapper.SysProductTypeMapper;
+import com.ruoyi.system.utils.Constant;
+import com.ruoyi.system.utils.FileUploadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.service.ISysProductService;
 import com.ruoyi.common.core.text.Convert;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -105,8 +110,13 @@ public class SysProductServiceImpl implements ISysProductService
      * @return 结果
      */
     @Override
-    public int insertSysProduct(SysProduct sysProduct)
+    public int insertSysProduct(@RequestParam("file") MultipartFile file, SysProduct sysProduct)
     {
+        LOGGER.info("===============添加商品==============");
+        LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
+        String imageUrl = FileUploadUtil.savaFile(file, Constant.PRODUCT_IMAGE_PATH);
+        sysProduct.setProductPhoto(imageUrl);
+        sysProduct.setId(UUID.randomUUID().toString());
         return sysProductMapper.insertSysProduct(sysProduct);
     }
 
