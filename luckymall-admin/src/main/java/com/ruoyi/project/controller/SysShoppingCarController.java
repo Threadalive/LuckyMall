@@ -1,6 +1,8 @@
 package com.ruoyi.project.controller;
 
 import java.util.List;
+
+import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -89,9 +91,9 @@ public class SysShoppingCarController extends BaseController
     @Log(title = "购物车", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(SysShoppingCar sysShoppingCar)
+    public Result addSave(SysShoppingCar sysShoppingCar)
     {
-        return toAjax(sysShoppingCarService.insertSysShoppingCar(sysShoppingCar));
+        return sysShoppingCarService.insertSysShoppingCar(sysShoppingCar);
     }
 
     /**

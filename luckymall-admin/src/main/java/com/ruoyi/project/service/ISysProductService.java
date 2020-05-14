@@ -50,7 +50,7 @@ public interface ISysProductService
      * @param sysProduct 【请填写功能名称】
      * @return 结果
      */
-    public int updateSysProduct(SysProduct sysProduct);
+    public int updateSysProduct(MultipartFile file,SysProduct sysProduct);
 
     /**
      * 批量删除【请填写功能名称】

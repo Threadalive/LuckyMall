@@ -2,6 +2,7 @@ package com.ruoyi.project.service;
 
 import java.util.List;
 import com.ruoyi.project.domain.SysShoppingCar;
+import com.ruoyi.system.utils.Result;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -36,7 +37,7 @@ public interface ISysShoppingCarService
      * @param sysShoppingCar 购物车
      * @return 结果
      */
-    public int insertSysShoppingCar(SysShoppingCar sysShoppingCar);
+    public Result insertSysShoppingCar(SysShoppingCar sysShoppingCar);
 
     /**
      * 修改购物车

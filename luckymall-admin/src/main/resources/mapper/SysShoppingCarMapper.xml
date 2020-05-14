@@ -30,6 +30,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectSysShoppingCarVo"/>
         where id = #{id}
     </select>
+    <select id="selectSysShoppingCarByIdAndProductId" parameterType="SysShoppingCar" resultMap="SysShoppingCarResult">
+        <include refid="selectSysShoppingCarVo"/>
+        <where>
+            <if test="productId != null  and productId != ''"> and product_id = #{productId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
         
     <insert id="insertSysShoppingCar" parameterType="SysShoppingCar">
         insert into sys_shopping_car

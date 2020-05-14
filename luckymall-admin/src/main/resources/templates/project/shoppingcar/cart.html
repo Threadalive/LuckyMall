@@ -86,12 +86,12 @@
                                         <td>
                                             <!--商品库存-->
                                             <input type="hidden" th:value="${map.key.productCount}"
-                                                   th:id="'stock'+${map.key.id}">
+                                                   th:id="'stock'+${map.key.id}" />
                                             <span th:text="${map.key.productCount}"
                                                   style="color: #000;margin-left: 5px">库存</span>
                                         </td>
                                         <td>
-                                            ￥<span class="liPrice" th:id="'liPrice'+${map.key.id}" th:text="${#numbers.formatDecimal(map.key.price*map.value.number,0,2)}">0</span>
+                                            ￥<span class="liPrice" th:id="'liPrice'+${map.key.id}" th:text="${#numbers.formatDecimal(map.key.productPrice*map.value.number,0,2)}">0</span>
                                         </td>
                                         <td>
                                             <a th:href="@{/shoppingCar/remove(cartId=${map.value.id})}" class="
@@ -164,7 +164,7 @@
     // 数量减
     function minus(id) {
         var numId = "#num"+ id;
-        var priceId = "#price"+id;
+        var priceId = "#productPrice"+id;
         var liPriceId = "#liPrice"+id;
 
         var price = parseFloat($(priceId).val()).toFixed(2);
@@ -183,7 +183,7 @@
     function plus(id) {
         var numId = "#num" + id;
         var stockId = "#stock" + id;
-        var priceId = "#price"+id;
+        var priceId = "#productPrice"+id;
         var liPriceId = "#liPrice"+id;
 
         var stock = parseInt($(stockId).val());

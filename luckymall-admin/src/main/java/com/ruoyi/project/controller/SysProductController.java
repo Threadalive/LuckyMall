@@ -8,11 +8,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.project.domain.SysProduct;
@@ -127,9 +123,8 @@ public class SysProductController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(MultipartFile file, SysProduct sysProduct)
+    public AjaxResult addSave(@RequestParam("file")MultipartFile file, SysProduct sysProduct)
     {
-
         return toAjax(sysProductService.insertSysProduct(file,sysProduct));
     }
 
@@ -140,6 +135,9 @@ public class SysProductController extends BaseController
     public String edit(@PathVariable("id") String id, ModelMap mmap)
     {
         SysProduct sysProduct = sysProductService.selectSysProductById(id);
+        SysProductType productType = new SysProductType();
+        List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
+        mmap.put("productTypeList",productTypeList);
         mmap.put("sysProduct", sysProduct);
         return prefix + "/edit";
     }
@@ -151,9 +149,9 @@ public class SysProductController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(SysProduct sysProduct)
+    public AjaxResult editSave(@RequestParam("file")MultipartFile file,SysProduct sysProduct)
     {
-        return toAjax(sysProductService.updateSysProduct(sysProduct));
+        return toAjax(sysProductService.updateSysProduct(file,sysProduct));
     }
 
     /**

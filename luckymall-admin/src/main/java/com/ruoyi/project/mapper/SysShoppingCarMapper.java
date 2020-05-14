@@ -20,6 +20,13 @@ public interface SysShoppingCarMapper
     public SysShoppingCar selectSysShoppingCarById(String id);
 
     /**
+     * 根据商品id以及用户id查找商品
+     * @param sysShoppingCar
+     * @return
+     */
+    public SysShoppingCar selectSysShoppingCarByIdAndProductId(SysShoppingCar sysShoppingCar);
+
+    /**
      * 查询购物车列表
      * 
      * @param sysShoppingCar 购物车

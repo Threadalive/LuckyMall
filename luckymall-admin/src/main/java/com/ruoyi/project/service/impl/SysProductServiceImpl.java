@@ -110,7 +110,7 @@ public class SysProductServiceImpl implements ISysProductService
      * @return 结果
      */
     @Override
-    public int insertSysProduct(@RequestParam("file") MultipartFile file, SysProduct sysProduct)
+    public int insertSysProduct(MultipartFile file, SysProduct sysProduct)
     {
         LOGGER.info("===============添加商品==============");
         LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
@@ -127,8 +127,12 @@ public class SysProductServiceImpl implements ISysProductService
      * @return 结果
      */
     @Override
-    public int updateSysProduct(SysProduct sysProduct)
+    public int updateSysProduct(MultipartFile file,SysProduct sysProduct)
     {
+        LOGGER.info("===============编辑商品==============");
+        LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
+        String imageUrl = FileUploadUtil.savaFile(file, Constant.PRODUCT_IMAGE_PATH);
+        sysProduct.setProductPhoto(imageUrl);
         return sysProductMapper.updateSysProduct(sysProduct);
     }
 
