@@ -23,6 +23,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where product_type = #{productType}
     </select>
 
+    <select id="findProductByName" parameterType="String" resultMap="SysProductResult">
+        <include refid="selectSysProductVo"/>
+        where product_name like concat('%',#{key},'%')
+        or product_type like  concat('%',#{key},'%')
+    </select>
+
     <select id="selectSysProductList" parameterType="SysProduct" resultMap="SysProductResult">
         <include refid="selectSysProductVo"/>
         <where>  

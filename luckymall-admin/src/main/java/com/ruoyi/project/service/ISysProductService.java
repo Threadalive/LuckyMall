@@ -20,6 +20,13 @@ public interface ISysProductService
     public Map<SysProductType,List<SysProduct>> getProductByTypeMap();
 
     public ModelAndView findProductByType(int id, String name);
+
+    /**
+     * 关键字查询
+     * @param key
+     * @return
+     */
+    public ModelAndView findProductByKey(String key);
     /**
      * 查询【请填写功能名称】
      * 

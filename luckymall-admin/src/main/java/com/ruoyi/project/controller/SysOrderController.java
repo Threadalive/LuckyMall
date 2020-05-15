@@ -45,6 +45,11 @@ public class SysOrderController extends BaseController
         return orderModel;
     }
 
+    @GetMapping("orderAdmin")
+    public String orderAdmin(){
+        return prefix + "/admin_order.html";
+    }
+
     /**
      * 方法说明：用户支付订单
      * @param id 订单id

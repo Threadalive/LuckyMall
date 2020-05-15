@@ -30,7 +30,7 @@
             </div>
         </div>
         <div class="layui-row">
-            <div class='layui-col-md3 layui-col-xs6' th:each="product:${list}" th:if="${!#lists.isEmpty(list)&& product.status==1}">
+            <div class='layui-col-md3 layui-col-xs6' th:each="product:${list}" th:if="${!#lists.isEmpty(list)&& product.productStatus==1}">
                 <div class='card layui-anim layui-anim-scale'>
                     <div class='product_image'>
                         <a th:href="@{/product/detail(id=${product.id})}">

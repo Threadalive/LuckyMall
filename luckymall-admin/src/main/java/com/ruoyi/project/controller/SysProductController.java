@@ -63,6 +63,18 @@ public class SysProductController extends BaseController
     }
 
     /**
+     * 方法说明：根据搜索关键字查找相关商品
+     *
+     * @param key 搜素关键字
+     * @return org.springframework.web.servlet.ModelAndView 返回商品视图
+     */
+    @RequestMapping("/findProductByKey")
+    public ModelAndView findProductByKey(String key) {
+        ModelAndView modelAndView = sysProductService.findProductByKey(key);
+        return modelAndView;
+    }
+
+    /**
      * 方法说明：跳转到商品详情页
      *
      * @param id 商品id

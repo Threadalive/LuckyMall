@@ -112,7 +112,20 @@
                 },
                 {
                     field: 'productType', 
-                    title: '商品类别'
+                    title: '商品类别',
+                    formatter: function (value, row, index) {
+                        var content = '';
+                        if (value == 1) {
+                            content = '女装'
+                        } else if (value == 2) {
+                            content = '男装'
+                        }else if (value == 3) {
+                            content = '鞋靴'
+                        }else if (value == 4) {
+                            content = '数码'
+                        }
+                        return content;
+                    }
                 },
                 {
                     field: 'productPhoto', 

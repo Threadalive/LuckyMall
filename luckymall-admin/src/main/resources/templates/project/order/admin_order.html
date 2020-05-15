@@ -18,6 +18,8 @@
                                 <label>订单状态：</label>
                                 <select name="status">
                                     <option value="">所有</option>
+                                    <option value="0">未付款</option>
+                                    <option value="1">已付款</option>
                                 </select>
                             </li>
                             <li>
@@ -60,7 +62,7 @@
     <script th:inline="javascript">
         var editFlag = [[${@permission.hasPermi('project:order:edit')}]];
         var removeFlag = [[${@permission.hasPermi('project:order:remove')}]];
-        var prefix = ctx + "project/order";
+        var prefix = ctx + "order";
 
         $(function() {
             var options = {
@@ -84,7 +86,16 @@
                 },
                 {
                     field: 'status', 
-                    title: '订单状态'
+                    title: '订单状态',
+                    formatter: function (value, row, index) {
+                        var content = '';
+                        if (value == 0) {
+                            content = '未付款'
+                        } else if (value == 1) {
+                            content = '已付款'
+                        }
+                        return content;
+                    }
                 },
                 {
                     field: 'totalPrice', 
@@ -92,7 +103,7 @@
                 },
                 {
                     field: 'userId', 
-                    title: '订单用户'
+                    title: '订单用户ID'
                 },
                 {
                     title: '操作',

@@ -20,6 +20,8 @@ public interface SysProductMapper
     public SysProduct selectSysProductById(String id);
 
     public List<SysProduct> findProductByType(int productType);
+
+    public List<SysProduct> findProductByName(String key);
     /**
      * 查询【请填写功能名称】列表
      * 

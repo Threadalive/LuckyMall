@@ -71,7 +71,7 @@ public class SysProductServiceImpl implements ISysProductService
     public ModelAndView findProductByType(int id, String name) {
         LOGGER.info("===============按种类查找商品==============");
 
-        ModelAndView modelAndView = new ModelAndView("product/category");
+        ModelAndView modelAndView = new ModelAndView("project/product/category");
         List<SysProduct> productList = sysProductMapper.findProductByType(id);
         modelAndView.addObject("productTypeName", name);
         modelAndView.addObject("list", productList);
@@ -79,6 +79,18 @@ public class SysProductServiceImpl implements ISysProductService
         LOGGER.info("查询结果列表：" + JSON.toJSONString(productList));
         return modelAndView;
     }
+
+    @Override
+    public ModelAndView findProductByKey(String key) {
+        LOGGER.info("===============按种类查找商品==============");
+        ModelAndView modelAndView = new ModelAndView("project/product/category");
+        List<SysProduct> productList = sysProductMapper.findProductByName(key);
+        modelAndView.addObject("productTypeName", key);
+        modelAndView.addObject("list", productList);
+        LOGGER.info("查询条件及结果：" + JSON.toJSONString(key) + " " + JSON.toJSONString(productList));
+        return modelAndView;
+    }
+
     /**
      * 查询【请填写功能名称】
      * 
