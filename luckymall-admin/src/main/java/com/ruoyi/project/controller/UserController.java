@@ -1,10 +1,12 @@
 package com.ruoyi.project.controller;
 
+import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.service.ISysOrderService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
+import org.apache.shiro.authc.DisabledAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,20 @@ public class UserController {
     private String PREFIX = "project/user";
 
     /**
+     * 用户登录次数计数 redisKey 前缀
+     */
+    private String SHIRO_LOGIN_COUNT = "shiro_login_count_";
+
+    /**
+     * 用户登录是否被锁定5分钟 redisKey 前缀
+     */
+    private String SHIRO_IS_LOCK = "shiro_is_lock_";
+
+    /**
+     * 最大尝试次数3
+     */
+    private Integer MAX_RETRY_COUNT = 3;
+    /**
      * 用户服务层
      */
     @Autowired
@@ -52,6 +68,8 @@ public class UserController {
     @Autowired
     private ISysOrderService sysOrderService;
 
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 方法说明：跳转登录界面
      *
@@ -72,8 +90,22 @@ public class UserController {
     @ResponseBody
     public Result loginUser(String userName, String password) {
         Result result = new Result();
+        //根据用户名记录尝试登录次数
+//        redisUtil.set(SHIRO_LOGIN_COUNT+userName,"0",0);
+        redisUtil.incr(SHIRO_LOGIN_COUNT+userName);
+        //若尝试次数大于限定值
+        if (Integer.parseInt(redisUtil.get(SHIRO_LOGIN_COUNT+userName,0)) >= MAX_RETRY_COUNT){
+            //记录锁定标记，5分钟后过期,删除两项记录
+            redisUtil.set(SHIRO_IS_LOCK+userName,"LOCKED",0);
+            redisUtil.expire(SHIRO_IS_LOCK+userName,300,0);
+            redisUtil.expire(SHIRO_LOGIN_COUNT+userName,300,0);
+        }
         // 根据用户名和密码查找用户
         result = userService.loginUser(userName, password);
+
+        if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK+userName,0))){
+            result.setMsg("locked");
+        }
         return result;
     }
 

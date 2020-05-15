@@ -24,6 +24,7 @@ import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -117,18 +118,18 @@ public class UserRealm extends AuthorizingRealm
             password = new String(upToken.getPassword());
         }
         //根据用户名记录尝试登录次数
-//        redisUtil.set(SHIRO_LOGIN_COUNT+username,"0",0);
-//        redisUtil.incr(SHIRO_LOGIN_COUNT+username);
-//        //若尝试次数大于限定值
-//        if (Integer.parseInt(redisUtil.get(SHIRO_LOGIN_COUNT+username,0))>=MAX_RETRY_COUNT){
-//            //记录锁定标记，5分钟后过期,删除两项记录
-//            redisUtil.set(SHIRO_IS_LOCK+username,"LOCKED",0);
-//            redisUtil.expire(SHIRO_IS_LOCK+username,300,0);
-//            redisUtil.expire(SHIRO_LOGIN_COUNT+username,300,0);
-//        }
-//        if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK+username,0))){
-//            throw new DisabledAccountException("由于密码输入错误次数大于3次，5分钟后再次尝试！");
-//        }
+        redisUtil.set(SHIRO_LOGIN_COUNT+username,"0",0);
+        redisUtil.incr(SHIRO_LOGIN_COUNT+username);
+        //若尝试次数大于限定值
+        if (Integer.parseInt(redisUtil.get(SHIRO_LOGIN_COUNT+username,0))>=MAX_RETRY_COUNT){
+            //记录锁定标记，5分钟后过期,删除两项记录
+            redisUtil.set(SHIRO_IS_LOCK+username,"LOCKED",0);
+            redisUtil.expire(SHIRO_IS_LOCK+username,300,0);
+            redisUtil.expire(SHIRO_LOGIN_COUNT+username,300,0);
+        }
+        if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK+username,0))){
+            throw new DisabledAccountException("由于密码输入错误次数大于3次，5分钟后再次尝试！");
+        }
 
         SysUser user = null;
         try

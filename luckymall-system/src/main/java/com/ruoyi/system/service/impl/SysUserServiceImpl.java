@@ -73,7 +73,7 @@ public class SysUserServiceImpl implements ISysUserService
     /**
      * 方法说明：用户登录接口
      *
-     * @param username 用户名
+     * @param userName 用户名
      * @param password 密码
      * @return com.luckymall.common.Result 返回验证信息 success/登陆成功 error/验证失败
      */

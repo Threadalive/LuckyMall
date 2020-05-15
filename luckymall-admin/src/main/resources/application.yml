@@ -81,7 +81,7 @@ spring:
         max-wait: 100
         max-idle: 200
         min-idle: 0
-    timeout: 10000
+    timeout: 100
     block-when-exhausted: true
 
 # MyBatis

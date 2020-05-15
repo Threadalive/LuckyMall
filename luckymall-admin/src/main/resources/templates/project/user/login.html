@@ -168,10 +168,11 @@
                     if(data.msg=="disable"){
                         addTip("该账号已被禁用，请用其他账号登录");
                         return;
+                    }if (data.msg == "locked") {
+                        addTip("尝试次数过多，5分钟后再来哦");
+                        return;
                     }
                     addTip("用户名或密码错误");
-
-
                 },
                 error: function (jqXHR) {
                     addTip("ajax请求出错");
