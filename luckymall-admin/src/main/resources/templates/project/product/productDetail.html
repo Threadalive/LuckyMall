@@ -402,10 +402,10 @@
                 // 商品数量
                 var number = parseInt($("#num").val());
                 // 商品id
-                var id = parseInt($("#id").val());
+                var id = $("#id").val();
                 $.ajax({
                     type: 'post',
-                    url: '/order/buy',
+                    url: '/order/add',
                     dataType: 'json',
                     data: {"id": id, "number": number},
                     success: function (data) {
@@ -426,7 +426,9 @@
                                     window.location.reload();
                                 }
                             });
-                        } else {
+                        } else if(data.msg == "unEnough"){
+                            showMsg("库存不足，请重试", 5, 6);
+                        }else {
                             showMsg("购买失败，请重试", 5, 6);
                         }
                     },

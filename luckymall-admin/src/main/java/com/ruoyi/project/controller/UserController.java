@@ -156,28 +156,6 @@ public class UserController {
         return result;
     }
 
-//    /**
-//     * 方法说明：用户查看购物车
-//     *
-//     * @return org.springframework.web.servlet.ModelAndView 购物车视图
-//     */
-//    @RequestMapping("/cart")
-//    public ModelAndView userCart() {
-//        ModelAndView modelAndView = cartService.userCart();
-//        return modelAndView;
-//    }
-
-//    /**
-////     * 方法说明：用户查看订单
-////     *
-////     * @return org.springframework.web.servlet.ModelAndView 用户订单视图
-////     */
-//    @RequestMapping("/order")
-//    public ModelAndView userOrder() {
-//        ModelAndView modelAndView = sysOrderService.getUserOrder();
-//        return modelAndView;
-//    }
-
     /**
      * 方法说明：用户查看订单详情页
      *
@@ -185,95 +163,8 @@ public class UserController {
      * @return org.springframework.web.servlet.ModelAndView 订单详情页视图
      */
     @RequestMapping("/orderDetail")
-    public ModelAndView userOrderDetail(Long orderId) {
+    public ModelAndView userOrderDetail(String orderId) {
         ModelAndView modelAndView = sysOrderService.userOrderDetail(orderId);
         return modelAndView;
     }
-
-//    /**
-//     * 方法说明：用户查看积分明细
-//     *
-//     * @return org.springframework.web.servlet.ModelAndView 积分视图
-//     */
-//    @RequestMapping("/score")
-//    public ModelAndView userScore() {
-//        ModelAndView modelAndView = scoreRecordService.userScore();
-//        return modelAndView;
-//    }
-
-//    /**
-//     * 方法说明：用户积分抽奖
-//     *
-//     * @return org.springframework.web.servlet.ModelAndView 积分抽奖视图
-//     */
-//    @RequestMapping("/lottery")
-//    public ModelAndView userLottery(){
-//        ModelAndView modelAndView =scoreRecordService.userLottery();
-//        return modelAndView;
-//    }
-
-//    /**
-//     * 方法说明：抽奖结果处理
-//     * @param product 抽中的商品
-//     * @return com.luckymall.common.Result 结果
-//     */
-//    @RequestMapping("/doLottery")
-//    @ResponseBody
-//    public Result doLottery(Product product){
-//        Result result =scoreRecordService.doLottery(product);
-//        return result;
-//    }
-
-//    /**
-//     * 方法说明：管理员添加会员
-//     *
-//     * @param user 会员
-//     * @return com.luckymall.common.Result 结果
-//     */
-//    @RequestMapping("/admin/add")
-//    @ResponseBody
-//    public Result addUser(User user) {
-//        Result result = userService.addUser(user);
-//        return result;
-//    }
-
-//    /**
-//     * 方法说明：管理员修改会员状态
-//     *
-//     * @param id     会员id
-//     * @param status 会员状态 0/已禁用 1/已启用
-//     * @return com.luckymall.common.Result  结果
-//     */
-//    @RequestMapping("/admin/editUserStatus")
-//    @ResponseBody
-//    public Result editUserStatus(int id, int status) {
-//        Result result = userService.editUserStatus(id,status);
-//        return result;
-//    }
-//
-//    /**
-//     * 方法说明：管理员修改会员信息
-//     * @param file  会员头像信息
-//     * @param user 会员信息
-//     * @return com.luckymall.common.Result 结果
-//     */
-//    @RequestMapping("/admin/edit")
-//    @ResponseBody
-//    public Result editUserByAdmin(MultipartFile file, User user){
-//        Result result=userService.editUserByAdmin(file,user);
-//        return result;
-//    }
-//
-//    /**
-//     * 方法说明：管理员修改会员密码
-//     * @param username  会员名
-//     * @param password  密码
-//     * @return com.luckymall.common.Result 结果
-//     */
-//    @RequestMapping("/admin/editPassword")
-//    @ResponseBody
-//    public Result editPasswordByAdmin(String username, String password){
-//        Result result =userService.editPasswordByAdmin(username,password);
-//        return result;
-//    }
 }

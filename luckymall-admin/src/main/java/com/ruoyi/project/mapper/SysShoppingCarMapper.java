@@ -51,6 +51,12 @@ public interface SysShoppingCarMapper
     public int updateSysShoppingCar(SysShoppingCar sysShoppingCar);
 
     /**
+     * 根据用户id删除对应购物车
+     * @param userId
+     * @return
+     */
+    public int deleteSysShoppingCarByUserId(Long userId);
+    /**
      * 删除购物车
      * 
      * @param id 购物车ID

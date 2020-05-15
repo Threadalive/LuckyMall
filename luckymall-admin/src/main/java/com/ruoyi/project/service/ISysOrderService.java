@@ -2,6 +2,7 @@ package com.ruoyi.project.service;
 
 import java.util.List;
 import com.ruoyi.project.domain.SysOrder;
+import com.ruoyi.system.utils.Result;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -14,14 +15,14 @@ public interface ISysOrderService
 {
     public ModelAndView getUserOrder();
 
-    public ModelAndView userOrderDetail(Long orderId);
+    public ModelAndView userOrderDetail(String orderId);
     /**
      * 查询订单
      * 
      * @param id 订单ID
      * @return 订单
      */
-    public SysOrder selectSysOrderById(Long id);
+    public SysOrder selectSysOrderById(String id);
 
     /**
      * 查询订单列表
@@ -34,11 +35,13 @@ public interface ISysOrderService
     /**
      * 新增订单
      * 
-     * @param sysOrder 订单
      * @return 结果
      */
-    public int insertSysOrder(SysOrder sysOrder);
+    public Result insertSysOrder(String id,Integer number);
 
+    public Result addByCar(String[] numArr,String[] idArr,String[] priceArr);
+
+    public Result payOrder(String id);
     /**
      * 修改订单
      * 
@@ -61,5 +64,5 @@ public interface ISysOrderService
      * @param id 订单ID
      * @return 结果
      */
-    public int deleteSysOrderById(Long id);
+    public int deleteSysOrderById(String id);
 }

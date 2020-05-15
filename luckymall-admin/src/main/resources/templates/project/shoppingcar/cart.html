@@ -71,7 +71,7 @@
                                         <td>
                                             <!--数量减-->
                                             <span><button class="layui-btn layui-btn-xs"
-                                                          th:onclick="'minus('+${map.key.id}+')'">
+                                                          th:onclick="minus([[${map.key.id}]]);">
                                                 <i class="fa fa-minus"></i></button></span>
                                             <!--购买数量-->
                                             <span style="margin: 0px 1px;">
@@ -80,7 +80,7 @@
                                                        th:value="${map.value.number}"></span>
                                             <!--数量加-->
                                             <span><button class="layui-btn layui-btn-xs"
-                                                          th:onclick="'plus('+${map.key.id}+')'"><i
+                                                          th:onclick="plus([[${map.key.id}]]);"><i
                                                     class="fa fa-plus"></i></button></span>
                                         </td>
                                         <td>
@@ -131,6 +131,7 @@
         </div>
     </div>
 </div>
+
 <script>
     window.onload=totalPrice(),totalNum();
     if(totalNum()==0){
@@ -223,7 +224,7 @@
 
         $.ajax({
             type:'post',
-            url:"/order/add",
+            url:"/order/addByCar",
             dataType:'json',
             traditional :true,
             data:{'numArr':numArr,"idArr":idArr,'priceArr':priceArr},
@@ -236,11 +237,11 @@
                         btn:['立即前往','下次再说'],
                         yes: function (index) {
                             layer.close(index);
-                            location.href="/user/order";
+                            location.href="/order";
                         },
                         btn2: function(index){
                             layer.close(index);
-                            location.href="/user/cart";
+                            location.href="/shoppingCar";
                         },
                         offset: '70px',
                         end: function () {
@@ -266,7 +267,6 @@
             offset: '65px',
         });
     }
-
 </script>
 </body>
 </html>

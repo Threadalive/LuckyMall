@@ -124,10 +124,13 @@ public class SysShoppingCarController extends BaseController
      */
     @RequiresPermissions("project:shoppingCar:remove")
     @Log(title = "购物车", businessType = BusinessType.DELETE)
-    @RequestMapping( "/remove")
-    @ResponseBody
-    public AjaxResult remove(String ids)
+    @GetMapping( "/remove")
+    public String remove(String cartId)
     {
-        return toAjax(sysShoppingCarService.deleteSysShoppingCarByIds(ids));
+        if (1 == sysShoppingCarService.deleteSysShoppingCarById(cartId)){
+           return  "redirect:/shoppingCar";
+        }else {
+            return "error/business";
+        }
     }
 }

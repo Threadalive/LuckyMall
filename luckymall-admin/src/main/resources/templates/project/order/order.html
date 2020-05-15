@@ -65,7 +65,7 @@
                                                     <td th:text="${allOrder.createTime}">1998-01-01 00:00:00</td>
                                                     <td th:if="${allOrder.status}==0">
                                                         <button type="button" class="layui-btn layui-btn-danger"
-                                                                th:onclick="'payOrder('+${allOrder.id}+','+${allOrder.totalPrice}+')'">未支付
+                                                                th:onclick="payOrder([[${allOrder.id}]],[[${allOrder.totalPrice}]])">未支付
                                                         </button>
                                                     </td>
                                                     <td th:if="${allOrder.status}==1">
@@ -76,7 +76,7 @@
                                                     <td th:text="'￥'+${allOrder.totalPrice}"></td>
                                                     <td>
                                                         <button type="button" class="layui-btn layui-btn-warm"
-                                                                th:onclick="'orderDetail('+${allOrder.id}+')'">查看详情
+                                                                th:onclick="orderDetail([[${allOrder.id}]])">查看详情
                                                         </button>
                                                         <!--<a th:href="@{/user/orderDetail(id=${allOrder.id})}">查看详情</a>-->
                                                     </td>
@@ -109,7 +109,7 @@
                                                     <td th:text="${unpaidOrder.createTime}">1998-01-01 00:00:00</td>
                                                     <td th:if="${unpaidOrder.status}==0">
                                                         <button type="button" class="layui-btn layui-btn-danger"
-                                                                th:onclick="'payOrder('+${unpaidOrder.id}+')'">未支付
+                                                                th:onclick="payOrder([[${unpaidOrder.id}]])">未支付
                                                         </button>
                                                     </td>
                                                     <td th:if="${unpaidOrder.status}==1">
@@ -120,7 +120,7 @@
                                                     <td th:text="'￥'+${unpaidOrder.totalPrice}"></td>
                                                     <td>
                                                         <button type="button" class="layui-btn layui-btn-warm"
-                                                                th:onclick="'orderDetail('+${unpaidOrder.id}+')'">查看详情
+                                                                th:onclick="orderDetail([[${unpaidOrder.id}]])">查看详情
                                                         </button>
                                                         <!--<a th:href="@{/user/orderDetail(id=${unpaidOrder.id})}">查看详情</a>-->
                                                     </td>
@@ -153,7 +153,7 @@
                                                     <td th:text="${paidOrder.createTime}">1998-01-01 00:00:00</td>
                                                     <td th:if="${paidOrder.status}==0">
                                                         <button type="button" class="layui-btn layui-btn-danger"
-                                                                th:onclick="'payOrder('+${paidOrder.id}+')'">未支付
+                                                                th:onclick="payOrder([[${paidOrder.id}]])">未支付
                                                         </button>
                                                     </td>
                                                     <td th:if="${paidOrder.status}==1">
@@ -164,7 +164,7 @@
                                                     <td th:text="'￥'+${paidOrder.totalPrice}"></td>
                                                     <td>
                                                         <button type="button" class="layui-btn layui-btn-warm"
-                                                                th:onclick="'orderDetail('+${paidOrder.id}+')'">查看详情
+                                                                th:onclick="orderDetail([[${paidOrder.id}]])">查看详情
                                                         </button>
                                                         <!-- <a th:href="@{/user/orderDetail(id=${paidOrder.id})}">查看详情</a>-->
                                                     </td>
@@ -176,7 +176,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div th:if="${session.user}==null">
+                            <div th:if="${session.user == null || session.user.userType == '00'}">
                                 <script>
                                     window.location.href = "/clientLogin";
                                 </script>

@@ -71,6 +71,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         delete from sys_shopping_car where id = #{id}
     </delete>
 
+
+    <delete id="deleteSysShoppingCarByUserId" parameterType="Long">
+        delete from sys_shopping_car where user_id = #{userId}
+    </delete>
+
     <delete id="deleteSysShoppingCarByIds" parameterType="String">
         delete from sys_shopping_car where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">

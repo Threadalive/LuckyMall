@@ -46,18 +46,23 @@ public class SysOrderController extends BaseController
     }
 
     /**
-     * 方法说明：商品详情页点击立即购买
-     * @param id    商品id
-     * @param number 商品数量
+     * 方法说明：用户支付订单
+     * @param id 订单id
      * @return com.luckymall.common.Result 结果
      */
-//    @RequestMapping("/buy")
-//    @ResponseBody
-//    public Result buy(int id, int number){
-//        Result result = sysOrderService.buy(id,number);
-//        return result;
-//    }
-//
+    @PostMapping("/pay")
+    @ResponseBody
+    public Result payOrder(String id){
+        Result result = sysOrderService.payOrder(id);
+        return result;
+    }
+
+    @PostMapping("addByCar")
+    @ResponseBody
+    public Result addByCar(String[] numArr,String[] idArr,String[] priceArr){
+        Result result =sysOrderService.addByCar(numArr,idArr,priceArr);
+        return result;
+    }
     /**
      * 查询订单列表
      */
@@ -101,16 +106,16 @@ public class SysOrderController extends BaseController
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(SysOrder sysOrder)
+    public Result addSave(String id,Integer number)
     {
-        return toAjax(sysOrderService.insertSysOrder(sysOrder));
+        return sysOrderService.insertSysOrder(id,number);
     }
 
     /**
      * 修改订单
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap)
+    public String edit(@PathVariable("id") String id, ModelMap mmap)
     {
         SysOrder sysOrder = sysOrderService.selectSysOrderById(id);
         mmap.put("sysOrder", sysOrder);

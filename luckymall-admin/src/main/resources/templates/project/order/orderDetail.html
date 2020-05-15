@@ -52,11 +52,11 @@
                         <tbody>
                         <tr th:each="map:${map}">
                             <td>
-                                <img th:src="${map.key.image}">
+                                <img th:src="${map.key.productPhoto}">
                             </td>
-                            <td th:text="${map.key.name}">商品名</td>
-                            <td th:text="${map.key.price}">单价</td>
-                            <td th:text="${map.value.number}">数量</td>
+                            <td th:text="${map.key.productName}">商品名</td>
+                            <td th:text="${map.key.productPrice}">单价</td>
+                            <td th:text="${map.value.productNum}">数量</td>
                         </tr>
                         <tr>
                             <td colspan="4" align="right">

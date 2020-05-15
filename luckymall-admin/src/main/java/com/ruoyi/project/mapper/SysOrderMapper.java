@@ -17,7 +17,7 @@ public interface SysOrderMapper
      * @param id 订单ID
      * @return 订单
      */
-    public SysOrder selectSysOrderById(Long id);
+    public SysOrder selectSysOrderById(String id);
 
     /**
      * 查询订单列表
@@ -49,7 +49,7 @@ public interface SysOrderMapper
      * @param id 订单ID
      * @return 结果
      */
-    public int deleteSysOrderById(Long id);
+    public int deleteSysOrderById(String id);
 
     /**
      * 批量删除订单

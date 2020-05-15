@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.mapper.SysOrderItemMapper">
+    
+    <resultMap type="SysOrderItem" id="SysOrderItemResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productNum"    column="product_num"    />
+        <result property="orderId"    column="order_id"    />
+    </resultMap>
+
+    <sql id="selectSysOrderItemVo">
+        select id, product_id, product_num, order_id from sys_order_item
+    </sql>
+
+    <select id="selectSysOrderItemList" parameterType="SysOrderItem" resultMap="SysOrderItemResult">
+        <include refid="selectSysOrderItemVo"/>
+        <where>  
+            <if test="productId != null  and productId != ''"> and product_id = #{productId}</if>
+            <if test="productNum != null "> and product_num = #{productNum}</if>
+            <if test="orderId != null  and orderId != ''"> and order_id = #{orderId}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysOrderItemById" parameterType="String" resultMap="SysOrderItemResult">
+        <include refid="selectSysOrderItemVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysOrderItem" parameterType="SysOrderItem">
+        insert into sys_order_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">id,</if>
+            <if test="productId != null  and productId != ''">product_id,</if>
+            <if test="productNum != null ">product_num,</if>
+            <if test="orderId != null  and orderId != ''">order_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null  and id != ''">#{id},</if>
+            <if test="productId != null  and productId != ''">#{productId},</if>
+            <if test="productNum != null ">#{productNum},</if>
+            <if test="orderId != null  and orderId != ''">#{orderId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysOrderItem" parameterType="SysOrderItem">
+        update sys_order_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null  and productId != ''">product_id = #{productId},</if>
+            <if test="productNum != null ">product_num = #{productNum},</if>
+            <if test="orderId != null  and orderId != ''">order_id = #{orderId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysOrderItemById" parameterType="String">
+        delete from sys_order_item where id = #{id}
+    </delete>
+
+    <delete id="deleteSysOrderItemByIds" parameterType="String">
+        delete from sys_order_item where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

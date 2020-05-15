@@ -1,10 +1,18 @@
 package com.ruoyi.project.service.impl;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.project.domain.SysOrderItem;
+import com.ruoyi.project.domain.SysProduct;
+import com.ruoyi.project.mapper.SysOrderItemMapper;
+import com.ruoyi.project.mapper.SysProductMapper;
+import com.ruoyi.project.mapper.SysShoppingCarMapper;
 import com.ruoyi.system.domain.SysUser;
+import com.ruoyi.system.utils.Constant;
+import com.ruoyi.system.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +21,7 @@ import com.ruoyi.project.mapper.SysOrderMapper;
 import com.ruoyi.project.domain.SysOrder;
 import com.ruoyi.project.service.ISysOrderService;
 import com.ruoyi.common.core.text.Convert;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +39,15 @@ public class SysOrderServiceImpl implements ISysOrderService
     @Autowired
     private SysOrderMapper sysOrderMapper;
 
+    @Autowired
+    private SysProductMapper sysProductMapper;
+
+    @Autowired
+    private SysOrderItemMapper sysOrderItemMapper;
+
+    @Autowired
+    private SysShoppingCarMapper sysShoppingCarMapper;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SysOrderServiceImpl.class);
 
     /**
@@ -46,7 +64,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         SysUser user = (SysUser) session.getAttribute("user");
         // 用户所有订单
         SysOrder userOrder = new SysOrder();
-        userOrder.setId(user.getUserId());
+        userOrder.setUserId(user.getUserId());
         List<SysOrder> allOrderList = sysOrderMapper.selectSysOrderList(userOrder);
         // 用户已支付订单
         userOrder.setStatus(1);
@@ -62,19 +80,22 @@ public class SysOrderServiceImpl implements ISysOrderService
     }
 
     @Override
-    public ModelAndView userOrderDetail(Long orderId) {
+    public ModelAndView userOrderDetail(String orderId) {
         LOGGER.info("===============用户查看订单详情==============");
         ModelAndView modelAndView = new ModelAndView("project/order/orderDetail");
         SysOrder order = sysOrderMapper.selectSysOrderById(orderId);
         LOGGER.info("订单：" + JSON.toJSONString(order));
-//        List<OrderItem> orderItemList = orderItemMapper.findOrderItemByOrderId(orderId);
-//        Map<Product, OrderItem> map = new HashMap<>(Constant.ORDERITEM_MAP_CAPACITY);
-//        for (OrderItem orderItem : orderItemList) {
-//            Product product = productMapper.findProductById(orderItem.getProductId());
-//            map.put(product, orderItem);
-//        }
+        SysOrderItem item = new SysOrderItem();
+        item.setOrderId(order.getOrderCode());
+        List<SysOrderItem> orderItemList = sysOrderItemMapper.selectSysOrderItemList(item);
+
+        Map<SysProduct, SysOrderItem> map = new HashMap<>(Constant.ORDERITEM_MAP_CAPACITY);
+        for (SysOrderItem orderItem : orderItemList) {
+            SysProduct product = sysProductMapper.selectSysProductById(orderItem.getProductId());
+            map.put(product, orderItem);
+        }
         modelAndView.addObject("order", order);
-//        modelAndView.addObject("map", map);
+        modelAndView.addObject("map", map);
         return modelAndView;
     }
 
@@ -85,7 +106,7 @@ public class SysOrderServiceImpl implements ISysOrderService
      * @return 订单
      */
     @Override
-    public SysOrder selectSysOrderById(Long id)
+    public SysOrder selectSysOrderById(String id)
     {
         return sysOrderMapper.selectSysOrderById(id);
     }
@@ -103,18 +124,175 @@ public class SysOrderServiceImpl implements ISysOrderService
     }
 
     /**
+     * 方法说明：购物车添加订单
+     *
+     * @param numArr   商品数量数组
+     * @param idArr    商品id数组
+     * @param priceArr 商品单价数组
+     * @return com.luckymall.common.Result 结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result addByCar(String[] numArr, String[] idArr, String[] priceArr) {
+        LOGGER.info("===============生成订单==============");
+        Result result = new Result();
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        // 下单时间
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constant.TIME_FORMAT);
+        String createTime = dateFormat.format(new Date());
+        // 订单号
+        String orderCode = UUID.randomUUID().toString();
+        LOGGER.info("下单时间：" + createTime);
+        LOGGER.info("订单号：" + orderCode);
+        // 总金额
+        double totalPrice = 0.0;
+        for (int i = 0; i < numArr.length && i < priceArr.length; i++) {
+            totalPrice += Integer.parseInt(numArr[i]) * Double.parseDouble(priceArr[i]);
+        }
+        // 生成订单
+        SysOrder order = new SysOrder();
+        order.setId(UUID.randomUUID().toString());
+        order.setCreateTime(createTime);
+        order.setOrderCode(orderCode);
+        order.setTotalPrice(totalPrice);
+        order.setStatus(0);
+        order.setUserId(user.getUserId());
+        // 订单添加
+        int orderFlag = sysOrderMapper.insertSysOrder(order);
+        int[] orderItemFlags = new int[idArr.length];
+        for (int j = 0; j < idArr.length; j++) {
+            String productId = idArr[j];
+            int number = Integer.parseInt(numArr[j]);
+            // 添加订单项
+            SysOrderItem orderItem = new SysOrderItem();
+            orderItem.setId(UUID.randomUUID().toString());
+            orderItem.setProductNum(number);
+            orderItem.setProductId(productId);
+            orderItem.setOrderId(order.getOrderCode());
+
+            orderItemFlags[j] = sysOrderItemMapper.insertSysOrderItem(orderItem);
+
+            // 更新商品库存
+            SysProduct product = sysProductMapper.selectSysProductById(productId);
+            product.setProductCount(product.getProductCount() - number);
+            sysProductMapper.updateSysProduct(product);
+        }
+        // 清空用户购物车
+        sysShoppingCarMapper.deleteSysShoppingCarByUserId(user.getUserId());
+
+        // 判断所有操作是否成功(标志是否都为1)
+        int orderItemFlag = 1;
+        for (int flag : orderItemFlags) {
+            orderItemFlag *= flag;
+        }
+        // 插入结果
+        if (orderFlag == 1 && orderItemFlag == 1) {
+            result.setMsg(Constant.SUCCESS_MSG);
+        } else {
+            result.setMsg(Constant.ERROR_MSG);
+        }
+        return result;
+    }
+
+    /**
      * 新增订单
      * 
-     * @param sysOrder 订单
      * @return 结果
      */
     @Override
-    public int insertSysOrder(SysOrder sysOrder)
+    @Transactional(rollbackFor = Exception.class)
+    public Result insertSysOrder(String id,Integer number)
     {
-        sysOrder.setCreateTime(DateUtils.getNowDate());
-        return sysOrderMapper.insertSysOrder(sysOrder);
+        LOGGER.info("===============立即购买==============");
+        LOGGER.info("商品id：" + id + " 购买数量：" + number);
+        Result result = new Result();
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        if (null == user) {
+            result.setMsg(Constant.NOUSER_MSG);
+            return result;
+        }
+        //检查商品价格及库存
+        SysProduct product = sysProductMapper.selectSysProductById(id);
+        if (product.getProductCount() < number){
+            result.setMsg("unEnough");
+            return result;
+        }
+        double price = product.getProductPrice();
+        // 总金额
+        double totalPrice = price * number;
+        // 下单时间
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constant.TIME_FORMAT);
+        String createTime = dateFormat.format(new Date());
+
+        // 订单号
+        String orderCode = UUID.randomUUID().toString();
+
+        // 生成订单
+        SysOrder order = new SysOrder();
+        order.setId(UUID.randomUUID().toString());
+        order.setOrderCode(orderCode);
+        order.setCreateTime(createTime);
+        order.setStatus(0);
+        order.setUserId(user.getUserId());
+        order.setTotalPrice(totalPrice);
+
+        //先插入数据库，后期加入队列
+        int orderFlag = sysOrderMapper.insertSysOrder(order);
+
+        // 生成订单项
+        SysOrderItem orderItem = new SysOrderItem();
+        orderItem.setId(UUID.randomUUID().toString());
+        orderItem.setOrderId(order.getOrderCode());
+        orderItem.setProductId(id);
+        orderItem.setProductNum(number);
+        int orderItemFlag = sysOrderItemMapper.insertSysOrderItem(orderItem);
+        // 更新商品库存
+        product.setProductCount(product.getProductCount() - number);
+        int productFlag = sysProductMapper.updateSysProduct(product);
+        // 判断所有操作是否成功(标志是否都为1)
+        if (orderFlag == 1 && productFlag == 1 && orderItemFlag == 1) {
+            result.setMsg(Constant.SUCCESS_MSG);
+        } else {
+            result.setMsg(Constant.ERROR_MSG);
+        }
+        return result;
     }
 
+    /**
+     * 方法说明：用户支付订单
+     * 支付订单时更新订单状态为已支付，
+     * 并根据积分规则计算本次订单用户所能获得的积分，
+     * 然后更新用户的积分
+     *
+     * @param id 订单id
+     * @return Result 结果
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public Result payOrder(String id) {
+        LOGGER.info("===============用户支付订单==============");
+        LOGGER.info("订单号：" + id);
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        Result result = new Result();
+        // 更新订单状态为已支付
+        SysOrder order = sysOrderMapper.selectSysOrderById(id);
+        order.setStatus(1);
+        int orderFlag = sysOrderMapper.updateSysOrder(order);
+        double totalPrice = order.getTotalPrice();
+        LOGGER.info("总金额：" + totalPrice );
+
+        // 操作是否成功
+        if (orderFlag == 1) {
+            result.setMsg(Constant.SUCCESS_MSG);
+            result.setData(10);
+        } else {
+            result.setMsg(Constant.ERROR_MSG);
+        }
+        return result;
+    }
     /**
      * 修改订单
      * 
@@ -146,7 +324,7 @@ public class SysOrderServiceImpl implements ISysOrderService
      * @return 结果
      */
     @Override
-    public int deleteSysOrderById(Long id)
+    public int deleteSysOrderById(String id)
     {
         return sysOrderMapper.deleteSysOrderById(id);
     }
