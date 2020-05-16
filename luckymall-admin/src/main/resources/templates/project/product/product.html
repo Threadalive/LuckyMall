@@ -32,6 +32,7 @@
                             <li>
                                 <label>商品类别：</label>
                                 <select name="productType" >
+                                    <option value=""></option>
                                     <option th:each="type : ${productTypeList}" th:text="${type.name}" th:value="${type.id}"></option>
                                 </select>
                             </li>
@@ -116,11 +117,11 @@
                     formatter: function (value, row, index) {
                         var content = '';
                         if (value == 1) {
-                            content = '女装'
+                            content = '家电'
                         } else if (value == 2) {
-                            content = '男装'
+                            content = '出行 穿戴'
                         }else if (value == 3) {
-                            content = '鞋靴'
+                            content = '生活 箱包'
                         }else if (value == 4) {
                             content = '数码'
                         }

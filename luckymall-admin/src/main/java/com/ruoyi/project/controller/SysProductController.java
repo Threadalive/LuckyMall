@@ -1,9 +1,11 @@
 package com.ruoyi.project.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.service.ISysProductTypeService;
+import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -56,7 +58,7 @@ public class SysProductController extends BaseController
      * @param name 商品种类名
      * @return org.springframework.web.servlet.ModelAndView 返回商品视图
      */
-    @RequestMapping("/findProductByType")
+    @GetMapping("/findProductByType")
     public ModelAndView findProductByType(int id, String name) {
         ModelAndView modelAndView = sysProductService.findProductByType(id, name);
         return modelAndView;
@@ -68,19 +70,30 @@ public class SysProductController extends BaseController
      * @param key 搜素关键字
      * @return org.springframework.web.servlet.ModelAndView 返回商品视图
      */
-    @RequestMapping("/findProductByKey")
+    @GetMapping("/findProductByKey")
     public ModelAndView findProductByKey(String key) {
         ModelAndView modelAndView = sysProductService.findProductByKey(key);
         return modelAndView;
     }
 
     /**
+     * 方法说明：好评商品榜
+     *
+     * @return org.springframework.web.servlet.ModelAndView 返回商品视图
+     */
+    @GetMapping("/getHightCommentProducts")
+    public String getHightCommentProducts(ModelMap modelMap) {
+        List<Map<String, String>> list = sysProductService.getHightCommentProducts();
+        modelMap.put("list",list);
+        return prefix + "/hcomment";
+    }
+    /**
      * 方法说明：跳转到商品详情页
      *
      * @param id 商品id
      * @return org.springframework.web.servlet.ModelAndView 返回视图
      */
-    @RequestMapping("/detail")
+    @GetMapping("/detail")
     public ModelAndView productDetail(String id) {
         ModelAndView modelAndView = new ModelAndView(prefix+"/productDetail");
         SysProduct productDetail = sysProductService.selectSysProductById(id);
@@ -138,6 +151,12 @@ public class SysProductController extends BaseController
     public AjaxResult addSave(@RequestParam("file")MultipartFile file, SysProduct sysProduct)
     {
         return toAjax(sysProductService.insertSysProduct(file,sysProduct));
+    }
+
+    @PostMapping("/like")
+    @ResponseBody
+    public Result like(String id){
+        return sysProductService.like(id);
     }
 
     /**

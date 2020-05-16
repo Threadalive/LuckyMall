@@ -1,16 +1,16 @@
 package com.ruoyi.project.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.mapper.SysProductMapper;
 import com.ruoyi.project.mapper.SysProductTypeMapper;
+import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.FileUploadUtil;
+import com.ruoyi.system.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +18,13 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.service.ISysProductService;
 import com.ruoyi.common.core.text.Convert;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * 【请填写功能名称】Service业务层处理
@@ -41,6 +45,18 @@ public class SysProductServiceImpl implements ISysProductService
 
     @Autowired
     private SysProductTypeMapper sysProductTypeMapper;
+
+    /**
+     * 客户端请求
+     */
+    @Autowired
+    private HttpServletRequest request;
+
+    /**
+     * redis工具类
+     */
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public Map<SysProductType, List<SysProduct>> getProductByTypeMap() {
@@ -116,19 +132,106 @@ public class SysProductServiceImpl implements ISysProductService
     }
 
     /**
-     * 新增【请填写功能名称】
+     * 获取好评前五十的商品
+     * @return
+     */
+    @Override
+    public List<Map<String, String>> getHightCommentProducts() {
+        //获取分值前50的商品id
+        Set<String> ids = redisUtil.zrevrange("score:", 0, 50);
+
+        List<Map<String, String>> products = new ArrayList<Map<String, String>>();
+        for (String id : ids) {
+            Map<String, String> productData = redisUtil.hgetall(id,0);
+            products.add(productData);
+        }
+        return products;
+    }
+
+    /**
+     * 对商品进行点赞
+     * @param id
+     * @return
+     */
+    @Override
+    public Result like(String id) {
+        //redis中商品的成员名
+        String product = "product:" + id;
+        //一周前
+        long cutoff = (System.currentTimeMillis() / 1000) - Constant.ONE_WEEK_IN_SECONDS;
+
+        Result result = new Result();
+
+        //获取当前用户
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        if (null == user){
+            result.setMsg(Constant.NOUSER_MSG);
+        }else {
+            //若商品上架时间超过一周，不可点赞
+            if (redisUtil.zscore("time:", product) < cutoff) {
+                result.setMsg("overtime");
+            }
+            //取商品id
+            String productId = product.substring(product.indexOf(':') + 1);
+            //若已投票集合添加成功
+            if (1 == redisUtil.sadd("voted:" + productId, String.valueOf(user.getUserId()))) {
+                //增加分数432
+                redisUtil.zincrby("score:", Constant.VOTE_SCORE, product);
+                //更新点赞数
+                redisUtil.hincrBy(product, "likeNum", 1);
+                result.setMsg(Constant.SUCCESS_MSG);
+            }else {
+                result.setMsg("voted");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 新增商品
      * 
-     * @param sysProduct 【请填写功能名称】
+     * @param sysProduct 商品实体
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int insertSysProduct(MultipartFile file, SysProduct sysProduct)
     {
         LOGGER.info("===============添加商品==============");
         LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
+
+        //获取当前用户
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+
         String imageUrl = FileUploadUtil.savaFile(file, Constant.PRODUCT_IMAGE_PATH);
+        String productId = UUID.randomUUID().toString();
         sysProduct.setProductPhoto(imageUrl);
-        sysProduct.setId(UUID.randomUUID().toString());
+        sysProduct.setId(productId);
+
+        //添加已点赞集合
+        String voted = "voted:"+productId;
+        redisUtil.sadd(voted,String.valueOf(user.getUserId()));
+        redisUtil.expire(voted,Constant.ONE_WEEK_IN_SECONDS,0);
+
+        long now = System.currentTimeMillis() / 1000;
+        String product = "product:" + productId;
+        HashMap<String, String> productData = new HashMap<String, String>();
+        productData.put("productName", sysProduct.getProductName());
+        productData.put("productPrice", String.valueOf(sysProduct.getProductPrice()));
+        productData.put("productPhoto", imageUrl);
+        productData.put("link", sysProduct.getId());
+        productData.put("postTime", String.valueOf(now));
+        productData.put("likeNum", "1");
+        productData.put("addCarNum","0");
+        productData.put("view","0");
+        redisUtil.hmset(product, productData,0);
+        //分值排序zset
+        redisUtil.zadd("score:", now + Constant.VOTE_SCORE, product);
+        //时间排序的zset
+        redisUtil.zadd("time:", now, product);
+
         return sysProductMapper.insertSysProduct(sysProduct);
     }
 

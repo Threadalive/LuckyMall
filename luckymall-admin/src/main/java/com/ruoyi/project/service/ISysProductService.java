@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.domain.SysProductType;
+import com.ruoyi.system.utils.Result;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -43,6 +45,13 @@ public interface ISysProductService
      */
     public List<SysProduct> selectSysProductList(SysProduct sysProduct);
 
+    /**
+     * 获取好评商品
+     * @return
+     */
+    public List<Map<String, String>> getHightCommentProducts();
+
+    public Result like(String id);
     /**
      * 新增【请填写功能名称】
      * 

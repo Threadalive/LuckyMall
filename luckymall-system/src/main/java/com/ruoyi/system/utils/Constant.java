@@ -66,4 +66,14 @@ public class Constant {
      */
     public static final int SCORE_PER_TIME = 100;
 
+    /**
+     * 每周秒数
+     */
+    public static final int ONE_WEEK_IN_SECONDS = 7 * 86400;
+    /**
+     * 点赞得分
+     */
+    public static final int VOTE_SCORE = 432;
+
+
 }

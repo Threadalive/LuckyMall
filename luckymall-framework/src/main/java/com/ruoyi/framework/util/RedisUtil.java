@@ -43,7 +43,7 @@ public class RedisUtil {
      * @param indexdb 选择redis库 0-15
      * @return 成功返回value 失败返回null
      */
-    public String get(String key,int indexdb) {
+    public String get(String key, int indexdb) {
         jedis = new Jedis("localhost");
         String value = null;
         try {
@@ -71,7 +71,7 @@ public class RedisUtil {
      * @param indexdb 选择redis库 0-15
      * @return 成功返回value 失败返回null
      */
-    public byte[] get(byte[] key,int indexdb) {
+    public byte[] get(byte[] key, int indexdb) {
         jedis = new Jedis("localhost");
         byte[] value = null;
         try {
@@ -85,6 +85,7 @@ public class RedisUtil {
         }
         return value;
     }
+
     /**
      * <p>
      * 向redis存入key和value,并释放连接资源
@@ -98,7 +99,7 @@ public class RedisUtil {
      * @param indexdb 选择redis库 0-15
      * @return 成功 返回OK 失败返回 0
      */
-    public String set(String key, String value,int indexdb) {
+    public String set(String key, String value, int indexdb) {
         jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
@@ -124,7 +125,7 @@ public class RedisUtil {
      * @param indexdb 选择redis库 0-15
      * @return 成功 返回OK 失败返回 0
      */
-    public String set(byte[] key, byte[] value,int indexdb) {
+    public String set(byte[] key, byte[] value, int indexdb) {
         jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
@@ -162,11 +163,12 @@ public class RedisUtil {
      * <p>
      * 删除指定的key,也可以传入一个包含key的数组
      * </p>
+     *
      * @param indexdb 选择redis库 0-15
-     * @param keys 一个key 也可以使 string 数组
+     * @param keys    一个key 也可以使 string 数组
      * @return 返回删除成功的个数
      */
-    public Long del(int indexdb,String... keys) {
+    public Long del(int indexdb, String... keys) {
         jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
@@ -175,7 +177,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return 0L;
         } finally {
-           jedis.close();
+            jedis.close();
         }
     }
 
@@ -183,11 +185,12 @@ public class RedisUtil {
      * <p>
      * 删除指定的key,也可以传入一个包含key的数组
      * </p>
+     *
      * @param indexdb 选择redis库 0-15
-     * @param keys 一个key 也可以使 string 数组
+     * @param keys    一个key 也可以使 string 数组
      * @return 返回删除成功的个数
      */
-    public Long del(int indexdb,byte[]... keys) {
+    public Long del(int indexdb, byte[]... keys) {
         jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
@@ -269,8 +272,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param value
-     *            过期时间，单位：秒
+     * @param value 过期时间，单位：秒
      * @return 成功返回1 如果存在 和 发生异常 返回 0
      */
     public Long expire(String key, int value, int indexdb) {
@@ -293,9 +295,9 @@ public class RedisUtil {
      *
      * @param key
      * @return 当 key 不存在时，返回 -2 。当 key 存在但没有设置剩余生存时间时，返回 -1 。否则，以秒为单位，返回 key
-     *         的剩余生存时间。 发生异常 返回 0
+     * 的剩余生存时间。 发生异常 返回 0
      */
-    public Long ttl(String key,int indexdb) {
+    public Long ttl(String key, int indexdb) {
         jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
@@ -336,8 +338,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param seconds
-     *            生存时间 单位：秒
+     * @param seconds 生存时间 单位：秒
      * @param value
      * @return 设置成功时返回 OK 。当 seconds 参数不合法时，返回一个错误。
      */
@@ -408,8 +409,7 @@ public class RedisUtil {
      *
      * @param key
      * @param value
-     * @param seconds
-     *            单位:秒
+     * @param seconds 单位:秒
      * @return 成功返回OK 失败和异常返回null
      */
     public String setex(String key, String value, int seconds) {
@@ -443,8 +443,7 @@ public class RedisUtil {
      * 通过批量的key获取批量的value
      * </p>
      *
-     * @param keys
-     *            string数组 也可以是一个key
+     * @param keys string数组 也可以是一个key
      * @return 成功返回value的集合, 失败返回null的集合 ,异常返回空
      */
     public List<String> mget(String... keys) {
@@ -474,7 +473,6 @@ public class RedisUtil {
      *
      * @param keysvalues
      * @return 成功返回OK 失败 异常 返回 null
-     *
      */
     public String mset(String... keysvalues) {
         jedis = new Jedis("localhost");
@@ -533,8 +531,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param startOffset
-     *            开始位置 从0 开始 负数表示从右边开始截取
+     * @param startOffset 开始位置 从0 开始 负数表示从右边开始截取
      * @param endOffset
      * @return 如果没有返回null
      */
@@ -595,6 +592,7 @@ public class RedisUtil {
         }
         return res;
     }
+
     /**
      * <p>
      * 对key的值做减减操作,如果key不存在,则设置key为-1
@@ -668,8 +666,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param field
-     *            字段
+     * @param field 字段
      * @param value
      * @return 如果存在返回0 异常返回null
      */
@@ -764,8 +761,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param fields
-     *            可以使 一个String 也可以是 String数组
+     * @param fields 可以使 一个String 也可以是 String数组
      * @return
      */
     public List<String> hmget(String key, int indexdb, String... fields) {
@@ -825,7 +821,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-           jedis.close();
+            jedis.close();
         }
         return res;
     }
@@ -859,8 +855,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param fields
-     *            可以是 一个 field 也可以是 一个数组
+     * @param fields 可以是 一个 field 也可以是 一个数组
      * @return
      */
     public Long hdel(String key, String... fields) {
@@ -949,8 +944,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param strs
-     *            可以使一个string 也可以使string数组
+     * @param strs 可以使一个string 也可以使string数组
      * @return 返回list的value个数
      */
     public Long lpush(int indexdb, String key, String... strs) {
@@ -963,7 +957,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-           jedis.close();
+            jedis.close();
         }
         return res;
     }
@@ -974,8 +968,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param strs
-     *            可以使一个string 也可以使string数组
+     * @param strs 可以使一个string 也可以使string数组
      * @return 返回list的value个数
      */
     public Long rpush(String key, String... strs) {
@@ -1001,8 +994,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param index
-     *            从0开始
+     * @param index 从0开始
      * @param value
      * @return 成功返回OK
      */
@@ -1026,8 +1018,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param count
-     *            当count为0时删除全部
+     * @param count 当count为0时删除全部
      * @param value
      * @return 返回被删除的个数
      */
@@ -1088,6 +1079,7 @@ public class RedisUtil {
         }
         return res;
     }
+
     /**
      * <p>
      * 通过key从list尾部删除一个value,并返回该元素
@@ -1283,8 +1275,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param members
-     *            可以是一个String 也可以是一个String数组
+     * @param members 可以是一个String 也可以是一个String数组
      * @return 添加成功的个数
      */
     public Long sadd(String key, String... members) {
@@ -1307,8 +1298,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param members
-     *            可以是一个String 也可以是一个String数组
+     * @param members 可以是一个String 也可以是一个String数组
      * @return 删除的个数
      */
     public Long srem(String key, String... members) {
@@ -1355,8 +1345,7 @@ public class RedisUtil {
      * 以第一个set为标准
      * </p>
      *
-     * @param keys
-     *            可以使一个string 则返回set中所有的value 也可以是string数组
+     * @param keys 可以使一个string 则返回set中所有的value 也可以是string数组
      * @return
      */
     public Set<String> sdiff(String... keys) {
@@ -1381,10 +1370,8 @@ public class RedisUtil {
      * 以第一个set为标准
      * </p>
      *
-     * @param dstkey
-     *            差集存入的key
-     * @param keys
-     *            可以使一个string 则返回set中所有的value 也可以是string数组
+     * @param dstkey 差集存入的key
+     * @param keys   可以使一个string 则返回set中所有的value 也可以是string数组
      * @return
      */
     public Long sdiffstore(String dstkey, String... keys) {
@@ -1396,7 +1383,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-           jedis.close();
+            jedis.close();
         }
         return res;
     }
@@ -1406,8 +1393,7 @@ public class RedisUtil {
      * 通过key获取指定set中的交集
      * </p>
      *
-     * @param keys
-     *            可以使一个string 也可以是一个string数组
+     * @param keys 可以使一个string 也可以是一个string数组
      * @return
      */
     public Set<String> sinter(String... keys) {
@@ -1419,7 +1405,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-           jedis.close();
+            jedis.close();
         }
         return res;
     }
@@ -1430,8 +1416,7 @@ public class RedisUtil {
      * </p>
      *
      * @param dstkey
-     * @param keys
-     *            可以使一个string 也可以是一个string数组
+     * @param keys   可以使一个string 也可以是一个string数组
      * @return
      */
     public Long sinterstore(String dstkey, String... keys) {
@@ -1454,8 +1439,7 @@ public class RedisUtil {
      * 通过key返回所有set的并集
      * </p>
      *
-     * @param keys
-     *            可以使一个string 也可以是一个string数组
+     * @param keys 可以使一个string 也可以是一个string数组
      * @return
      */
     public Set<String> sunion(String... keys) {
@@ -1478,8 +1462,7 @@ public class RedisUtil {
      * </p>
      *
      * @param dstkey
-     * @param keys
-     *            可以使一个string 也可以是一个string数组
+     * @param keys   可以使一个string 也可以是一个string数组
      * @return
      */
     public Long sunionstore(String dstkey, String... keys) {
@@ -1495,17 +1478,15 @@ public class RedisUtil {
         }
         return res;
     }
+
     /**
      * <p>
      * 通过key将set中的value移除并添加到第二个set中
      * </p>
      *
-     * @param srckey
-     *            需要移除的
-     * @param dstkey
-     *            添加的
-     * @param member
-     *            set中的value
+     * @param srckey 需要移除的
+     * @param dstkey 添加的
+     * @param member set中的value
      * @return
      */
     public Long smove(String srckey, String dstkey, String member) {
@@ -1720,8 +1701,7 @@ public class RedisUtil {
      * </p>
      *
      * @param key
-     * @param members
-     *            可以使一个string 也可以是一个string数组
+     * @param members 可以使一个string 也可以是一个string数组
      * @return
      */
     public Long zrem(String key, String... members) {
@@ -1863,7 +1843,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-           jedis.close();
+            jedis.close();
         }
         return res;
     }
@@ -1891,6 +1871,7 @@ public class RedisUtil {
         }
         return res;
     }
+
     /**
      * <p>
      * 返回指定区间内zset中value的数量
@@ -2037,7 +2018,7 @@ public class RedisUtil {
         return res;
     }
 
-    public Set<String> keysBySelect(String pattern,int database) {
+    public Set<String> keysBySelect(String pattern, int database) {
         jedis = new Jedis("localhost");
         Set<String> res = null;
         try {
@@ -2051,6 +2032,7 @@ public class RedisUtil {
         }
         return res;
     }
+
     /**
      * <p>
      * 通过key判断值得类型
@@ -2075,9 +2057,9 @@ public class RedisUtil {
 
     /**
      * 序列化对象
+     *
      * @param obj
-     * @return
-     * 对象需实现Serializable接口
+     * @return 对象需实现Serializable接口
      */
     public static byte[] ObjTOSerialize(Object obj) {
         ObjectOutputStream oos = null;
@@ -2095,9 +2077,9 @@ public class RedisUtil {
 
     /**
      * 反序列化对象
+     *
      * @param bytes
-     * @return
-     * 对象需实现Serializable接口
+     * @return 对象需实现Serializable接口
      */
     public static Object unserialize(byte[] bytes) {
         ByteArrayInputStream bais = null;

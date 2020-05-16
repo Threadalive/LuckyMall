@@ -109,7 +109,7 @@
                                                     <td th:text="${unpaidOrder.createTime}">1998-01-01 00:00:00</td>
                                                     <td th:if="${unpaidOrder.status}==0">
                                                         <button type="button" class="layui-btn layui-btn-danger"
-                                                                th:onclick="payOrder([[${unpaidOrder.id}]])">未支付
+                                                                th:onclick="payOrder([[${unpaidOrder.id}]],[[${unpaidOrder.totalPrice}]])">未支付
                                                         </button>
                                                     </td>
                                                     <td th:if="${unpaidOrder.status}==1">
