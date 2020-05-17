@@ -185,6 +185,10 @@ public class SysProductServiceImpl implements ISysProductService
         return products;
     }
 
+    /**
+     * 获取热度商品
+     * @return
+     */
     @Override
     public List<Map<String, String>> getHotProducts() {
         //获取热度前50的商品id

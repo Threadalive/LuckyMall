@@ -1,6 +1,9 @@
 package com.ruoyi.project.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.domain.SysShoppingCar;
 import com.ruoyi.system.utils.Result;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 public interface ISysShoppingCarService 
 {
 
-    public ModelAndView userCar();
+    public Map<SysProduct,SysShoppingCar> userCar();
     /**
      * 查询购物车
      * 

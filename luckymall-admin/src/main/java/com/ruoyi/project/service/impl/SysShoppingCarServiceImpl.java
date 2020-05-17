@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.service.ISysProductService;
 import com.ruoyi.system.domain.SysUser;
@@ -39,31 +40,53 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     private ISysProductService productService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SysShoppingCarServiceImpl.class);
+
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 客户端请求
      */
     @Autowired
     private HttpServletRequest request;
 
+    /**
+     * 获取用户购物车，
+     * 若redis中存在，
+     * 则首先从缓存中取标志
+     * @return
+     */
     @Override
-    public ModelAndView userCar() {
+    public Map<SysProduct,SysShoppingCar> userCar() {
         LOGGER.info("===============查看购物车==============");
-        ModelAndView modelAndView = new ModelAndView("project/shoppingcar/cart");
         HttpSession session=request.getSession();
         SysUser user = (SysUser) session.getAttribute("user");
+
+        String userCartFlag = "cart:" + String.valueOf(user.getUserId());
+
         // Map<商品，该商品的购物车>
         Map<SysProduct,SysShoppingCar> productCartMap = new HashMap<>(Constant.CART_MAP_CAPACITY);
         // List<用户的购物车>
         SysShoppingCar car = new SysShoppingCar();
         car.setUserId(user.getUserId());
-        List<SysShoppingCar> cartList = this.selectSysShoppingCarList(car);
-        for(SysShoppingCar cart:cartList){
-            SysProduct product = productService.selectSysProductById(cart.getProductId());
-            productCartMap.put(product,cart);
+
+        //若redis缓存中有该用户购物车缓存
+        if (redisUtil.exists(userCartFlag)) {
+            Set<String> productIds = redisUtil.hkeys(userCartFlag);
+            for (String productId : productIds){
+                //通过缓存的标记获取商品和购物车
+                SysProduct product = productService.selectSysProductById(productId);
+                SysShoppingCar cart = sysShoppingCarMapper.selectSysShoppingCarById(redisUtil.hget(userCartFlag,productId));
+                productCartMap.put(product,cart);
+            }
+        }else {
+            List<SysShoppingCar> cartList = this.selectSysShoppingCarList(car);
+            for (SysShoppingCar cart : cartList) {
+                SysProduct product = productService.selectSysProductById(cart.getProductId());
+                productCartMap.put(product, cart);
+            }
+            LOGGER.info("购物车map：" + JSON.toJSONString(productCartMap));
         }
-        LOGGER.info("购物车map：" + JSON.toJSONString(productCartMap));
-        modelAndView.addObject("cartMap",productCartMap);
-        return modelAndView;
+        return productCartMap;
     }
 
     /**
@@ -112,6 +135,9 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
             result.setMsg(Constant.NOUSER_MSG);
             return result;
         }
+        String userCartFlag = "cart:" + String.valueOf(user.getUserId());
+        String product = "product:" + sysShoppingCar.getProductId();
+
         // 先查看用户该商品的购物车是否已存在
         SysShoppingCar car = new SysShoppingCar();
         car.setUserId(user.getUserId());
@@ -124,11 +150,25 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
             sysShoppingCar.setAddTime(addTime);
             sysShoppingCar.setUserId(user.getUserId());
             sysShoppingCarMapper.insertSysShoppingCar(sysShoppingCar);
+
+            //将商品id与购物车id的映射保存进redis中
+            redisUtil.hset(userCartFlag,sysShoppingCar.getProductId(),sysShoppingCar.getId());
+
+            //购物车缓存在一周后失效，节省内存
+            redisUtil.expire(userCartFlag,Constant.ONE_WEEK_IN_SECONDS,0);
+
+            //更新该商品被添加进购物车次数
+            redisUtil.hincrBy(product, "addCarNum", 1);
+
             result.setMsg(Constant.SUCCESS_MSG);
         }else{
             cart.setAddTime(addTime);
             cart.setNumber(cart.getNumber()+sysShoppingCar.getNumber());
             sysShoppingCarMapper.updateSysShoppingCar(cart);
+
+            //将商品id与购物车id的映射保存进redis中
+            redisUtil.hset(userCartFlag,sysShoppingCar.getProductId(),sysShoppingCar.getId());
+
             result.setMsg(Constant.SUCCESS_MSG);
         }
         return result;

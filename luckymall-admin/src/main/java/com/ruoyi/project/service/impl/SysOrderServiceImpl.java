@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysOrderItem;
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.mapper.SysOrderItemMapper;
@@ -50,6 +51,8 @@ public class SysOrderServiceImpl implements ISysOrderService
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SysOrderServiceImpl.class);
 
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 客户端请求
      */
@@ -143,6 +146,10 @@ public class SysOrderServiceImpl implements ISysOrderService
         String createTime = dateFormat.format(new Date());
         // 订单号
         String orderCode = UUID.randomUUID().toString();
+
+        //redis中用户购物车标记key
+        String userCartFlag = "cart:" + String.valueOf(user.getUserId());
+
         LOGGER.info("下单时间：" + createTime);
         LOGGER.info("订单号：" + orderCode);
         // 总金额
@@ -180,6 +187,8 @@ public class SysOrderServiceImpl implements ISysOrderService
         }
         // 清空用户购物车
         sysShoppingCarMapper.deleteSysShoppingCarByUserId(user.getUserId());
+        //情况购物车缓存
+        redisUtil.del(userCartFlag);
 
         // 判断所有操作是否成功(标志是否都为1)
         int orderItemFlag = 1;

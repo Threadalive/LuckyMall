@@ -91,7 +91,6 @@ public class UserController {
     public Result loginUser(String userName, String password) {
         Result result = new Result();
         //根据用户名记录尝试登录次数
-//        redisUtil.set(SHIRO_LOGIN_COUNT+userName,"0",0);
         redisUtil.incr(SHIRO_LOGIN_COUNT+userName);
         //若尝试次数大于限定值
         if (Integer.parseInt(redisUtil.get(SHIRO_LOGIN_COUNT+userName,0)) >= MAX_RETRY_COUNT){
@@ -103,6 +102,11 @@ public class UserController {
         // 根据用户名和密码查找用户
         result = userService.loginUser(userName, password);
 
+        //登陆成功，则删除标记
+        if (Constant.SUCCESS_MSG.equals(result.getMsg())){
+            redisUtil.del(SHIRO_LOGIN_COUNT+userName);
+            redisUtil.del(SHIRO_IS_LOCK+userName);
+        }
         if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK+userName,0))){
             result.setMsg("locked");
         }

@@ -1,7 +1,9 @@
 package com.ruoyi.project.controller;
 
 import java.util.List;
+import java.util.Map;
 
+import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +45,10 @@ public class SysShoppingCarController extends BaseController
      * @return org.springframework.web.servlet.ModelAndView 购物车视图
      */
     @GetMapping()
-    public ModelAndView userCart() {
-        ModelAndView modelAndView = sysShoppingCarService.userCar();
-        return modelAndView;
+    public String userCart(ModelMap modelMap) {
+        Map<SysProduct,SysShoppingCar> map = sysShoppingCarService.userCar();
+        modelMap.put("cartMap",map);
+        return prefix + "/cart";
     }
 
     /**
