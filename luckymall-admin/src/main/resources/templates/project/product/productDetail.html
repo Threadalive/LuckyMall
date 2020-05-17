@@ -299,6 +299,11 @@
             </div>
             <div class="layui-row">
                 <div class="layui-col-md7" style="height: 100px;">
+                    <span th:text="'添加该商品进购物车的用户中有'+${buyRate}+'%最终进行了购买'" style="color: #bb2929"></span>
+                </div>
+            </div>
+            <div class="layui-row">
+                <div class="layui-col-md7" style="height: 100px;">
                     <span><button type="button" id="buyBtn" class="layui-btn layui-btn-danger">立即购买</button></span>
                     <span><button type="button" id="cartBtn" class="layui-btn layui-btn-normal">加入购物车</button></span>
                 </div>

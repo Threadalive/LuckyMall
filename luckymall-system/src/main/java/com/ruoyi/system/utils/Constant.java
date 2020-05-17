@@ -75,5 +75,7 @@ public class Constant {
      */
     public static final int VOTE_SCORE = 432;
 
+    public static final String ADD_BY_CAR_KEY = "add_by_car";
+
 
 }

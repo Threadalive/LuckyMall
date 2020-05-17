@@ -149,6 +149,7 @@ public class SysOrderServiceImpl implements ISysOrderService
 
         //redis中用户购物车标记key
         String userCartFlag = "cart:" + String.valueOf(user.getUserId());
+        String productFlag = "product:";
 
         LOGGER.info("下单时间：" + createTime);
         LOGGER.info("订单号：" + orderCode);
@@ -184,6 +185,8 @@ public class SysOrderServiceImpl implements ISysOrderService
             SysProduct product = sysProductMapper.selectSysProductById(productId);
             product.setProductCount(product.getProductCount() - number);
             sysProductMapper.updateSysProduct(product);
+            //对通过购物车购买的商品的次数+1
+            redisUtil.hincrBy(Constant.ADD_BY_CAR_KEY,productFlag+productId,1);
         }
         // 清空用户购物车
         sysShoppingCarMapper.deleteSysShoppingCarByUserId(user.getUserId());

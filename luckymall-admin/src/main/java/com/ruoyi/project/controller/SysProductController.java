@@ -3,8 +3,10 @@ package com.ruoyi.project.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.service.ISysProductTypeService;
+import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,10 @@ public class SysProductController extends BaseController
 
     @Autowired
     private ISysProductTypeService productTypeService;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
 
     @RequiresPermissions("system:product:view")
     @GetMapping("/productAdmin")
@@ -110,8 +116,20 @@ public class SysProductController extends BaseController
      */
     @GetMapping("/detail")
     public String productDetail(String id,ModelMap modelMap) {
+        String productFlag = "product:";
         SysProduct product = sysProductService.getProductDetail(id);
+        //获取该商品的购物车购买次数
+        double buyCount = 0;
+        double addCartNum = 1;
+
+        //若该商品存在购买记录
+        if (redisUtil.hexists(Constant.ADD_BY_CAR_KEY,productFlag+id)){
+        buyCount = Double.parseDouble(redisUtil.hget(Constant.ADD_BY_CAR_KEY,productFlag + id));
+        addCartNum = Double.parseDouble(redisUtil.hget(productFlag+id,"addCarNum"));
+        }
+        double buyRate = (buyCount/addCartNum)*100;
         modelMap.put("product",product);
+        modelMap.put("buyRate",buyRate);
         return prefix + "/productDetail";
     }
 
