@@ -37,6 +37,7 @@ public interface ISysProductService
      */
     public SysProduct selectSysProductById(String id);
 
+    public SysProduct getProductDetail(String id);
     /**
      * 查询【请填写功能名称】列表
      * 
@@ -50,6 +51,12 @@ public interface ISysProductService
      * @return
      */
     public List<Map<String, String>> getHightCommentProducts();
+
+    /**
+     * 获取热度商品榜
+     * @return
+     */
+    public List<Map<String,String>> getHotProducts();
 
     public Result like(String id);
     /**

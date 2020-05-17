@@ -24,8 +24,7 @@
     <div>
         <div class="layui-row">
             <div class="layui-col-md12">
-                <h1 class="site-h1" >
-                    好评商品榜
+                <h1 class="site-h1" th:text="${type}">
                 </h1>
             </div>
         </div>
@@ -40,8 +39,11 @@
                     <div class='product_title' th:text="${productMap['productName']}">
                         商品名
                     </div>
-                    <div class='product_title' th:text="'点赞数：'+${productMap['likeNum']}">
+                    <div th:if="${type} == '好评商品榜单 TOP50'" class='product_title' th:text="'点赞数：'+${productMap['likeNum']}">
                         点赞数
+                    </div>
+                    <div th:if="${type} == '热度商品榜单 TOP50'" class='product_title' th:text="'被浏览过：'+${productMap['view']}+'次'">
+                        浏览次数
                     </div>
                     <div style='text-align: center;'>
                         <span class='price1' th:text="'￥'+${productMap['productPrice']}"></span>

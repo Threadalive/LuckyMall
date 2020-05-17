@@ -85,8 +85,23 @@ public class SysProductController extends BaseController
     public String getHightCommentProducts(ModelMap modelMap) {
         List<Map<String, String>> list = sysProductService.getHightCommentProducts();
         modelMap.put("list",list);
+        modelMap.put("type","好评商品榜单 TOP50");
         return prefix + "/hcomment";
     }
+
+    /**
+     * 方法说明：热度商品榜
+     *
+     * @return org.springframework.web.servlet.ModelAndView 返回商品视图
+     */
+    @GetMapping("/getHotProducts")
+    public String getHotProducts(ModelMap modelMap) {
+        List<Map<String, String>> list = sysProductService.getHotProducts();
+        modelMap.put("type","热度商品榜单 TOP50");
+        modelMap.put("list",list);
+        return prefix + "/hcomment";
+    }
+
     /**
      * 方法说明：跳转到商品详情页
      *
@@ -94,11 +109,10 @@ public class SysProductController extends BaseController
      * @return org.springframework.web.servlet.ModelAndView 返回视图
      */
     @GetMapping("/detail")
-    public ModelAndView productDetail(String id) {
-        ModelAndView modelAndView = new ModelAndView(prefix+"/productDetail");
-        SysProduct productDetail = sysProductService.selectSysProductById(id);
-        modelAndView.addObject("product",productDetail);
-        return modelAndView;
+    public String productDetail(String id,ModelMap modelMap) {
+        SysProduct product = sysProductService.getProductDetail(id);
+        modelMap.put("product",product);
+        return prefix + "/productDetail";
     }
 
     /**

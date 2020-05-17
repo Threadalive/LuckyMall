@@ -96,11 +96,27 @@ public class SysProductServiceImpl implements ISysProductService
         return modelAndView;
     }
 
+    /**
+     * 根据关键字搜索商品，增加相关商品热度值
+     * @param key
+     * @return
+     */
     @Override
     public ModelAndView findProductByKey(String key) {
         LOGGER.info("===============按种类查找商品==============");
         ModelAndView modelAndView = new ModelAndView("project/product/category");
+        long now = System.currentTimeMillis()/1000;
+
         List<SysProduct> productList = sysProductMapper.findProductByName(key);
+        String product = "product:";
+        for (SysProduct sysProduct:productList){
+            product += sysProduct.getId();
+            if (null != redisUtil.zscore("hot:",product)){
+                redisUtil.zincrby("hot:", Constant.VOTE_SCORE, product);
+            }else {
+                redisUtil.zadd("hot:", now + Constant.VOTE_SCORE, product);
+            }
+        }
         modelAndView.addObject("productTypeName", key);
         modelAndView.addObject("list", productList);
         LOGGER.info("查询条件及结果：" + JSON.toJSONString(key) + " " + JSON.toJSONString(productList));
@@ -116,6 +132,27 @@ public class SysProductServiceImpl implements ISysProductService
     @Override
     public SysProduct selectSysProductById(String id)
     {
+        return sysProductMapper.selectSysProductById(id);
+    }
+
+    /**
+     * 获取商品详情
+     * @param id
+     * @return
+     */
+    @Override
+    public SysProduct getProductDetail(String id) {
+        //当前时间秒数
+        long now = System.currentTimeMillis()/1000;
+        String product = "product:" + id;
+        //若首次浏览，根据当前时间给与热度值，否则浏览添加热度值432
+        if (null != redisUtil.zscore("hot:",product)){
+            redisUtil.zincrby("hot:", Constant.VOTE_SCORE, product);
+        }else {
+            redisUtil.zadd("hot:", now + Constant.VOTE_SCORE, product);
+        }
+        //更新商品数据库中浏览数
+        redisUtil.hincrBy(product, "view", 1);
         return sysProductMapper.selectSysProductById(id);
     }
 
@@ -139,6 +176,19 @@ public class SysProductServiceImpl implements ISysProductService
     public List<Map<String, String>> getHightCommentProducts() {
         //获取分值前50的商品id
         Set<String> ids = redisUtil.zrevrange("score:", 0, 50);
+
+        List<Map<String, String>> products = new ArrayList<Map<String, String>>();
+        for (String id : ids) {
+            Map<String, String> productData = redisUtil.hgetall(id,0);
+            products.add(productData);
+        }
+        return products;
+    }
+
+    @Override
+    public List<Map<String, String>> getHotProducts() {
+        //获取热度前50的商品id
+        Set<String> ids = redisUtil.zrevrange("hot:", 0, 50);
 
         List<Map<String, String>> products = new ArrayList<Map<String, String>>();
         for (String id : ids) {
