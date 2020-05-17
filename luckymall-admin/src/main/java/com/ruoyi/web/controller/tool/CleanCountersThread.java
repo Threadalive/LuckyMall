@@ -16,6 +16,9 @@ import java.util.Set;
 
 /**
  * 清理计数器守护进程
+ * @param
+ * @return
+ * @author zhenxing.dong
  */
 public class CleanCountersThread extends Thread {
     private  RedisUtil redisUtil;
@@ -88,7 +91,7 @@ public class CleanCountersThread extends Thread {
             }
         }
     }
-    // mimic python's bisect.bisect_right
+
     public int bisectRight(List<String> values, String key) {
         int index = Collections.binarySearch(values, key);
         return index < 0 ? Math.abs(index) - 1 : index + 1;
