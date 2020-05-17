@@ -75,7 +75,24 @@ public class Constant {
      */
     public static final int VOTE_SCORE = 432;
 
+    /**
+     * 通过购物车添加的订单
+     */
     public static final String ADD_BY_CAR_KEY = "add_by_car";
 
+    /**
+     * 成交额
+     */
+    public static final String TURNOVER = "turnover";
+
+    /**
+     * 订单数
+     */
+    public static final String ORDER_COUNT = "order_count";
+
+    /**
+     * 系统访问次数计数器
+     */
+    public static final String ACCESS_COUNT_COUNTER = "sys_access_count_counter";
 
 }

@@ -1,6 +1,10 @@
 package com.ruoyi.project.controller;
 
+import com.ruoyi.framework.util.RedisUtil;
+import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.project.service.ISysProductService;
+import com.ruoyi.system.utils.Constant;
+import com.ruoyi.web.controller.tool.CleanCountersThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,14 @@ import javax.servlet.http.HttpServletRequest;
 public class MallIndexController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MallIndexController.class);
+    /**
+     * 后台计数服务
+     */
+    @Autowired
+    private ISysCounterService counterService;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     private final String PREFIX = "project/";
 
@@ -37,6 +49,12 @@ public class MallIndexController {
     @GetMapping("/mallIndex")
     public String index(ModelMap mmap)
     {
+        //用户访问，进行系统访问计数
+        counterService.updateCounter(Constant.ACCESS_COUNT_COUNTER);
+
+        // 用户访问系统即开启清理计数器的守护进程
+        CleanCountersThread thread = new CleanCountersThread(redisUtil,100, 5);
+        thread.start();
         //放入商品信息
         mmap.put("map",productService.getProductByTypeMap());
         return PREFIX+"index/index";

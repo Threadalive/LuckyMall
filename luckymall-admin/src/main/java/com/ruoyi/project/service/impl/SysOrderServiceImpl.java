@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.alibaba.fastjson.JSON;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysOrderItem;
 import com.ruoyi.project.domain.SysProduct;
@@ -266,6 +265,8 @@ public class SysOrderServiceImpl implements ISysOrderService
         // 判断所有操作是否成功(标志是否都为1)
         if (orderFlag == 1 && productFlag == 1 && orderItemFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
+            //更新订单量
+            redisUtil.incrBy(Constant.ORDER_COUNT,Integer.toUnsignedLong(1));
         } else {
             result.setMsg(Constant.ERROR_MSG);
         }
@@ -300,6 +301,9 @@ public class SysOrderServiceImpl implements ISysOrderService
         if (orderFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
             result.setData(10);
+
+            //redis中记录成交额
+            redisUtil.incrByFloat(Constant.TURNOVER,totalPrice);
         } else {
             result.setMsg(Constant.ERROR_MSG);
         }

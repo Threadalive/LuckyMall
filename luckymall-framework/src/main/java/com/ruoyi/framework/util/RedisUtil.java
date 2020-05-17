@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.SortingParams;
+import redis.clients.jedis.Transaction;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -59,6 +60,27 @@ public class RedisUtil {
         return value;
     }
 
+    public Transaction multi(){
+        jedis = new Jedis("localhost");
+        Transaction value = null;
+        try {
+            value = jedis.multi();
+            log.info(value.toString());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return value;
+    }
+
+    public void watch(String key){
+        jedis = new Jedis("localhost");
+        jedis.watch(key);
+    }
+
+    public void unWatch(){
+        jedis = new Jedis("localhost");
+        jedis.unwatch();
+    }
     /**
      * <p>
      * 通过key获取储存在redis中的value
@@ -593,6 +615,27 @@ public class RedisUtil {
         return res;
     }
 
+    /**
+     * <p>
+     * 通过key给指定的value加值,如果key不存在,则这是value为该值
+     * </p>
+     *
+     * @param key
+     * @return
+     */
+    public Double incrByFloat(String key, Double increment) {
+        jedis = new Jedis("localhost");
+        Double res = null;
+        try {
+            res = jedis.incrByFloat(key, increment);
+        } catch (Exception e) {
+
+            log.error(e.getMessage());
+        } finally {
+            jedis.close();
+        }
+        return res;
+    }
     /**
      * <p>
      * 对key的值做减减操作,如果key不存在,则设置key为-1
