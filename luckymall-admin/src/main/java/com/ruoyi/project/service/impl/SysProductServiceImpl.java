@@ -7,7 +7,9 @@ import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.mapper.SysProductMapper;
 import com.ruoyi.project.mapper.SysProductTypeMapper;
+import com.ruoyi.project.service.IEmailService;
 import com.ruoyi.system.domain.SysUser;
+import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.FileUploadUtil;
 import com.ruoyi.system.utils.Result;
@@ -19,7 +21,6 @@ import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.service.ISysProductService;
 import com.ruoyi.common.core.text.Convert;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -46,6 +47,11 @@ public class SysProductServiceImpl implements ISysProductService
     @Autowired
     private SysProductTypeMapper sysProductTypeMapper;
 
+    @Autowired
+    private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private IEmailService emailService;
     /**
      * 客户端请求
      */
@@ -243,6 +249,33 @@ public class SysProductServiceImpl implements ISysProductService
     }
 
     /**
+     * 订阅商品
+     * @param id 商品id
+     * @return
+     */
+    @Override
+    public Result subscribe(String id) {
+        Result result = new Result();
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        //存储在redis中的key值，subscribe:商品id
+        String subscribeKey = "subscribe:"+id;
+        //是否已存在
+        if (redisUtil.sismember(subscribeKey,String.valueOf(user.getUserId()))){
+            result.setMsg("subscribed");
+        }else {
+            //存储对应商品的订阅用户
+            long flag = redisUtil.sadd(subscribeKey, String.valueOf(user.getUserId()));
+            if (flag > 0) {
+                result.setMsg(Constant.SUCCESS_MSG);
+            }else {
+                result.setMsg(Constant.ERROR_MSG);
+            }
+        }
+        return result;
+    }
+
+    /**
      * 新增商品
      * 
      * @param sysProduct 商品实体
@@ -300,8 +333,29 @@ public class SysProductServiceImpl implements ISysProductService
     {
         LOGGER.info("===============编辑商品==============");
         LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
+        HttpSession session = request.getSession();
+        SysUser user = (SysUser) session.getAttribute("user");
+        //存储在redis中的key值
+        String subscribeKey = "subscribe:"+sysProduct.getId();
+
         String imageUrl = FileUploadUtil.savaFile(file, Constant.PRODUCT_IMAGE_PATH);
         sysProduct.setProductPhoto(imageUrl);
+
+        SysProduct product = sysProductMapper.selectSysProductById(sysProduct.getId());
+        //若为上架操作
+        if (0 == product.getProductStatus() && 1 == sysProduct.getProductStatus()){
+            //若该商品存在订阅用户,遍历发送邮件通知
+            if (redisUtil.exists(subscribeKey)){
+                Set<String> userSet = redisUtil.smembers(subscribeKey);
+                for (String id : userSet){
+                    SysUser sysUser = sysUserMapper.selectUserById(Long.parseLong(id));
+                    emailService.sendSimpleMail(sysUser.getEmail(),"商品上架提醒","尊贵的LuckyMall商城用户，您订阅的商品"+
+                            sysProduct.getProductName()+"上架啦");
+                }
+                //通知结束后删除该key
+                redisUtil.del(subscribeKey);
+            }
+        }
         return sysProductMapper.updateSysProduct(sysProduct);
     }
 

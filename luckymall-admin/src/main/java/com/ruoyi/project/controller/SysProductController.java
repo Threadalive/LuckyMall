@@ -191,6 +191,11 @@ public class SysProductController extends BaseController
         return sysProductService.like(id);
     }
 
+    @PostMapping("/subscribe")
+    @ResponseBody
+    public Result subscribe(String id){
+        return sysProductService.subscribe(id);
+    }
     /**
      * 修改【请填写功能名称】
      */

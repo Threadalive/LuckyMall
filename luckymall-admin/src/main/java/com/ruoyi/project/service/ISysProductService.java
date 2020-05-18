@@ -59,6 +59,13 @@ public interface ISysProductService
     public List<Map<String,String>> getHotProducts();
 
     public Result like(String id);
+
+    /**
+     * 订阅未上架商品
+     * @param id
+     * @return
+     */
+    public Result subscribe(String id);
     /**
      * 新增【请填写功能名称】
      * 

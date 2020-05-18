@@ -271,8 +271,7 @@
                 <div class="layui-col-md7"
                      style="height: 100px;background-color: white;font: normal 26px  'Microsoft Yahei';">
                     <div style="margin-top: 30px">
-                        <span style="color: #9F9F9F;font-size: 20px">价格</span> <span th:text="'￥'+*{productPrice}"
-                                                                                     style="color: red;font-weight: bold">价格</span>
+                        <span style="color: #9F9F9F;font-size: 20px">价格</span> <span th:text="'￥'+*{productPrice}" style="color: red;font-weight: bold">价格</span>
                     </div>
                 </div>
             </div>
@@ -295,13 +294,12 @@
                     <!--库存-->
                     <span th:text="'库存'+*{productCount}" style="color: #000;margin-left: 5px">库存</span>
                     <span><button type="button" id="likeBtn" class="layui-btn layui-btn-warm">LIKE</button></span>
+                    <span th:if="*{productStatus} == 0 "><button type="button" id="subscribe" class="layui-btn layui-btn-normal">商品未上架,点此预约</button></span>
                 </div>
             </div>
-            <div class="layui-row">
                 <div class="layui-col-md7" style="height: 100px;">
                     <span th:text="'添加该商品进购物车的用户中有'+${buyRate}+'%最终进行了购买'" style="color: #bb2929"></span>
                 </div>
-            </div>
             <div class="layui-row">
                 <div class="layui-col-md7" style="height: 100px;">
                     <span><button type="button" id="buyBtn" class="layui-btn layui-btn-danger">立即购买</button></span>
@@ -326,7 +324,7 @@
             $("#cartBtn").on("click", addCart);
             $("#buyBtn").on("click", buy);
             $('#likeBtn').on('click',like);
-
+            $('#subscribe').on('click',subscribe);
             // 库存
             var stock = parseInt($("#stock").val());
 
@@ -465,6 +463,31 @@
                             showMsg("您已经点赞过该商品啦",5,6)
                         } else {
                             showMsg("点赞失败，请重试", 5, 6);
+                        }
+                    },
+                    error: function (jqXHR) {
+                        showMsg("Ajax请求出错", 2, 6)
+                    }
+                });
+            }
+            // 点赞
+            function subscribe() {
+                // 商品id
+                var id = $("#id").val();
+                $.ajax({
+                    type: 'post',
+                    url: '/product/subscribe',
+                    dataType: 'json',
+                    data: {"id": id},
+                    success: function (data) {
+                        if (data.msg == "nouser") {
+                            layer.msg("用户未登录，请登录后重试", {offset: '70px'});
+                        } else if (data.msg == "success") {
+                            $("#subscribe").html("已订阅")
+                        }else if (data.msg == "subscribed") {
+                            showMsg("您已经订阅过哦", 5, 6);
+                        }else {
+                            showMsg("订阅失败，请重试", 5, 6);
                         }
                     },
                     error: function (jqXHR) {
