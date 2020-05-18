@@ -95,4 +95,23 @@ public class Constant {
      */
     public static final String ACCESS_COUNT_COUNTER = "sys_access_count_counter";
 
+    /**
+     * 注册用户计数器
+     */
+    public static final String REGISTER_COUNTER = "register_count_counter";
+
+    /**
+     * 计数器记录订单数
+     */
+    public static final String ORDER_COUNT_BY_TIME = "order_count_time";
+
+    /**
+     * 在线用户数
+     */
+    public static final String ONLINE_USER_COUNTER = "online_user_counter";
+
+    /**
+     * 硬盘读写次数
+     */
+    public static final String DISK_READ_COUNTER = "disk_read_counter";
 }

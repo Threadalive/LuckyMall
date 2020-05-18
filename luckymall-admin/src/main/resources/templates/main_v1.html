@@ -18,14 +18,14 @@
             <div class="col-sm-3">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <span class="label label-success pull-right">本周</span>
+                        <span class="label label-success pull-right">总额</span>
                         <h5>成交额</h5>
                     </div>
                     <div class="ibox-content">
                         <h1 class="no-margins" th:text="${turnover}">40 886,200</h1>
                         <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i>
                         </div>
-                        <small>本周成交额</small>
+                        <small>总成交额</small>
                     </div>
                 </div>
             </div>
@@ -60,14 +60,14 @@
             <div class="col-sm-3">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <span class="label label-danger pull-right">最近一个月</span>
-                        <h5>活跃用户</h5>
+                        <span class="label label-danger pull-right">今日</span>
+                        <h5>新增注册用户数</h5>
                     </div>
                     <div class="ibox-content">
-                        <h1 class="no-margins">80,600</h1>
+                        <h1 class="no-margins" th:text="${registerCount}">80</h1>
                         <div class="stat-percent font-bold text-danger">38% <i class="fa fa-level-down"></i>
                         </div>
-                        <small>12月</small>
+                        <small>今日</small>
                     </div>
                 </div>
             </div>
@@ -77,12 +77,12 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>订单</h5>
+                        <h5>近期订单数据</h5>
                         <div class="pull-right">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-xs btn-white active">天</button>
-                                <button type="button" class="btn btn-xs btn-white">月</button>
-                                <button type="button" class="btn btn-xs btn-white">年</button>
+                                <button type="button" class="btn btn-xs btn-white active">1h</button>
+                                <button type="button" class="btn btn-xs btn-white">天</button>
+                                <button type="button" class="btn btn-xs btn-white">周</button>
                             </div>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                             <div class="col-sm-3">
                                 <ul class="stat-list">
                                     <li>
-                                        <h2 class="no-margins">2,346</h2>
+                                        <h2 class="no-margins" th:text="${orderCount}">2,346</h2>
                                         <small>订单总数</small>
                                         <div class="stat-percent">48% <i class="fa fa-level-up text-navy"></i>
                                         </div>
@@ -105,8 +105,8 @@
                                         </div>
                                     </li>
                                     <li>
-                                        <h2 class="no-margins ">4,422</h2>
-                                        <small>最近一个月订单</small>
+                                        <h2 class="no-margins" th:text="${orderCountInOneWeek}">4,422</h2>
+                                        <small>最近一周订单</small>
                                         <div class="stat-percent">60% <i class="fa fa-level-down text-navy"></i>
                                         </div>
                                         <div class="progress progress-mini">
@@ -114,8 +114,8 @@
                                         </div>
                                     </li>
                                     <li>
-                                        <h2 class="no-margins ">9,180</h2>
-                                        <small>最近一个月销售额</small>
+                                        <h2 class="no-margins " th:text="${turnover}">9,180</h2>
+                                        <small>总销售额</small>
                                         <div class="stat-percent">22% <i class="fa fa-bolt text-navy"></i>
                                         </div>
                                         <div class="progress progress-mini">

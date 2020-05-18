@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('counter列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <label>选取时间精度：</label>
+                                <select name="precision" id="precision">
+                                    <option th:each="precision : ${precisionList}" th:text="${precision}+'秒内'" th:value="${precision}"></option>
+                                </select>
+                            </li>
+                            <li>
+                                <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var prefix = ctx + "counter";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                modalName: "counter",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field: 'id', 
+                    title: 'null',
+                    visible: false
+                },
+                {
+                    field: 'accessCount', 
+                    title: '系统访问次数'
+                },
+                {
+                    field: 'turnover', 
+                    title: '成交额'
+                },
+                {
+                    field: 'orderCount', 
+                    title: '订单数量'
+                },
+                {
+                    field: 'registerCount', 
+                    title: '注册用户数'
+                },
+                {
+                    field: 'onlineUserCount', 
+                    title: '同时在线用户数'
+                },
+                {
+                    field: 'diskReadCount', 
+                    title: '系统硬盘读取次数'
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

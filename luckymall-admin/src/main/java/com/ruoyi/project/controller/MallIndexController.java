@@ -78,10 +78,12 @@ public class MallIndexController {
      *
      * @return 返回商城首页
      */
-    @RequestMapping("/logout")
+    @GetMapping("/user/logout")
     public String logout() {
         LOGGER.info("===============用户退出==============");
         request.getSession().invalidate();
+        //在线用户数-1
+        counterService.updateCounterDown(Constant.ONLINE_USER_COUNTER);
         return "redirect:/mallIndex";
     }
 }

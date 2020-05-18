@@ -1,5 +1,9 @@
 package com.ruoyi.framework.shiro.service;
 
+import com.alibaba.fastjson.JSON;
+import com.ruoyi.system.mapper.SysUserMapper;
+import com.ruoyi.system.utils.Constant;
+import com.ruoyi.system.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -21,10 +25,13 @@ import com.ruoyi.framework.util.ShiroUtils;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysUserService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 /**
  * 登录校验方法
  * 
- * @author ruoyi
+ * @author zhenxing
  */
 @Component
 public class SysLoginService
@@ -35,6 +42,14 @@ public class SysLoginService
     @Autowired
     private ISysUserService userService;
 
+    /**
+     * 客户端请求
+     */
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private SysUserMapper userMapper;
     /**
      * 登录
      */

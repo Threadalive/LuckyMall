@@ -1,6 +1,13 @@
 package com.ruoyi.project.controller;
 
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.ShiroConstants;
+import com.ruoyi.common.utils.MessageUtils;
+import com.ruoyi.framework.manager.AsyncManager;
+import com.ruoyi.framework.manager.factory.AsyncFactory;
+import com.ruoyi.framework.shiro.session.OnlineSession;
 import com.ruoyi.framework.util.RedisUtil;
+import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.project.service.ISysOrderService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysUserService;
@@ -50,12 +57,9 @@ public class UserController {
      */
     @Autowired
     private ISysUserService userService;
-    /**
-     * 购物车服务层
-     */
-//    @Autowired
-//    private CartService cartService;
 
+    @Autowired
+    private ISysCounterService counterService;
     /**
      * 客户端请求
      */
@@ -102,10 +106,15 @@ public class UserController {
         // 根据用户名和密码查找用户
         result = userService.loginUser(userName, password);
 
-        //登陆成功，则删除标记
+        //登陆成功，则删除标记,记录登录信息
         if (Constant.SUCCESS_MSG.equals(result.getMsg())){
             redisUtil.del(SHIRO_LOGIN_COUNT+userName);
             redisUtil.del(SHIRO_IS_LOCK+userName);
+            AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
+//            //获取记录在线用户信息
+//            OnlineSession session = (OnlineSession) request.getAttribute(ShiroConstants.ONLINE_SESSION);
+//            AsyncManager.me().execute(AsyncFactory.syncSessionToDb(session));
+            counterService.updateCounter(Constant.ONLINE_USER_COUNTER);
         }
         if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK+userName,0))){
             result.setMsg("locked");
@@ -129,6 +138,7 @@ public class UserController {
             result.setMsg(Constant.ERROR_MSG);
             return result;
         }
+        counterService.updateCounter(Constant.REGISTER_COUNTER);
         result.setMsg(Constant.SUCCESS_MSG);
         session.setAttribute("user", user);
         return result;

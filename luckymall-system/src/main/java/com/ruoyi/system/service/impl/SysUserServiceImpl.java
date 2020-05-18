@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.fastjson.JSON;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.utils.MessageUtils;
+import com.ruoyi.system.service.ISysLogininforService;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.FileUploadUtil;
 import com.ruoyi.system.utils.Result;
@@ -69,7 +72,6 @@ public class SysUserServiceImpl implements ISysUserService
     @Autowired
     private HttpServletRequest request;
 
-
     /**
      * 方法说明：用户登录接口
      *
@@ -79,12 +81,10 @@ public class SysUserServiceImpl implements ISysUserService
      */
     @Override
     public Result loginUser(String userName, String password) {
-        log.info("===============用户登录==============");
         HttpSession session = request.getSession();
         Result result = new Result();
         // 根据用户名和密码查找用户
         SysUser user = userMapper.findUserByNameAndPassword(userName, password);
-        log.info("查询的用户信息：" + JSON.toJSONString(user));
         if (user == null) {
             result.setMsg(Constant.ERROR_MSG);
             return result;
@@ -96,7 +96,6 @@ public class SysUserServiceImpl implements ISysUserService
         result.setMsg(Constant.SUCCESS_MSG);
         return result;
     }
-
     /**
      * 根据条件分页查询用户列表
      * 
@@ -259,12 +258,11 @@ public class SysUserServiceImpl implements ISysUserService
     {
         log.info("===============用户注册==============");
         log.info("注册用户信息：" + JSON.toJSONString(user));
-//        user.setScore(0);
         user.setStatus("0");
         user.setAvatar(Constant.DEFAULT_IMAGE);
         user.setLoginName(user.getUserName());
         user.setUserType(UserConstants.REGISTER_USER_TYPE);
-        // flag=1/数据插入成功 flag=0/数据插入失败
+
         return userMapper.insertUser(user) > 0;
     }
 

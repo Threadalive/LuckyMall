@@ -10,6 +10,7 @@ import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.mapper.SysOrderItemMapper;
 import com.ruoyi.project.mapper.SysProductMapper;
 import com.ruoyi.project.mapper.SysShoppingCarMapper;
+import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
@@ -49,6 +50,9 @@ public class SysOrderServiceImpl implements ISysOrderService
     private SysShoppingCarMapper sysShoppingCarMapper;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SysOrderServiceImpl.class);
+
+    @Autowired
+    private ISysCounterService counterService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -200,6 +204,8 @@ public class SysOrderServiceImpl implements ISysOrderService
         // 插入结果
         if (orderFlag == 1 && orderItemFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
+            //更新计数器
+            counterService.updateCounter(Constant.ORDER_COUNT_BY_TIME);
         } else {
             result.setMsg(Constant.ERROR_MSG);
         }
@@ -267,6 +273,9 @@ public class SysOrderServiceImpl implements ISysOrderService
             result.setMsg(Constant.SUCCESS_MSG);
             //更新订单量
             redisUtil.incrBy(Constant.ORDER_COUNT,Integer.toUnsignedLong(1));
+
+            //更新计数器
+            counterService.updateCounter(Constant.ORDER_COUNT_BY_TIME);
         } else {
             result.setMsg(Constant.ERROR_MSG);
         }

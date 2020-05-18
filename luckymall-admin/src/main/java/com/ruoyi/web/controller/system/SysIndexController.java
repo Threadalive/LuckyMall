@@ -73,22 +73,38 @@ public class SysIndexController extends BaseController
     public String mainV1(ModelMap modelMap)
     {
         String turnover = "0";
+        String orderCount = "0";
+        int accessCount = 0;
+        int registerCount = 0;
+        int orderCountInOneWeek = 0;
+
         if (null != redisUtil.get(Constant.TURNOVER,0)){
             turnover = redisUtil.get(Constant.TURNOVER,0);
         }
-        String orderCount = "0";
         if (null != redisUtil.get(Constant.ORDER_COUNT,0)){
             orderCount = redisUtil.get(Constant.ORDER_COUNT,0);
         }
-        int accessCount = 0;
         //取一天范围内的访问数据
-        List<Pair<Integer, Integer>> counter = counterService.getCounter(Constant.ACCESS_COUNT_COUNTER,86400);
-        for (Pair<Integer, Integer> count : counter) {
+        List<Pair<Integer, Integer>> accessCounter = counterService.getCounter(Constant.ACCESS_COUNT_COUNTER,86400);
+        for (Pair<Integer, Integer> count : accessCounter) {
             accessCount += count.getValue();
+        }
+        //取一天内的注册量
+        List<Pair<Integer, Integer>> registerCounter = counterService.getCounter(Constant.REGISTER_COUNTER,86400);
+        for (Pair<Integer, Integer> count : registerCounter) {
+            registerCount += count.getValue();
+        }
+
+        //取一周内的订单量
+        List<Pair<Integer, Integer>> orderCounter = counterService.getCounter(Constant.ORDER_COUNT_BY_TIME,604800);
+        for (Pair<Integer, Integer> count : orderCounter) {
+            orderCountInOneWeek += count.getValue();
         }
         modelMap.put("accessCount",accessCount);
         modelMap.put("turnover",turnover);
         modelMap.put("orderCount",orderCount);
+        modelMap.put("registerCount",registerCount);
+        modelMap.put("orderCountInOneWeek",orderCountInOneWeek);
 
         return "main_v1";
     }
