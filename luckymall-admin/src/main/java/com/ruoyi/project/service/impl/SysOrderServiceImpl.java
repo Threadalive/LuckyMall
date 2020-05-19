@@ -72,13 +72,15 @@ public class SysOrderServiceImpl implements ISysOrderService
         SysOrder userOrder = new SysOrder();
         userOrder.setUserId(user.getUserId());
         List<SysOrder> allOrderList = sysOrderMapper.selectSysOrderList(userOrder);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 用户已支付订单
         userOrder.setStatus(1);
         List<SysOrder> paidOrderList = sysOrderMapper.selectSysOrderList(userOrder);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 用户未支付订单
         userOrder.setStatus(0);
         List<SysOrder> unpaidOrderList = sysOrderMapper.selectSysOrderList(userOrder);
-
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         modelAndView.addObject("allOrderList", allOrderList);
         modelAndView.addObject("paidOrderList", paidOrderList);
         modelAndView.addObject("unpaidOrderList", unpaidOrderList);
@@ -90,14 +92,16 @@ public class SysOrderServiceImpl implements ISysOrderService
         LOGGER.info("===============用户查看订单详情==============");
         ModelAndView modelAndView = new ModelAndView("project/order/orderDetail");
         SysOrder order = sysOrderMapper.selectSysOrderById(orderId);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         LOGGER.info("订单：" + JSON.toJSONString(order));
         SysOrderItem item = new SysOrderItem();
         item.setOrderId(order.getOrderCode());
         List<SysOrderItem> orderItemList = sysOrderItemMapper.selectSysOrderItemList(item);
-
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         Map<SysProduct, SysOrderItem> map = new HashMap<>(Constant.ORDERITEM_MAP_CAPACITY);
         for (SysOrderItem orderItem : orderItemList) {
             SysProduct product = sysProductMapper.selectSysProductById(orderItem.getProductId());
+            counterService.updateCounter(Constant.DISK_READ_COUNTER);
             map.put(product, orderItem);
         }
         modelAndView.addObject("order", order);
@@ -114,6 +118,7 @@ public class SysOrderServiceImpl implements ISysOrderService
     @Override
     public SysOrder selectSysOrderById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.selectSysOrderById(id);
     }
 
@@ -126,6 +131,7 @@ public class SysOrderServiceImpl implements ISysOrderService
     @Override
     public List<SysOrder> selectSysOrderList(SysOrder sysOrder)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.selectSysOrderList(sysOrder);
     }
 
@@ -171,6 +177,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         order.setUserId(user.getUserId());
         // 订单添加
         int orderFlag = sysOrderMapper.insertSysOrder(order);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         int[] orderItemFlags = new int[idArr.length];
         for (int j = 0; j < idArr.length; j++) {
             String productId = idArr[j];
@@ -183,9 +190,10 @@ public class SysOrderServiceImpl implements ISysOrderService
             orderItem.setOrderId(order.getOrderCode());
 
             orderItemFlags[j] = sysOrderItemMapper.insertSysOrderItem(orderItem);
-
+            counterService.updateCounter(Constant.DISK_READ_COUNTER);
             // 更新商品库存
             SysProduct product = sysProductMapper.selectSysProductById(productId);
+            counterService.updateCounter(Constant.DISK_READ_COUNTER);
             product.setProductCount(product.getProductCount() - number);
             sysProductMapper.updateSysProduct(product);
             //对通过购物车购买的商品的次数+1
@@ -193,6 +201,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         }
         // 清空用户购物车
         sysShoppingCarMapper.deleteSysShoppingCarByUserId(user.getUserId());
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         //情况购物车缓存
         redisUtil.del(userCartFlag);
 
@@ -232,6 +241,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         }
         //检查商品价格及库存
         SysProduct product = sysProductMapper.selectSysProductById(id);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         if (product.getProductCount() < number){
             result.setMsg("unEnough");
             return result;
@@ -257,7 +267,7 @@ public class SysOrderServiceImpl implements ISysOrderService
 
         //先插入数据库，后期加入队列
         int orderFlag = sysOrderMapper.insertSysOrder(order);
-
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 生成订单项
         SysOrderItem orderItem = new SysOrderItem();
         orderItem.setId(UUID.randomUUID().toString());
@@ -265,9 +275,11 @@ public class SysOrderServiceImpl implements ISysOrderService
         orderItem.setProductId(id);
         orderItem.setProductNum(number);
         int orderItemFlag = sysOrderItemMapper.insertSysOrderItem(orderItem);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 更新商品库存
         product.setProductCount(product.getProductCount() - number);
         int productFlag = sysProductMapper.updateSysProduct(product);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 判断所有操作是否成功(标志是否都为1)
         if (orderFlag == 1 && productFlag == 1 && orderItemFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
@@ -301,8 +313,10 @@ public class SysOrderServiceImpl implements ISysOrderService
         Result result = new Result();
         // 更新订单状态为已支付
         SysOrder order = sysOrderMapper.selectSysOrderById(id);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         order.setStatus(1);
         int orderFlag = sysOrderMapper.updateSysOrder(order);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         double totalPrice = order.getTotalPrice();
         LOGGER.info("总金额：" + totalPrice );
 
@@ -327,6 +341,7 @@ public class SysOrderServiceImpl implements ISysOrderService
     @Override
     public int updateSysOrder(SysOrder sysOrder)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.updateSysOrder(sysOrder);
     }
 
@@ -339,6 +354,7 @@ public class SysOrderServiceImpl implements ISysOrderService
     @Override
     public int deleteSysOrderByIds(String ids)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.deleteSysOrderByIds(Convert.toStrArray(ids));
     }
 
@@ -351,6 +367,7 @@ public class SysOrderServiceImpl implements ISysOrderService
     @Override
     public int deleteSysOrderById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.deleteSysOrderById(id);
     }
 }

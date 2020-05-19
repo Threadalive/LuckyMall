@@ -1,6 +1,9 @@
 package com.ruoyi.project.service.impl;
 
 import java.util.List;
+
+import com.ruoyi.project.service.ISysCounterService;
+import com.ruoyi.system.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.project.mapper.SysOrderItemMapper;
@@ -20,6 +23,8 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Autowired
     private SysOrderItemMapper sysOrderItemMapper;
 
+    @Autowired
+    private ISysCounterService counterService;
     /**
      * 查询订单项
      * 
@@ -29,6 +34,7 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Override
     public SysOrderItem selectSysOrderItemById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderItemMapper.selectSysOrderItemById(id);
     }
 
@@ -41,6 +47,7 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Override
     public List<SysOrderItem> selectSysOrderItemList(SysOrderItem sysOrderItem)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderItemMapper.selectSysOrderItemList(sysOrderItem);
     }
 
@@ -53,6 +60,7 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Override
     public int insertSysOrderItem(SysOrderItem sysOrderItem)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderItemMapper.insertSysOrderItem(sysOrderItem);
     }
 
@@ -65,6 +73,7 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Override
     public int updateSysOrderItem(SysOrderItem sysOrderItem)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderItemMapper.updateSysOrderItem(sysOrderItem);
     }
 
@@ -77,6 +86,7 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Override
     public int deleteSysOrderItemByIds(String ids)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderItemMapper.deleteSysOrderItemByIds(Convert.toStrArray(ids));
     }
 
@@ -89,6 +99,7 @@ public class SysOrderItemServiceImpl implements ISysOrderItemService
     @Override
     public int deleteSysOrderItemById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderItemMapper.deleteSysOrderItemById(id);
     }
 }

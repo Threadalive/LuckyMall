@@ -6,6 +6,7 @@ import java.util.*;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysProduct;
+import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.project.service.ISysProductService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.utils.Constant;
@@ -49,6 +50,8 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private ISysCounterService  counterService;
     /**
      * 获取用户购物车，
      * 若redis中存在，
@@ -76,12 +79,14 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
                 //通过缓存的标记获取商品和购物车
                 SysProduct product = productService.selectSysProductById(productId);
                 SysShoppingCar cart = sysShoppingCarMapper.selectSysShoppingCarById(redisUtil.hget(userCartFlag,productId));
+                counterService.updateCounter(Constant.DISK_READ_COUNTER);
                 productCartMap.put(product,cart);
             }
         }else {
             List<SysShoppingCar> cartList = this.selectSysShoppingCarList(car);
             for (SysShoppingCar cart : cartList) {
                 SysProduct product = productService.selectSysProductById(cart.getProductId());
+                counterService.updateCounter(Constant.DISK_READ_COUNTER);
                 productCartMap.put(product, cart);
             }
             LOGGER.info("购物车map：" + JSON.toJSONString(productCartMap));
@@ -98,6 +103,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     @Override
     public SysShoppingCar selectSysShoppingCarById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysShoppingCarMapper.selectSysShoppingCarById(id);
     }
 
@@ -110,6 +116,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     @Override
     public List<SysShoppingCar> selectSysShoppingCarList(SysShoppingCar sysShoppingCar)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysShoppingCarMapper.selectSysShoppingCarList(sysShoppingCar);
     }
 
@@ -143,7 +150,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
         car.setUserId(user.getUserId());
         car.setProductId(sysShoppingCar.getProductId());
         SysShoppingCar cart = sysShoppingCarMapper.selectSysShoppingCarByIdAndProductId(car);
-
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 若购物车不存在，则添加一个新的购物车;否则，修改已存在的购物车
         if(cart==null){
             sysShoppingCar.setId(UUID.randomUUID().toString());
@@ -165,7 +172,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
             cart.setAddTime(addTime);
             cart.setNumber(cart.getNumber()+sysShoppingCar.getNumber());
             sysShoppingCarMapper.updateSysShoppingCar(cart);
-
+            counterService.updateCounter(Constant.DISK_READ_COUNTER);
             //将商品id与购物车id的映射保存进redis中
             redisUtil.hset(userCartFlag,sysShoppingCar.getProductId(),sysShoppingCar.getId());
 
@@ -183,6 +190,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     @Override
     public int updateSysShoppingCar(SysShoppingCar sysShoppingCar)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysShoppingCarMapper.updateSysShoppingCar(sysShoppingCar);
     }
 
@@ -195,6 +203,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     @Override
     public int deleteSysShoppingCarByIds(String ids)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysShoppingCarMapper.deleteSysShoppingCarByIds(Convert.toStrArray(ids));
     }
 
@@ -207,6 +216,7 @@ public class SysShoppingCarServiceImpl implements ISysShoppingCarService
     @Override
     public int deleteSysShoppingCarById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysShoppingCarMapper.deleteSysShoppingCarById(id);
     }
 }

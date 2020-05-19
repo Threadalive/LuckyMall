@@ -4,7 +4,9 @@ import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.mapper.SysProductTypeMapper;
+import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.project.service.ISysProductTypeService;
+import com.ruoyi.system.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.core.text.Convert;
@@ -21,6 +23,8 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     @Autowired
     private SysProductTypeMapper sysProductTypeMapper;
 
+    @Autowired
+    private ISysCounterService counterService;
     /**
      * 查询【请填写功能名称】
      * 
@@ -30,6 +34,7 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     @Override
     public SysProductType selectSysProductTypeById(Long id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductTypeMapper.selectSysProductTypeById(id);
     }
 
@@ -42,6 +47,7 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     @Override
     public List<SysProductType> selectSysProductTypeList(SysProductType sysProductType)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductTypeMapper.selectSysProductTypeList(sysProductType);
     }
 
@@ -54,6 +60,7 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     @Override
     public int insertSysProductType(SysProductType sysProductType)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductTypeMapper.insertSysProductType(sysProductType);
     }
 
@@ -67,6 +74,7 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     public int updateSysProductType(SysProductType sysProductType)
     {
         sysProductType.setUpdateTime(DateUtils.getNowDate());
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductTypeMapper.updateSysProductType(sysProductType);
     }
 
@@ -79,6 +87,7 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     @Override
     public int deleteSysProductTypeByIds(String ids)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductTypeMapper.deleteSysProductTypeByIds(Convert.toStrArray(ids));
     }
 
@@ -91,6 +100,7 @@ public class SysProductTypeServiceImpl implements ISysProductTypeService
     @Override
     public int deleteSysProductTypeById(Long id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductTypeMapper.deleteSysProductTypeById(id);
     }
 }

@@ -8,6 +8,7 @@ import com.ruoyi.project.domain.SysProductType;
 import com.ruoyi.project.mapper.SysProductMapper;
 import com.ruoyi.project.mapper.SysProductTypeMapper;
 import com.ruoyi.project.service.IEmailService;
+import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.utils.Constant;
@@ -58,6 +59,8 @@ public class SysProductServiceImpl implements ISysProductService
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private ISysCounterService counterService;
     /**
      * redis工具类
      */
@@ -69,8 +72,10 @@ public class SysProductServiceImpl implements ISysProductService
         // Map<商品种类,商品列表>
         Map<SysProductType, List<SysProduct>> productMap = new HashMap<>(8);
         List<SysProductType> productTypeList = sysProductTypeMapper.selectAllSysProductType();
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         for (SysProductType productType : productTypeList) {
             List<SysProduct> productList = sysProductMapper.findProductByType(productType.getId());
+            counterService.updateCounter(Constant.DISK_READ_COUNTER);
             // 每种商品最多存4个
             if (productList.size() > 4) {
                 productMap.put(productType, productList.subList(0, 4));
@@ -95,6 +100,7 @@ public class SysProductServiceImpl implements ISysProductService
 
         ModelAndView modelAndView = new ModelAndView("project/product/category");
         List<SysProduct> productList = sysProductMapper.findProductByType(id);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         modelAndView.addObject("productTypeName", name);
         modelAndView.addObject("list", productList);
         LOGGER.info("查找的商品种类：" + JSON.toJSONString(name));
@@ -114,6 +120,7 @@ public class SysProductServiceImpl implements ISysProductService
         long now = System.currentTimeMillis()/1000;
 
         List<SysProduct> productList = sysProductMapper.findProductByName(key);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         String product = "product:";
         for (SysProduct sysProduct:productList){
             product += sysProduct.getId();
@@ -138,6 +145,7 @@ public class SysProductServiceImpl implements ISysProductService
     @Override
     public SysProduct selectSysProductById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.selectSysProductById(id);
     }
 
@@ -159,6 +167,7 @@ public class SysProductServiceImpl implements ISysProductService
         }
         //更新商品数据库中浏览数
         redisUtil.hincrBy(product, "view", 1);
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.selectSysProductById(id);
     }
 
@@ -171,6 +180,7 @@ public class SysProductServiceImpl implements ISysProductService
     @Override
     public List<SysProduct> selectSysProductList(SysProduct sysProduct)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.selectSysProductList(sysProduct);
     }
 
@@ -318,7 +328,7 @@ public class SysProductServiceImpl implements ISysProductService
         redisUtil.zadd("score:", now + Constant.VOTE_SCORE, product);
         //时间排序的zset
         redisUtil.zadd("time:", now, product);
-
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.insertSysProduct(sysProduct);
     }
 
@@ -342,6 +352,7 @@ public class SysProductServiceImpl implements ISysProductService
         sysProduct.setProductPhoto(imageUrl);
 
         SysProduct product = sysProductMapper.selectSysProductById(sysProduct.getId());
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         //若为上架操作
         if (0 == product.getProductStatus() && 1 == sysProduct.getProductStatus()){
             //若该商品存在订阅用户,遍历发送邮件通知
@@ -356,6 +367,7 @@ public class SysProductServiceImpl implements ISysProductService
                 redisUtil.del(subscribeKey);
             }
         }
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.updateSysProduct(sysProduct);
     }
 
@@ -368,6 +380,7 @@ public class SysProductServiceImpl implements ISysProductService
     @Override
     public int deleteSysProductByIds(String ids)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.deleteSysProductByIds(Convert.toStrArray(ids));
     }
 
@@ -380,6 +393,7 @@ public class SysProductServiceImpl implements ISysProductService
     @Override
     public int deleteSysProductById(String id)
     {
+        counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.deleteSysProductById(id);
     }
 }
