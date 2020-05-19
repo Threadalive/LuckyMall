@@ -114,4 +114,9 @@ public class Constant {
      * 硬盘读写次数
      */
     public static final String DISK_READ_COUNTER = "disk_read_counter";
+
+    /**
+     * 图片文件基础路径
+     */
+    public static final String IMG_FILE_PATH = "/Users/mac/Documents/航天班/毕业设计/LuckyMall/luckymall-admin/src/main/resources/static/";
 }

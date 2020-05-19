@@ -349,8 +349,8 @@ public class SysProductServiceImpl implements ISysProductService
                 Set<String> userSet = redisUtil.smembers(subscribeKey);
                 for (String id : userSet){
                     SysUser sysUser = sysUserMapper.selectUserById(Long.parseLong(id));
-                    emailService.sendSimpleMail(sysUser.getEmail(),"商品上架提醒","尊贵的LuckyMall商城用户，您订阅的商品"+
-                            sysProduct.getProductName()+"上架啦");
+                    emailService.sendAttachmentsMail(sysUser.getEmail(),"商品上架提醒","尊贵的LuckyMall商城用户，您订阅的商品"+
+                            sysProduct.getProductName()+"上架啦",Constant.IMG_FILE_PATH+sysProduct.getProductPhoto());
                 }
                 //通知结束后删除该key
                 redisUtil.del(subscribeKey);
