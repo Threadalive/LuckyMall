@@ -6,6 +6,12 @@ package com.ruoyi.system.utils;
  * @Date: 2020/5/1 16:40
  */
 public class Constant {
+
+    public static final String DEBUG = "debug";
+    public static final String INFO = "info";
+    public static final String WARNING = "warning";
+    public static final String ERROR = "error";
+    public static final String CRITICAL = "critical";
     /**
      * 用户默认的头像地址
      */
@@ -119,4 +125,15 @@ public class Constant {
      * 图片文件基础路径
      */
     public static final String IMG_FILE_PATH = "/Users/mac/Documents/航天班/毕业设计/LuckyMall/luckymall-admin/src/main/resources/static/";
+
+    /**
+     * 通用日志记录器
+     */
+    public static final String CURRENCY_LOG = "currency_log";
+
+    /**
+     * 5s时延
+     */
+    public static final Integer LOG_TIMEOUT = 5000;
+
 }

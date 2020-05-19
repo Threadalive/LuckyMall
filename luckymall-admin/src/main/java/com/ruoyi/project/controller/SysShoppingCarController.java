@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ruoyi.project.domain.SysProduct;
+import com.ruoyi.project.service.ISysLogAnalyseService;
+import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,9 @@ public class SysShoppingCarController extends BaseController
     @Autowired
     private ISysShoppingCarService sysShoppingCarService;
 
+    @Autowired
+    private ISysLogAnalyseService logAnalyseService;
+
     /**
      * 方法说明：用户查看购物车
      *
@@ -46,6 +51,8 @@ public class SysShoppingCarController extends BaseController
      */
     @GetMapping()
     public String userCart(ModelMap modelMap) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the cart's page",Constant.INFO,Constant.LOG_TIMEOUT);
         Map<SysProduct,SysShoppingCar> map = sysShoppingCarService.userCar();
         modelMap.put("cartMap",map);
         return prefix + "/cart";
@@ -59,6 +66,8 @@ public class SysShoppingCarController extends BaseController
     @ResponseBody
     public TableDataInfo list(SysShoppingCar sysShoppingCar)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"list cart",Constant.INFO,Constant.LOG_TIMEOUT);
         startPage();
         List<SysShoppingCar> list = sysShoppingCarService.selectSysShoppingCarList(sysShoppingCar);
         return getDataTable(list);
@@ -84,6 +93,8 @@ public class SysShoppingCarController extends BaseController
     @GetMapping("/add")
     public String add()
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get add cart page",Constant.INFO,Constant.LOG_TIMEOUT);
         return prefix + "/add";
     }
 
@@ -96,6 +107,8 @@ public class SysShoppingCarController extends BaseController
     @ResponseBody
     public Result addSave(SysShoppingCar sysShoppingCar)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"add cart",Constant.INFO,Constant.LOG_TIMEOUT);
         return sysShoppingCarService.insertSysShoppingCar(sysShoppingCar);
     }
 
@@ -130,6 +143,8 @@ public class SysShoppingCarController extends BaseController
     @GetMapping( "/remove")
     public String remove(String cartId)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"remove cart",Constant.INFO,Constant.LOG_TIMEOUT);
         if (1 == sysShoppingCarService.deleteSysShoppingCarById(cartId)){
            return  "redirect:/shoppingCar";
         }else {

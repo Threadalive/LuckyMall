@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysProductType;
+import com.ruoyi.project.service.ISysLogAnalyseService;
 import com.ruoyi.project.service.ISysProductTypeService;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
@@ -45,11 +46,15 @@ public class SysProductController extends BaseController
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private ISysLogAnalyseService logAnalyseService;
 
     @RequiresPermissions("system:product:view")
     @GetMapping("/productAdmin")
     public String product(ModelMap modelMap)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get product admin page",Constant.INFO,Constant.LOG_TIMEOUT);
         SysProductType productType = new SysProductType();
 
         List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
@@ -66,6 +71,8 @@ public class SysProductController extends BaseController
      */
     @GetMapping("/findProductByType")
     public ModelAndView findProductByType(int id, String name) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get category page",Constant.INFO,Constant.LOG_TIMEOUT);
         ModelAndView modelAndView = sysProductService.findProductByType(id, name);
         return modelAndView;
     }
@@ -78,6 +85,8 @@ public class SysProductController extends BaseController
      */
     @GetMapping("/findProductByKey")
     public ModelAndView findProductByKey(String key) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"search product by keyword",Constant.INFO,Constant.LOG_TIMEOUT);
         ModelAndView modelAndView = sysProductService.findProductByKey(key);
         return modelAndView;
     }
@@ -89,6 +98,8 @@ public class SysProductController extends BaseController
      */
     @GetMapping("/getHightCommentProducts")
     public String getHightCommentProducts(ModelMap modelMap) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get hight comment products",Constant.INFO,Constant.LOG_TIMEOUT);
         List<Map<String, String>> list = sysProductService.getHightCommentProducts();
         modelMap.put("list",list);
         modelMap.put("type","好评商品榜单 TOP50");
@@ -102,6 +113,8 @@ public class SysProductController extends BaseController
      */
     @GetMapping("/getHotProducts")
     public String getHotProducts(ModelMap modelMap) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get hot products",Constant.INFO,Constant.LOG_TIMEOUT);
         List<Map<String, String>> list = sysProductService.getHotProducts();
         modelMap.put("type","热度商品榜单 TOP50");
         modelMap.put("list",list);
@@ -116,6 +129,8 @@ public class SysProductController extends BaseController
      */
     @GetMapping("/detail")
     public String productDetail(String id,ModelMap modelMap) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get product's detail",Constant.INFO,Constant.LOG_TIMEOUT);
         String productFlag = "product:";
         SysProduct product = sysProductService.getProductDetail(id);
         //获取该商品的购物车购买次数
@@ -141,6 +156,8 @@ public class SysProductController extends BaseController
     @ResponseBody
     public TableDataInfo list(SysProduct sysProduct)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"list products",Constant.INFO,Constant.LOG_TIMEOUT);
         startPage();
         List<SysProduct> list = sysProductService.selectSysProductList(sysProduct);
         return getDataTable(list);
@@ -166,6 +183,8 @@ public class SysProductController extends BaseController
     @GetMapping("/add")
     public String add(ModelMap modelMap)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get add product's page",Constant.INFO,Constant.LOG_TIMEOUT);
         SysProductType productType = new SysProductType();
 
         List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
@@ -182,18 +201,24 @@ public class SysProductController extends BaseController
     @ResponseBody
     public AjaxResult addSave(@RequestParam("file")MultipartFile file, SysProduct sysProduct)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"add product",Constant.INFO,Constant.LOG_TIMEOUT);
         return toAjax(sysProductService.insertSysProduct(file,sysProduct));
     }
 
     @PostMapping("/like")
     @ResponseBody
     public Result like(String id){
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"hit like btn for product",Constant.INFO,Constant.LOG_TIMEOUT);
         return sysProductService.like(id);
     }
 
     @PostMapping("/subscribe")
     @ResponseBody
     public Result subscribe(String id){
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"subscribe product",Constant.INFO,Constant.LOG_TIMEOUT);
         return sysProductService.subscribe(id);
     }
     /**
@@ -202,6 +227,8 @@ public class SysProductController extends BaseController
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") String id, ModelMap mmap)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get edit product page",Constant.INFO,Constant.LOG_TIMEOUT);
         SysProduct sysProduct = sysProductService.selectSysProductById(id);
         SysProductType productType = new SysProductType();
         List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
@@ -219,6 +246,8 @@ public class SysProductController extends BaseController
     @ResponseBody
     public AjaxResult editSave(@RequestParam("file")MultipartFile file,SysProduct sysProduct)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"edit product",Constant.INFO,Constant.LOG_TIMEOUT);
         return toAjax(sysProductService.updateSysProduct(file,sysProduct));
     }
 
@@ -231,6 +260,8 @@ public class SysProductController extends BaseController
     @ResponseBody
     public AjaxResult remove(String ids)
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"remove product",Constant.INFO,Constant.LOG_TIMEOUT);
         return toAjax(sysProductService.deleteSysProductByIds(ids));
     }
 }

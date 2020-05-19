@@ -2,6 +2,8 @@ package com.ruoyi.project.controller;
 
 import java.util.List;
 
+import com.ruoyi.project.service.ISysLogAnalyseService;
+import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,58 +26,70 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 订单Controller
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-05-06
  */
 @Controller
 @RequestMapping("/order")
-public class SysOrderController extends BaseController
-{
+public class SysOrderController extends BaseController {
     private String prefix = "project/order";
 
     @Autowired
     private ISysOrderService sysOrderService;
 
+    @Autowired
+    private ISysLogAnalyseService logAnalyseService;
+
     @RequiresPermissions("project:order:view")
     @GetMapping()
-    public ModelAndView order()
-    {
+    public ModelAndView order() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the order page", Constant.INFO, Constant.LOG_TIMEOUT);
         ModelAndView orderModel = sysOrderService.getUserOrder();
         return orderModel;
     }
 
     @GetMapping("orderAdmin")
-    public String orderAdmin(){
-        return prefix + "/admin_order.html";
+    public String orderAdmin() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "admin access the order admin page", Constant.INFO, Constant.LOG_TIMEOUT);
+        return prefix + "/admin_order";
     }
 
     /**
      * 方法说明：用户支付订单
+     *
      * @param id 订单id
      * @return com.luckymall.common.Result 结果
      */
     @PostMapping("/pay")
     @ResponseBody
-    public Result payOrder(String id){
+    public Result payOrder(String id) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user pay for the order", Constant.INFO, Constant.LOG_TIMEOUT);
         Result result = sysOrderService.payOrder(id);
         return result;
     }
 
     @PostMapping("addByCar")
     @ResponseBody
-    public Result addByCar(String[] numArr,String[] idArr,String[] priceArr){
-        Result result =sysOrderService.addByCar(numArr,idArr,priceArr);
+    public Result addByCar(String[] numArr, String[] idArr, String[] priceArr) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user add order by car", Constant.INFO, Constant.LOG_TIMEOUT);
+        Result result = sysOrderService.addByCar(numArr, idArr, priceArr);
         return result;
     }
+
     /**
      * 查询订单列表
      */
     @RequiresPermissions("project:order:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(SysOrder sysOrder)
-    {
+    public TableDataInfo list(SysOrder sysOrder) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "select order list", Constant.INFO, Constant.LOG_TIMEOUT);
         startPage();
         List<SysOrder> list = sysOrderService.selectSysOrderList(sysOrder);
         return getDataTable(list);
@@ -88,8 +102,7 @@ public class SysOrderController extends BaseController
     @Log(title = "订单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(SysOrder sysOrder)
-    {
+    public AjaxResult export(SysOrder sysOrder) {
         List<SysOrder> list = sysOrderService.selectSysOrderList(sysOrder);
         ExcelUtil<SysOrder> util = new ExcelUtil<SysOrder>(SysOrder.class);
         return util.exportExcel(list, "order");
@@ -99,8 +112,9 @@ public class SysOrderController extends BaseController
      * 新增订单
      */
     @GetMapping("/add")
-    public String add()
-    {
+    public String add() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get add order page", Constant.INFO, Constant.LOG_TIMEOUT);
         return prefix + "/add";
     }
 
@@ -111,17 +125,19 @@ public class SysOrderController extends BaseController
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public Result addSave(String id,Integer number)
-    {
-        return sysOrderService.insertSysOrder(id,number);
+    public Result addSave(String id, Integer number) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "add and save an order", Constant.INFO, Constant.LOG_TIMEOUT);
+        return sysOrderService.insertSysOrder(id, number);
     }
 
     /**
      * 修改订单
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") String id, ModelMap mmap)
-    {
+    public String edit(@PathVariable("id") String id, ModelMap mmap) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get edit order msg page", Constant.INFO, Constant.LOG_TIMEOUT);
         SysOrder sysOrder = sysOrderService.selectSysOrderById(id);
         mmap.put("sysOrder", sysOrder);
         return prefix + "/edit";
@@ -134,8 +150,9 @@ public class SysOrderController extends BaseController
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(SysOrder sysOrder)
-    {
+    public AjaxResult editSave(SysOrder sysOrder) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "edit order msg", Constant.INFO, Constant.LOG_TIMEOUT);
         return toAjax(sysOrderService.updateSysOrder(sysOrder));
     }
 
@@ -144,10 +161,11 @@ public class SysOrderController extends BaseController
      */
     @RequiresPermissions("project:order:remove")
     @Log(title = "订单", businessType = BusinessType.DELETE)
-    @PostMapping( "/remove")
+    @PostMapping("/remove")
     @ResponseBody
-    public AjaxResult remove(String ids)
-    {
+    public AjaxResult remove(String ids) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "delete an order", Constant.INFO, Constant.LOG_TIMEOUT);
         return toAjax(sysOrderService.deleteSysOrderByIds(ids));
     }
 }

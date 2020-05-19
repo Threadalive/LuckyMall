@@ -2,6 +2,7 @@ package com.ruoyi.project.controller;
 
 import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.service.ISysCounterService;
+import com.ruoyi.project.service.ISysLogAnalyseService;
 import com.ruoyi.project.service.ISysProductService;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.web.controller.tool.CleanCountersThread;
@@ -34,6 +35,9 @@ public class MallIndexController {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private ISysLogAnalyseService logAnalyseService;
+
     private final String PREFIX = "project/";
 
     /**
@@ -47,6 +51,7 @@ public class MallIndexController {
 
     /**
      * 系统首页
+     *
      * @param mmap
      * @return
      */
@@ -54,7 +59,8 @@ public class MallIndexController {
     public String index(ModelMap mmap) {
         //用户访问，进行系统访问计数
         counterService.updateCounter(Constant.ACCESS_COUNT_COUNTER);
-
+//        //频繁日志记录
+//        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the index of mall", Constant.INFO, Constant.LOG_TIMEOUT);
         // 用户访问系统即开启清理计数器的守护进程
         CleanCountersThread thread = new CleanCountersThread(redisUtil, 100, 5);
         thread.start();
@@ -70,6 +76,8 @@ public class MallIndexController {
      */
     @RequestMapping("/userIndex")
     public String userIndex() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the user's homepage", Constant.INFO, Constant.LOG_TIMEOUT);
         return PREFIX + "user/userIndex";
     }
 
@@ -81,6 +89,8 @@ public class MallIndexController {
     @GetMapping("/user/logout")
     public String logout() {
         LOGGER.info("===============用户退出==============");
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user logout", Constant.INFO, Constant.LOG_TIMEOUT);
         request.getSession().invalidate();
         //在线用户数-1
         counterService.updateCounterDown(Constant.ONLINE_USER_COUNTER);

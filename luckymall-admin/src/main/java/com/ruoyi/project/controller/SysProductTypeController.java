@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.project.domain.SysProductType;
+import com.ruoyi.project.service.ISysLogAnalyseService;
 import com.ruoyi.project.service.ISysProductTypeService;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
@@ -40,6 +41,9 @@ public class SysProductTypeController extends BaseController
     @Autowired
     private ISysProductTypeService sysProductTypeService;
 
+    @Autowired
+    private ISysLogAnalyseService logAnalyseService;
+
     @RequiresPermissions("system:type:view")
     @GetMapping()
     public String type()
@@ -55,6 +59,8 @@ public class SysProductTypeController extends BaseController
     @ResponseBody
     public Result<List<SysProductType>> list()
     {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get product's type",Constant.INFO,Constant.LOG_TIMEOUT);
         Result<List<SysProductType>> result = new Result<>();
         SysProductType sysProductType = new SysProductType();
         List<SysProductType> list = sysProductTypeService.selectSysProductTypeList(sysProductType);

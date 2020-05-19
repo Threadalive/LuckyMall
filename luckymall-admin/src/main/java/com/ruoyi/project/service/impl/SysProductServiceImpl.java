@@ -75,7 +75,7 @@ public class SysProductServiceImpl implements ISysProductService
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         for (SysProductType productType : productTypeList) {
             List<SysProduct> productList = sysProductMapper.findProductByType(productType.getId());
-            counterService.updateCounter(Constant.DISK_READ_COUNTER);
+//            counterService.updateCounter(Constant.DISK_READ_COUNTER);
             // 每种商品最多存4个
             if (productList.size() > 4) {
                 productMap.put(productType, productList.subList(0, 4));

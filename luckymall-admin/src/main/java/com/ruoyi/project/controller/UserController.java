@@ -8,6 +8,7 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.shiro.session.OnlineSession;
 import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.service.ISysCounterService;
+import com.ruoyi.project.service.ISysLogAnalyseService;
 import com.ruoyi.project.service.ISysOrderService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.service.ISysUserService;
@@ -74,6 +75,10 @@ public class UserController {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private ISysLogAnalyseService logAnalyseService;
+
     /**
      * 方法说明：跳转登录界面
      *
@@ -81,6 +86,8 @@ public class UserController {
      */
     @GetMapping("/login")
     public String login() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the login page",Constant.INFO,Constant.LOG_TIMEOUT);
         return PREFIX+"/login";
     }
     /**
@@ -93,6 +100,8 @@ public class UserController {
     @PostMapping("/login")
     @ResponseBody
     public Result loginUser(String userName, String password) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user do login",Constant.INFO,Constant.LOG_TIMEOUT);
         Result result = new Result();
         //根据用户名记录尝试登录次数
         redisUtil.incr(SHIRO_LOGIN_COUNT+userName);
@@ -131,6 +140,8 @@ public class UserController {
     @PostMapping("/registerUser")
     @ResponseBody
     public Result register(SysUser user) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user do register",Constant.INFO,Constant.LOG_TIMEOUT);
         Result result = new Result();
         HttpSession session = request.getSession();
         boolean flag = userService.registerUser(user);
@@ -150,6 +161,8 @@ public class UserController {
      */
     @GetMapping("/registerUser")
     public String register() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user get register page",Constant.INFO,Constant.LOG_TIMEOUT);
         return PREFIX+"/register";
     }
 
@@ -160,6 +173,8 @@ public class UserController {
      */
     @GetMapping("/editUser")
     public String userEdit() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the edit page",Constant.INFO,Constant.LOG_TIMEOUT);
         return PREFIX+"/editUser";
     }
     /**
@@ -172,6 +187,8 @@ public class UserController {
     @PostMapping("/editUser")
     @ResponseBody
     public Result editUser(MultipartFile file, SysUser user) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user edit msg",Constant.INFO,Constant.LOG_TIMEOUT);
         Result result = new Result();
         result = userService.updateUser(file, user);
         return result;
@@ -184,6 +201,8 @@ public class UserController {
      */
     @GetMapping("/editPassword")
     public String passwordEdit() {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the password_edit page",Constant.INFO,Constant.LOG_TIMEOUT);
         return PREFIX+"/editPassword";
     }
 
@@ -197,6 +216,8 @@ public class UserController {
     @PostMapping("/editPassword")
     @ResponseBody
     public Result editPassword(String oldPassword, String password) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user edit password",Constant.INFO,Constant.LOG_TIMEOUT);
         Result result;
         result = userService.editPassword(oldPassword, password);
         return result;
@@ -210,6 +231,8 @@ public class UserController {
      */
     @RequestMapping("/orderDetail")
     public ModelAndView userOrderDetail(String orderId) {
+        //频繁日志记录
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access order detail",Constant.INFO,Constant.LOG_TIMEOUT);
         ModelAndView modelAndView = sysOrderService.userOrderDetail(orderId);
         return modelAndView;
     }

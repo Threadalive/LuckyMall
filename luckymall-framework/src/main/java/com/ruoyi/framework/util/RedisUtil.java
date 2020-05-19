@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.SortingParams;
-import redis.clients.jedis.Transaction;
+import redis.clients.jedis.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,7 +25,7 @@ public class RedisUtil {
     /**
      * 本地redis连接
      */
-    private Jedis jedis = null;
+    private final Jedis jedis = new Jedis("localhost");
 
     private final static Logger log = LoggerFactory.getLogger(RedisUtil.class);
 
@@ -45,7 +42,7 @@ public class RedisUtil {
      * @return 成功返回value 失败返回null
      */
     public String get(String key, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         String value = null;
         try {
 //            jedis = jedisPool.getResource();
@@ -55,13 +52,13 @@ public class RedisUtil {
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return value;
     }
 
-    public Transaction multi(){
-        jedis = new Jedis("localhost");
+    public Transaction multi() {
+//        jedis = new Jedis("localhost");
         Transaction value = null;
         try {
             value = jedis.multi();
@@ -72,15 +69,28 @@ public class RedisUtil {
         return value;
     }
 
-    public void watch(String key){
-        jedis = new Jedis("localhost");
+    public Pipeline pipelined(){
+//        jedis = new Jedis("localhost");
+        Pipeline value = null;
+        try {
+            value = jedis.pipelined();
+            log.info(value.toString());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return value;
+    }
+
+    public void watch(String key) {
+//        jedis = new Jedis("localhost");
         jedis.watch(key);
     }
 
-    public void unWatch(){
-        jedis = new Jedis("localhost");
+    public void unWatch() {
+//        jedis = new Jedis("localhost");
         jedis.unwatch();
     }
+
     /**
      * <p>
      * 通过key获取储存在redis中的value
@@ -94,7 +104,7 @@ public class RedisUtil {
      * @return 成功返回value 失败返回null
      */
     public byte[] get(byte[] key, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         byte[] value = null;
         try {
             jedis.select(indexdb);
@@ -103,7 +113,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return value;
     }
@@ -122,7 +132,7 @@ public class RedisUtil {
      * @return 成功 返回OK 失败返回 0
      */
     public String set(String key, String value, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
             return jedis.set(key, value);
@@ -130,7 +140,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return "0";
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -148,7 +158,7 @@ public class RedisUtil {
      * @return 成功 返回OK 失败返回 0
      */
     public String set(byte[] key, byte[] value, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
             return jedis.set(key, value);
@@ -157,7 +167,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return "0";
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -170,14 +180,14 @@ public class RedisUtil {
      * @return 返回删除成功的个数
      */
     public Long del(String... keys) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.del(keys);
         } catch (Exception e) {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -191,7 +201,7 @@ public class RedisUtil {
      * @return 返回删除成功的个数
      */
     public Long del(int indexdb, String... keys) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
             return jedis.del(keys);
@@ -199,7 +209,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -213,7 +223,7 @@ public class RedisUtil {
      * @return 返回删除成功的个数
      */
     public Long del(int indexdb, byte[]... keys) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
             return jedis.del(keys);
@@ -221,7 +231,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -235,7 +245,7 @@ public class RedisUtil {
      * @return 成功返回 添加后value的长度 失败 返回 添加的 value 的长度 异常返回0L
      */
     public Long append(String key, String str) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.append(key, str);
@@ -244,7 +254,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -258,14 +268,14 @@ public class RedisUtil {
      * @return true OR false
      */
     public Boolean exists(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.exists(key);
         } catch (Exception e) {
             log.error(e.getMessage());
             return false;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -277,13 +287,13 @@ public class RedisUtil {
      * @return 总是返回 OK
      */
     public String flushDB() {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.flushDB();
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return null;
     }
@@ -298,7 +308,7 @@ public class RedisUtil {
      * @return 成功返回1 如果存在 和 发生异常 返回 0
      */
     public Long expire(String key, int value, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
             return jedis.expire(key, value);
@@ -306,7 +316,7 @@ public class RedisUtil {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
@@ -320,7 +330,7 @@ public class RedisUtil {
      * 的剩余生存时间。 发生异常 返回 0
      */
     public Long ttl(String key, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             jedis.select(indexdb);
             return jedis.ttl(key);
@@ -329,223 +339,10 @@ public class RedisUtil {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
     }
 
-    /**
-     * <p>
-     * 移除给定 key 的生存时间，将这个 key 从『易失的』(带生存时间 key )转换成『持久的』(一个不带生存时间、永不过期的 key )
-     * </p>
-     *
-     * @param key
-     * @return 当生存时间移除成功时，返回 1 .如果 key 不存在或 key 没有设置生存时间，返回 0 ， 发生异常 返回 -1
-     */
-    public Long persist(String key) {
-        jedis = new Jedis("localhost");
-        try {
-            return jedis.persist(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-            return -1L;
-        } finally {
-            jedis.close();
-        }
-    }
-
-    /**
-     * <p>
-     * 新增key,并将 key 的生存时间 (以秒为单位)
-     * </p>
-     *
-     * @param key
-     * @param seconds 生存时间 单位：秒
-     * @param value
-     * @return 设置成功时返回 OK 。当 seconds 参数不合法时，返回一个错误。
-     */
-    public String setex(String key, int seconds, String value) {
-        jedis = new Jedis("localhost");
-        try {
-            return jedis.setex(key, seconds, value);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * 设置key value,如果key已经存在则返回0,nx==> not exist
-     * </p>
-     *
-     * @param key
-     * @param value
-     * @return 成功返回1 如果存在 和 发生异常 返回 0
-     */
-    public Long setnx(String key, String value) {
-        jedis = new Jedis("localhost");
-        try {
-            return jedis.setnx(key, value);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-            return 0L;
-        } finally {
-            jedis.close();
-        }
-    }
-
-    /**
-     * <p>
-     * 将给定 key 的值设为 value ，并返回 key 的旧值(old value)。
-     * </p>
-     * <p>
-     * 当 key 存在但不是字符串类型时，返回一个错误。
-     * </p>
-     *
-     * @param key
-     * @param value
-     * @return 返回给定 key 的旧值。当 key 没有旧值时，也即是， key 不存在时，返回 nil
-     */
-    public String getSet(String key, String value) {
-        jedis = new Jedis("localhost");
-        try {
-            return jedis.getSet(key, value);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return null;
-    }
-
-    /**
-     * <p>
-     * 设置key value并制定这个键值的有效期
-     * </p>
-     *
-     * @param key
-     * @param value
-     * @param seconds 单位:秒
-     * @return 成功返回OK 失败和异常返回null
-     */
-    public String setex(String key, String value, int seconds) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.setex(key, seconds, value);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    public Long setrange(String key, String str, int offset) {
-        jedis = new Jedis("localhost");
-        try {
-            return jedis.setrange(key, offset, str);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return 0L;
-        } finally {
-            jedis.close();
-        }
-    }
-
-    /**
-     * <p>
-     * 通过批量的key获取批量的value
-     * </p>
-     *
-     * @param keys string数组 也可以是一个key
-     * @return 成功返回value的集合, 失败返回null的集合 ,异常返回空
-     */
-    public List<String> mget(String... keys) {
-        jedis = new Jedis("localhost");
-        List<String> values = null;
-        try {
-            values = jedis.mget(keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return values;
-    }
-
-    /**
-     * <p>
-     * 批量的设置key:value,可以一个
-     * </p>
-     * <p>
-     * example:
-     * </p>
-     * <p>
-     * obj.mset(new String[]{"key2","value1","key2","value2"})
-     * </p>
-     *
-     * @param keysvalues
-     * @return 成功返回OK 失败 异常 返回 null
-     */
-    public String mset(String... keysvalues) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.mset(keysvalues);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    public Long msetnx(String... keysvalues) {
-        jedis = new Jedis("localhost");
-        Long res = 0L;
-        try {
-            res = jedis.msetnx(keysvalues);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 设置key的值,并返回一个旧值
-     * </p>
-     *
-     * @param key
-     * @param value
-     * @return 旧值 如果key不存在 则返回null
-     */
-    public String getset(String key, String value) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.getSet(key, value);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
 
     /**
      * <p>
@@ -558,7 +355,7 @@ public class RedisUtil {
      * @return 如果没有返回null
      */
     public String getrange(String key, int startOffset, int endOffset) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         String res = null;
         try {
             res = jedis.getrange(key, startOffset, endOffset);
@@ -566,7 +363,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -580,14 +377,14 @@ public class RedisUtil {
      * @return 加值后的结果
      */
     public Long incr(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.incr(key);
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -602,7 +399,7 @@ public class RedisUtil {
      * @return
      */
     public Long incrBy(String key, Long integer) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.incrBy(key, integer);
@@ -610,7 +407,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -624,7 +421,7 @@ public class RedisUtil {
      * @return
      */
     public Double incrByFloat(String key, Double increment) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Double res = null;
         try {
             res = jedis.incrByFloat(key, increment);
@@ -632,77 +429,10 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
-    /**
-     * <p>
-     * 对key的值做减减操作,如果key不存在,则设置key为-1
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    public Long decr(String key) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.decr(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 减去指定的值
-     * </p>
-     *
-     * @param key
-     * @param integer
-     * @return
-     */
-    public Long decrBy(String key, Long integer) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.decrBy(key, integer);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key获取value值的长度
-     * </p>
-     *
-     * @param key
-     * @return 失败返回null
-     */
-    public Long serlen(String key) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.strlen(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
     /**
      * <p>
      * 通过key给field设置指定的值,如果key不存在,则先创建
@@ -714,7 +444,6 @@ public class RedisUtil {
      * @return 如果存在返回0 异常返回null
      */
     public Long hset(String key, String field, String value) {
-        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.hset(key, field, value);
@@ -722,31 +451,6 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key给field设置指定的值,如果key不存在则先创建,如果field已经存在,返回0
-     * </p>
-     *
-     * @param key
-     * @param field
-     * @param value
-     * @return
-     */
-    public Long hsetnx(String key, String field, String value) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.hsetnx(key, field, value);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
         }
         return res;
     }
@@ -761,7 +465,6 @@ public class RedisUtil {
      * @return 返回OK 异常返回null
      */
     public String hmset(String key, Map<String, String> hash, int indexdb) {
-        jedis = new Jedis("localhost");
         String res = null;
         try {
             jedis.select(indexdb);
@@ -770,7 +473,6 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
         }
         return res;
     }
@@ -785,7 +487,6 @@ public class RedisUtil {
      * @return 没有返回null
      */
     public String hget(String key, String field) {
-        jedis = new Jedis("localhost");
         String res = null;
         try {
             res = jedis.hget(key, field);
@@ -793,34 +494,11 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
         }
         return res;
     }
 
-    /**
-     * <p>
-     * 通过key 和 fields 获取指定的value 如果没有对应的value则返回null
-     * </p>
-     *
-     * @param key
-     * @param fields 可以使 一个String 也可以是 String数组
-     * @return
-     */
-    public List<String> hmget(String key, int indexdb, String... fields) {
-        jedis = new Jedis("localhost");
-        List<String> res = null;
-        try {
-            jedis.select(indexdb);
-            res = jedis.hmget(key, fields);
-        } catch (Exception e) {
 
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
 
     /**
      * <p>
@@ -833,7 +511,7 @@ public class RedisUtil {
      * @return
      */
     public Long hincrby(String key, String field, Long value) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.hincrBy(key, field, value);
@@ -841,7 +519,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -856,7 +534,7 @@ public class RedisUtil {
      * @return
      */
     public Boolean hexists(String key, String field) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Boolean res = false;
         try {
             res = jedis.hexists(key, field);
@@ -864,7 +542,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -878,7 +556,7 @@ public class RedisUtil {
      * @return
      */
     public Long hlen(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.hlen(key);
@@ -886,7 +564,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
 
@@ -902,7 +580,7 @@ public class RedisUtil {
      * @return
      */
     public Long hdel(String key, String... fields) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.hdel(key, fields);
@@ -910,7 +588,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -924,7 +602,7 @@ public class RedisUtil {
      * @return
      */
     public Set<String> hkeys(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Set<String> res = null;
         try {
             res = jedis.hkeys(key);
@@ -932,32 +610,11 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
 
-    /**
-     * <p>
-     * 通过key返回所有和key有关的value
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    public List<String> hvals(String key) {
-        jedis = new Jedis("localhost");
-        List<String> res = null;
-        try {
-            res = jedis.hvals(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
 
     /**
      * <p>
@@ -968,7 +625,7 @@ public class RedisUtil {
      * @return
      */
     public Map<String, String> hgetall(String key, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Map<String, String> res = null;
         try {
             jedis.select(indexdb);
@@ -976,7 +633,7 @@ public class RedisUtil {
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -991,7 +648,7 @@ public class RedisUtil {
      * @return 返回list的value个数
      */
     public Long lpush(int indexdb, String key, String... strs) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             jedis.select(indexdb);
@@ -1000,220 +657,20 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
-
-    /**
-     * <p>
-     * 通过key向list尾部添加字符串
-     * </p>
-     *
-     * @param key
-     * @param strs 可以使一个string 也可以使string数组
-     * @return 返回list的value个数
-     */
-    public Long rpush(String key, String... strs) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.rpush(key, strs);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key设置list指定下标位置的value
-     * </p>
-     * <p>
-     * 如果下标超过list里面value的个数则报错
-     * </p>
-     *
-     * @param key
-     * @param index 从0开始
-     * @param value
-     * @return 成功返回OK
-     */
-    public String lset(String key, Long index, String value) {
-        jedis = new Jedis("localhost");
+    public String ltrim(String key, long start,long end) {
+//        jedis = new Jedis("localhost");
         String res = null;
         try {
-            res = jedis.lset(key, index, value);
+            res = jedis.ltrim(key, start,end);
         } catch (Exception e) {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key从对应的list中删除指定的count个 和 value相同的元素
-     * </p>
-     *
-     * @param key
-     * @param count 当count为0时删除全部
-     * @param value
-     * @return 返回被删除的个数
-     */
-    public Long lrem(String key, long count, String value) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.lrem(key, count, value);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key保留list中从strat下标开始到end下标结束的value值
-     * </p>
-     *
-     * @param key
-     * @param start
-     * @param end
-     * @return 成功返回OK
-     */
-    public String ltrim(String key, long start, long end) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.ltrim(key, start, end);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key从list的头部删除一个value,并返回该value
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    synchronized public String lpop(String key) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.lpop(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key从list尾部删除一个value,并返回该元素
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    synchronized public String rpop(String key, int indexdb) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            jedis.select(indexdb);
-            res = jedis.rpop(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key从一个list的尾部删除一个value并添加到另一个list的头部,并返回该value
-     * </p>
-     * <p>
-     * 如果第一个list为空或者不存在则返回null
-     * </p>
-     *
-     * @param srckey
-     * @param dstkey
-     * @return
-     */
-    public String rpoplpush(String srckey, String dstkey, int indexdb) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            jedis.select(indexdb);
-            res = jedis.rpoplpush(srckey, dstkey);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key获取list中指定下标位置的value
-     * </p>
-     *
-     * @param key
-     * @param index
-     * @return 如果没有返回null
-     */
-    public String lindex(String key, long index) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.lindex(key, index);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key返回list的长度
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    public Long llen(String key) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.llen(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1232,7 +689,7 @@ public class RedisUtil {
      * @return
      */
     public List<String> lrange(String key, long start, long end, int indexdb) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         List<String> res = null;
         try {
             jedis.select(indexdb);
@@ -1241,7 +698,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1257,14 +714,14 @@ public class RedisUtil {
      * @return 操作成功返回 ok ，否则返回错误信息
      */
     public String lset(String key, long index, String value) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.lset(key, index, value);
         } catch (Exception e) {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return null;
     }
@@ -1279,14 +736,14 @@ public class RedisUtil {
      * @return 返回列表形式的排序结果
      */
     public List<String> sort(String key, SortingParams sortingParameters) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.sort(key, sortingParameters);
         } catch (Exception e) {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return null;
     }
@@ -1300,14 +757,14 @@ public class RedisUtil {
      * @return 返回列表形式的排序结果
      */
     public List<String> sort(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.sort(key);
         } catch (Exception e) {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return null;
     }
@@ -1322,7 +779,7 @@ public class RedisUtil {
      * @return 添加成功的个数
      */
     public Long sadd(String key, String... members) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.sadd(key, members);
@@ -1330,7 +787,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1345,7 +802,7 @@ public class RedisUtil {
      * @return 删除的个数
      */
     public Long srem(String key, String... members) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.srem(key, members);
@@ -1353,195 +810,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key随机删除一个set中的value并返回该值
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    public String spop(String key) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.spop(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key获取set中的差集
-     * </p>
-     * <p>
-     * 以第一个set为标准
-     * </p>
-     *
-     * @param keys 可以使一个string 则返回set中所有的value 也可以是string数组
-     * @return
-     */
-    public Set<String> sdiff(String... keys) {
-        jedis = new Jedis("localhost");
-        Set<String> res = null;
-        try {
-            res = jedis.sdiff(keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key获取set中的差集并存入到另一个key中
-     * </p>
-     * <p>
-     * 以第一个set为标准
-     * </p>
-     *
-     * @param dstkey 差集存入的key
-     * @param keys   可以使一个string 则返回set中所有的value 也可以是string数组
-     * @return
-     */
-    public Long sdiffstore(String dstkey, String... keys) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.sdiffstore(dstkey, keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key获取指定set中的交集
-     * </p>
-     *
-     * @param keys 可以使一个string 也可以是一个string数组
-     * @return
-     */
-    public Set<String> sinter(String... keys) {
-        jedis = new Jedis("localhost");
-        Set<String> res = null;
-        try {
-            res = jedis.sinter(keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key获取指定set中的交集 并将结果存入新的set中
-     * </p>
-     *
-     * @param dstkey
-     * @param keys   可以使一个string 也可以是一个string数组
-     * @return
-     */
-    public Long sinterstore(String dstkey, String... keys) {
-        jedis = new Jedis("localhost");
-
-        Long res = null;
-        try {
-            res = jedis.sinterstore(dstkey, keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key返回所有set的并集
-     * </p>
-     *
-     * @param keys 可以使一个string 也可以是一个string数组
-     * @return
-     */
-    public Set<String> sunion(String... keys) {
-        jedis = new Jedis("localhost");
-        Set<String> res = null;
-        try {
-            res = jedis.sunion(keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key返回所有set的并集,并存入到新的set中
-     * </p>
-     *
-     * @param dstkey
-     * @param keys   可以使一个string 也可以是一个string数组
-     * @return
-     */
-    public Long sunionstore(String dstkey, String... keys) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.sunionstore(dstkey, keys);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key将set中的value移除并添加到第二个set中
-     * </p>
-     *
-     * @param srckey 需要移除的
-     * @param dstkey 添加的
-     * @param member set中的value
-     * @return
-     */
-    public Long smove(String srckey, String dstkey, String member) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.smove(srckey, dstkey, member);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1555,7 +824,6 @@ public class RedisUtil {
      * @return
      */
     public Long scard(String key) {
-        jedis = new Jedis("localhost");
 
         Long res = null;
         try {
@@ -1564,7 +832,6 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
         }
         return res;
     }
@@ -1579,7 +846,7 @@ public class RedisUtil {
      * @return
      */
     public Boolean sismember(String key, String member) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Boolean res = null;
         try {
             res = jedis.sismember(key, member);
@@ -1587,32 +854,11 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
 
-    /**
-     * <p>
-     * 通过key获取set中随机的value,不删除元素
-     * </p>
-     *
-     * @param key
-     * @return
-     */
-    public String srandmember(String key) {
-        jedis = new Jedis("localhost");
-        String res = null;
-        try {
-            res = jedis.srandmember(key);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
 
     /**
      * <p>
@@ -1623,7 +869,7 @@ public class RedisUtil {
      * @return
      */
     public Set<String> smembers(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Set<String> res = null;
         try {
             res = jedis.smembers(key);
@@ -1631,7 +877,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1650,7 +896,7 @@ public class RedisUtil {
      * @return
      */
     public Long zadd(String key, double score, String member) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.zadd(key, score, member);
@@ -1658,7 +904,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1674,40 +920,16 @@ public class RedisUtil {
      * @return 指定区间内的有序集成员的列表。
      */
     public Set<String> zrange(String key, long min, long max) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.zrange(key, min, max);
         } catch (Exception e) {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return null;
-    }
-
-    /**
-     * <p>
-     * 统计有序集 key 中,值在 min 和 max 之间的成员的数量
-     * </p>
-     *
-     * @param key
-     * @param min
-     * @param max
-     * @return 值在 min 和 max 之间的成员的数量。异常返回0
-     */
-    public Long zcount(String key, double min, double max) {
-        jedis = new Jedis("localhost");
-        try {
-            return jedis.zcount(key, min, max);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-            return 0L;
-        } finally {
-            jedis.close();
-        }
-
     }
 
     /**
@@ -1726,14 +948,14 @@ public class RedisUtil {
      * @return 执行 HINCRBY 命令之后，哈希表 key 中域 field的值。异常返回0
      */
     public Long hincrBy(String key, String value, long increment) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         try {
             return jedis.hincrBy(key, value, increment);
         } catch (Exception e) {
             log.error(e.getMessage());
             return 0L;
         } finally {
-            jedis.close();
+//            jedis.close();
         }
 
     }
@@ -1748,7 +970,7 @@ public class RedisUtil {
      * @return
      */
     public Long zrem(String key, String... members) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.zrem(key, members);
@@ -1756,7 +978,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1772,7 +994,7 @@ public class RedisUtil {
      * @return
      */
     public Double zincrby(String key, double score, String member) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Double res = null;
         try {
             res = jedis.zincrby(key, score, member);
@@ -1780,59 +1002,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key返回zset中value的排名
-     * </p>
-     * <p>
-     * 下标从小到大排序
-     * </p>
-     *
-     * @param key
-     * @param member
-     * @return
-     */
-    public Long zrank(String key, String member) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.zrank(key, member);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key返回zset中value的排名
-     * </p>
-     * <p>
-     * 下标从大到小排序
-     * </p>
-     *
-     * @param key
-     * @param member
-     * @return
-     */
-    public Long zrevrank(String key, String member) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.zrevrank(key, member);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1854,7 +1024,7 @@ public class RedisUtil {
      * @return
      */
     public Set<String> zrevrange(String key, long start, long end) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Set<String> res = null;
         try {
             res = jedis.zrevrange(key, start, end);
@@ -1862,34 +1032,25 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
 
-    /**
-     * <p>
-     * 通过key返回指定score内zset中的value
-     * </p>
-     *
-     * @param key
-     * @param max
-     * @param min
-     * @return
-     */
-    public Set<String> zrangebyscore(String key, String max, String min) {
-        jedis = new Jedis("localhost");
-        Set<String> res = null;
+    public Set<Tuple> zrevrangeWithScores(String key,long start,long end){
+//        jedis = new Jedis("localhost");
+        Set<Tuple> res = null;
         try {
-            res = jedis.zrevrangeByScore(key, max, min);
+            res = jedis.zrevrangeWithScores(key, start, end);
         } catch (Exception e) {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
+
 
     /**
      * <p>
@@ -1902,7 +1063,7 @@ public class RedisUtil {
      * @return
      */
     public Set<String> zrangeByScore(String key, double max, double min) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Set<String> res = null;
         try {
             res = jedis.zrevrangeByScore(key, max, min);
@@ -1910,7 +1071,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1926,7 +1087,7 @@ public class RedisUtil {
      * @return
      */
     public Long zcount(String key, String min, String max) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.zcount(key, min, max);
@@ -1934,7 +1095,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1948,7 +1109,7 @@ public class RedisUtil {
      * @return
      */
     public Long zcard(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Long res = null;
         try {
             res = jedis.zcard(key);
@@ -1956,7 +1117,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -1971,7 +1132,7 @@ public class RedisUtil {
      * @return
      */
     public Double zscore(String key, String member) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Double res = null;
         try {
             res = jedis.zscore(key, member);
@@ -1979,58 +1140,11 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
 
-    /**
-     * <p>
-     * 通过key删除给定区间内的元素
-     * </p>
-     *
-     * @param key
-     * @param start
-     * @param end
-     * @return
-     */
-    public Long zremrangeByRank(String key, long start, long end) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.zremrangeByRank(key, start, end);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
-
-    /**
-     * <p>
-     * 通过key删除指定score内的元素
-     * </p>
-     *
-     * @param key
-     * @param start
-     * @param end
-     * @return
-     */
-    public Long zremrangeByScore(String key, double start, double end) {
-        jedis = new Jedis("localhost");
-        Long res = null;
-        try {
-            res = jedis.zremrangeByScore(key, start, end);
-        } catch (Exception e) {
-
-            log.error(e.getMessage());
-        } finally {
-            jedis.close();
-        }
-        return res;
-    }
 
     /**
      * <p>
@@ -2047,7 +1161,7 @@ public class RedisUtil {
      * @return
      */
     public Set<String> keys(String pattern) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
 
         Set<String> res = null;
         try {
@@ -2056,13 +1170,13 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
 
     public Set<String> keysBySelect(String pattern, int database) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         Set<String> res = null;
         try {
             jedis.select(database);
@@ -2071,7 +1185,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
@@ -2085,7 +1199,7 @@ public class RedisUtil {
      * @return
      */
     public String type(String key) {
-        jedis = new Jedis("localhost");
+//        jedis = new Jedis("localhost");
         String res = null;
         try {
             res = jedis.type(key);
@@ -2093,7 +1207,7 @@ public class RedisUtil {
 
             log.error(e.getMessage());
         } finally {
-            jedis.close();
+//            jedis.close();
         }
         return res;
     }
