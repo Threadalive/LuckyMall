@@ -30,6 +30,12 @@
 			<optional>true</optional> <!-- 表示依赖不会传递 -->
 		</dependency>
 
+        <!--kafka依赖-->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
 		<!-- swagger2-->
 		<dependency>
 			<groupId>io.springfox</groupId>

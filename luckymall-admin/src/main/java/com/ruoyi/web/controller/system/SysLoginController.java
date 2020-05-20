@@ -4,6 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.ruoyi.framework.util.RedisUtil;
+import com.ruoyi.web.controller.tool.CleanCountersThread;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -26,6 +28,8 @@ import com.ruoyi.common.utils.StringUtils;
 @Controller
 public class SysLoginController extends BaseController
 {
+    @Autowired
+    private RedisUtil redisUtil;
     /**
      * 后台用户登录界面
      * @param request
@@ -54,6 +58,9 @@ public class SysLoginController extends BaseController
         try
         {
             subject.login(token);
+            // 用户访问系统即开启清理计数器的守护进程
+            CleanCountersThread thread = new CleanCountersThread(redisUtil, 100, 5);
+            thread.start();
             return success();
         }
         catch (AuthenticationException e)

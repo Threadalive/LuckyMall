@@ -2,7 +2,9 @@ package com.ruoyi.project.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSON;
 import com.ruoyi.framework.util.RedisUtil;
 import com.ruoyi.project.domain.SysOrderItem;
@@ -14,15 +16,19 @@ import com.ruoyi.project.service.ISysCounterService;
 import com.ruoyi.system.domain.SysUser;
 import com.ruoyi.system.utils.Constant;
 import com.ruoyi.system.utils.Result;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import com.ruoyi.project.mapper.SysOrderMapper;
 import com.ruoyi.project.domain.SysOrder;
 import com.ruoyi.project.service.ISysOrderService;
 import com.ruoyi.common.core.text.Convert;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,6 +62,9 @@ public class SysOrderServiceImpl implements ISysOrderService
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
     /**
      * 客户端请求
      */
@@ -175,8 +184,9 @@ public class SysOrderServiceImpl implements ISysOrderService
         order.setTotalPrice(totalPrice);
         order.setStatus(0);
         order.setUserId(user.getUserId());
-        // 订单添加
-        int orderFlag = sysOrderMapper.insertSysOrder(order);
+        // 发送订单对象至队列
+        kafkaTemplate.send("insertOrder", JSON.toJSONString(order));
+//        int orderFlag = sysOrderMapper.insertSysOrder(order);
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         int[] orderItemFlags = new int[idArr.length];
         for (int j = 0; j < idArr.length; j++) {
@@ -189,7 +199,20 @@ public class SysOrderServiceImpl implements ISysOrderService
             orderItem.setProductId(productId);
             orderItem.setOrderId(order.getOrderCode());
 
-            orderItemFlags[j] = sysOrderItemMapper.insertSysOrderItem(orderItem);
+            try {
+                ListenableFuture<SendResult<Integer, String>> future = kafkaTemplate.send("insertOrderItem",JSON.toJSONString(orderItem));
+                //这里我们可以获取到生产者消息是否提交成功
+                SendResult<Integer, String> integerStringSendResult = future.get();
+                RecordMetadata recordMetadata = integerStringSendResult.getRecordMetadata();
+                if (null != recordMetadata){
+                    orderItemFlags[j] = 1;
+                }
+            } catch (InterruptedException e) {
+                LOGGER.error("{}",e);
+            } catch (ExecutionException e) {
+                LOGGER.error("{}",e);
+            }
+//            orderItemFlags[j] = sysOrderItemMapper.insertSysOrderItem(orderItem);
             counterService.updateCounter(Constant.DISK_READ_COUNTER);
             // 更新商品库存
             SysProduct product = sysProductMapper.selectSysProductById(productId);
@@ -211,7 +234,7 @@ public class SysOrderServiceImpl implements ISysOrderService
             orderItemFlag *= flag;
         }
         // 插入结果
-        if (orderFlag == 1 && orderItemFlag == 1) {
+        if (orderItemFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
             //更新计数器
             counterService.updateCounter(Constant.ORDER_COUNT_BY_TIME);

@@ -93,6 +93,8 @@ spring:
         min-idle: 0
     timeout: 100
     block-when-exhausted: true
+  kafka:
+    bootstrap-servers: localhost:9092
 
 # MyBatis
 mybatis:

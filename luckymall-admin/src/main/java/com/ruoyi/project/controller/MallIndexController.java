@@ -61,9 +61,7 @@ public class MallIndexController {
         counterService.updateCounter(Constant.ACCESS_COUNT_COUNTER);
 //        //频繁日志记录
 //        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the index of mall", Constant.INFO, Constant.LOG_TIMEOUT);
-        // 用户访问系统即开启清理计数器的守护进程
-        CleanCountersThread thread = new CleanCountersThread(redisUtil, 100, 5);
-        thread.start();
+
         //放入商品信息
         mmap.put("map", productService.getProductByTypeMap());
         return PREFIX + "index/index";

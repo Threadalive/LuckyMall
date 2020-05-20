@@ -17,6 +17,7 @@ import com.ruoyi.system.utils.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import com.ruoyi.project.domain.SysProduct;
 import com.ruoyi.project.service.ISysProductService;
@@ -66,6 +67,9 @@ public class SysProductServiceImpl implements ISysProductService
      */
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
 
     @Override
     public Map<SysProductType, List<SysProduct>> getProductByTypeMap() {
@@ -357,14 +361,7 @@ public class SysProductServiceImpl implements ISysProductService
         if (0 == product.getProductStatus() && 1 == sysProduct.getProductStatus()){
             //若该商品存在订阅用户,遍历发送邮件通知
             if (redisUtil.exists(subscribeKey)){
-                Set<String> userSet = redisUtil.smembers(subscribeKey);
-                for (String id : userSet){
-                    SysUser sysUser = sysUserMapper.selectUserById(Long.parseLong(id));
-                    emailService.sendAttachmentsMail(sysUser.getEmail(),"商品上架提醒","尊贵的LuckyMall商城用户，您订阅的商品"+
-                            sysProduct.getProductName()+"上架啦",Constant.IMG_FILE_PATH+sysProduct.getProductPhoto());
-                }
-                //通知结束后删除该key
-                redisUtil.del(subscribeKey);
+                kafkaTemplate.send("emailUsers",JSON.toJSONString(sysProduct));
             }
         }
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
