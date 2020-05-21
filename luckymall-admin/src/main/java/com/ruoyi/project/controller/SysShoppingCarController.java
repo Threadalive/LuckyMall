@@ -28,14 +28,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 购物车Controller
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-05-08
  */
 @Controller
 @RequestMapping("/shoppingCar")
-public class SysShoppingCarController extends BaseController
-{
+public class SysShoppingCarController extends BaseController {
     private String prefix = "project/shoppingCar";
 
     @Autowired
@@ -52,9 +51,9 @@ public class SysShoppingCarController extends BaseController
     @GetMapping()
     public String userCart(ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the cart's page",Constant.INFO,Constant.LOG_TIMEOUT);
-        Map<SysProduct,SysShoppingCar> map = sysShoppingCarService.userCar();
-        modelMap.put("cartMap",map);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the cart's page", Constant.INFO, Constant.LOG_TIMEOUT);
+        Map<SysProduct, SysShoppingCar> map = sysShoppingCarService.userCar();
+        modelMap.put("cartMap", map);
         return prefix + "/cart";
     }
 
@@ -64,10 +63,9 @@ public class SysShoppingCarController extends BaseController
     @RequiresPermissions("project:shoppingCar:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(SysShoppingCar sysShoppingCar)
-    {
+    public TableDataInfo list(SysShoppingCar sysShoppingCar) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"list cart",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "list cart", Constant.INFO, Constant.LOG_TIMEOUT);
         startPage();
         List<SysShoppingCar> list = sysShoppingCarService.selectSysShoppingCarList(sysShoppingCar);
         return getDataTable(list);
@@ -80,8 +78,7 @@ public class SysShoppingCarController extends BaseController
     @Log(title = "购物车", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(SysShoppingCar sysShoppingCar)
-    {
+    public AjaxResult export(SysShoppingCar sysShoppingCar) {
         List<SysShoppingCar> list = sysShoppingCarService.selectSysShoppingCarList(sysShoppingCar);
         ExcelUtil<SysShoppingCar> util = new ExcelUtil<SysShoppingCar>(SysShoppingCar.class);
         return util.exportExcel(list, "shoppingCar");
@@ -91,10 +88,9 @@ public class SysShoppingCarController extends BaseController
      * 新增购物车
      */
     @GetMapping("/add")
-    public String add()
-    {
+    public String add() {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get add cart page",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get add cart page", Constant.INFO, Constant.LOG_TIMEOUT);
         return prefix + "/add";
     }
 
@@ -105,10 +101,9 @@ public class SysShoppingCarController extends BaseController
     @Log(title = "购物车", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public Result addSave(SysShoppingCar sysShoppingCar)
-    {
+    public Result addSave(SysShoppingCar sysShoppingCar) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"add cart",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "add cart", Constant.INFO, Constant.LOG_TIMEOUT);
         return sysShoppingCarService.insertSysShoppingCar(sysShoppingCar);
     }
 
@@ -116,8 +111,7 @@ public class SysShoppingCarController extends BaseController
      * 修改购物车
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") String id, ModelMap mmap)
-    {
+    public String edit(@PathVariable("id") String id, ModelMap mmap) {
         SysShoppingCar sysShoppingCar = sysShoppingCarService.selectSysShoppingCarById(id);
         mmap.put("sysShoppingCar", sysShoppingCar);
         return prefix + "/edit";
@@ -130,8 +124,7 @@ public class SysShoppingCarController extends BaseController
     @Log(title = "购物车", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(SysShoppingCar sysShoppingCar)
-    {
+    public AjaxResult editSave(SysShoppingCar sysShoppingCar) {
         return toAjax(sysShoppingCarService.updateSysShoppingCar(sysShoppingCar));
     }
 
@@ -140,14 +133,13 @@ public class SysShoppingCarController extends BaseController
      */
     @RequiresPermissions("project:shoppingCar:remove")
     @Log(title = "购物车", businessType = BusinessType.DELETE)
-    @GetMapping( "/remove")
-    public String remove(String cartId)
-    {
+    @GetMapping("/remove")
+    public String remove(String cartId) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"remove cart",Constant.INFO,Constant.LOG_TIMEOUT);
-        if (1 == sysShoppingCarService.deleteSysShoppingCarById(cartId)){
-           return  "redirect:/shoppingCar";
-        }else {
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "remove cart", Constant.INFO, Constant.LOG_TIMEOUT);
+        if (1 == sysShoppingCarService.deleteSysShoppingCarById(cartId)) {
+            return "redirect:/shoppingCar";
+        } else {
             return "error/business";
         }
     }

@@ -36,13 +36,12 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 订单Service业务层处理
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-05-06
  */
 @Service
-public class SysOrderServiceImpl implements ISysOrderService 
-{
+public class SysOrderServiceImpl implements ISysOrderService {
     @Autowired
     private SysOrderMapper sysOrderMapper;
 
@@ -120,26 +119,24 @@ public class SysOrderServiceImpl implements ISysOrderService
 
     /**
      * 查询订单
-     * 
+     *
      * @param id 订单ID
      * @return 订单
      */
     @Override
-    public SysOrder selectSysOrderById(String id)
-    {
+    public SysOrder selectSysOrderById(String id) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.selectSysOrderById(id);
     }
 
     /**
      * 查询订单列表
-     * 
+     *
      * @param sysOrder 订单
      * @return 订单
      */
     @Override
-    public List<SysOrder> selectSysOrderList(SysOrder sysOrder)
-    {
+    public List<SysOrder> selectSysOrderList(SysOrder sysOrder) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.selectSysOrderList(sysOrder);
     }
@@ -200,17 +197,17 @@ public class SysOrderServiceImpl implements ISysOrderService
             orderItem.setOrderId(order.getOrderCode());
 
             try {
-                ListenableFuture<SendResult<Integer, String>> future = kafkaTemplate.send("insertOrderItem",JSON.toJSONString(orderItem));
+                ListenableFuture<SendResult<Integer, String>> future = kafkaTemplate.send("insertOrderItem", JSON.toJSONString(orderItem));
                 //这里我们可以获取到生产者消息是否提交成功
                 SendResult<Integer, String> integerStringSendResult = future.get();
                 RecordMetadata recordMetadata = integerStringSendResult.getRecordMetadata();
-                if (null != recordMetadata){
+                if (null != recordMetadata) {
                     orderItemFlags[j] = 1;
                 }
             } catch (InterruptedException e) {
-                LOGGER.error("{}",e);
+                LOGGER.error("{}", e);
             } catch (ExecutionException e) {
-                LOGGER.error("{}",e);
+                LOGGER.error("{}", e);
             }
 //            orderItemFlags[j] = sysOrderItemMapper.insertSysOrderItem(orderItem);
             counterService.updateCounter(Constant.DISK_READ_COUNTER);
@@ -220,7 +217,7 @@ public class SysOrderServiceImpl implements ISysOrderService
             product.setProductCount(product.getProductCount() - number);
             sysProductMapper.updateSysProduct(product);
             //对通过购物车购买的商品的次数+1
-            redisUtil.hincrBy(Constant.ADD_BY_CAR_KEY,productFlag+productId,1);
+            redisUtil.hincrBy(Constant.ADD_BY_CAR_KEY, productFlag + productId, 1);
         }
         // 清空用户购物车
         sysShoppingCarMapper.deleteSysShoppingCarByUserId(user.getUserId());
@@ -246,13 +243,12 @@ public class SysOrderServiceImpl implements ISysOrderService
 
     /**
      * 新增订单
-     * 
+     *
      * @return 结果
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result insertSysOrder(String id,Integer number)
-    {
+    public Result insertSysOrder(String id, Integer number) {
         LOGGER.info("===============立即购买==============");
         LOGGER.info("商品id：" + id + " 购买数量：" + number);
         Result result = new Result();
@@ -265,7 +261,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         //检查商品价格及库存
         SysProduct product = sysProductMapper.selectSysProductById(id);
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
-        if (product.getProductCount() < number){
+        if (product.getProductCount() < number) {
             result.setMsg("unEnough");
             return result;
         }
@@ -307,7 +303,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         if (orderFlag == 1 && productFlag == 1 && orderItemFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
             //更新订单量
-            redisUtil.incrBy(Constant.ORDER_COUNT,Integer.toUnsignedLong(1));
+            redisUtil.incrBy(Constant.ORDER_COUNT, Integer.toUnsignedLong(1));
 
             //更新计数器
             counterService.updateCounter(Constant.ORDER_COUNT_BY_TIME);
@@ -341,7 +337,7 @@ public class SysOrderServiceImpl implements ISysOrderService
         int orderFlag = sysOrderMapper.updateSysOrder(order);
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         double totalPrice = order.getTotalPrice();
-        LOGGER.info("总金额：" + totalPrice );
+        LOGGER.info("总金额：" + totalPrice);
 
         // 操作是否成功
         if (orderFlag == 1) {
@@ -349,47 +345,45 @@ public class SysOrderServiceImpl implements ISysOrderService
             result.setData(10);
 
             //redis中记录成交额
-            redisUtil.incrByFloat(Constant.TURNOVER,totalPrice);
+            redisUtil.incrByFloat(Constant.TURNOVER, totalPrice);
         } else {
             result.setMsg(Constant.ERROR_MSG);
         }
         return result;
     }
+
     /**
      * 修改订单
-     * 
+     *
      * @param sysOrder 订单
      * @return 结果
      */
     @Override
-    public int updateSysOrder(SysOrder sysOrder)
-    {
+    public int updateSysOrder(SysOrder sysOrder) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.updateSysOrder(sysOrder);
     }
 
     /**
      * 删除订单对象
-     * 
+     *
      * @param ids 需要删除的数据ID
      * @return 结果
      */
     @Override
-    public int deleteSysOrderByIds(String ids)
-    {
+    public int deleteSysOrderByIds(String ids) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.deleteSysOrderByIds(Convert.toStrArray(ids));
     }
 
     /**
      * 删除订单信息
-     * 
+     *
      * @param id 订单ID
      * @return 结果
      */
     @Override
-    public int deleteSysOrderById(String id)
-    {
+    public int deleteSysOrderById(String id) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysOrderMapper.deleteSysOrderById(id);
     }

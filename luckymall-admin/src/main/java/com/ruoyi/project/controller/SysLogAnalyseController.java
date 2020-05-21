@@ -35,14 +35,14 @@ public class SysLogAnalyseController {
 
     @GetMapping
     public String logMonitor(ModelMap modelMap) {
-        Map<String,String> commonLogs = new HashMap<>(128);
-        List<String> recentLogs = logAnalyseService.getRecentLogs(Constant.CURRENCY_LOG,Constant.INFO);
-        Set<Tuple> commonLogsInTuple = logAnalyseService.getCommonLogs(Constant.CURRENCY_LOG,Constant.INFO);
-        for (Tuple tuple : commonLogsInTuple){
-            commonLogs.put(tuple.getElement(),String.valueOf(tuple.getScore()));
+        Map<String, String> commonLogs = new HashMap<>(128);
+        List<String> recentLogs = logAnalyseService.getRecentLogs(Constant.CURRENCY_LOG, Constant.INFO);
+        Set<Tuple> commonLogsInTuple = logAnalyseService.getCommonLogs(Constant.CURRENCY_LOG, Constant.INFO);
+        for (Tuple tuple : commonLogsInTuple) {
+            commonLogs.put(tuple.getElement(), String.valueOf(tuple.getScore()));
         }
-        modelMap.put("recentLogs",recentLogs);
-        modelMap.put("commonLogs",commonLogs);
-        return PREFIX+"/logMonitor";
+        modelMap.put("recentLogs", recentLogs);
+        modelMap.put("commonLogs", commonLogs);
+        return PREFIX + "/logMonitor";
     }
 }

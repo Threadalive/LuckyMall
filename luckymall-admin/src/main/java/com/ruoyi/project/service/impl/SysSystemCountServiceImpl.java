@@ -40,35 +40,35 @@ public class SysSystemCountServiceImpl implements ISysSystemCountService {
 
         //取精度范围内的访问数据
         List<Pair<Integer, Integer>> accessCounter = counterService.getCounter(Constant.ACCESS_COUNT_COUNTER, precision);
-        for(Pair<Integer, Integer> count :accessCounter){
+        for (Pair<Integer, Integer> count : accessCounter) {
             accessCount += count.getValue();
         }
 
         //总成交额
-        if (null != redisUtil.get(Constant.TURNOVER,0)){
-            turnover = Double.parseDouble(redisUtil.get(Constant.TURNOVER,0));
+        if (null != redisUtil.get(Constant.TURNOVER, 0)) {
+            turnover = Double.parseDouble(redisUtil.get(Constant.TURNOVER, 0));
         }
 
         //取精度范围内的订单量
-        List<Pair<Integer, Integer>> orderCounter = counterService.getCounter(Constant.ORDER_COUNT_BY_TIME,precision);
+        List<Pair<Integer, Integer>> orderCounter = counterService.getCounter(Constant.ORDER_COUNT_BY_TIME, precision);
         for (Pair<Integer, Integer> count : orderCounter) {
             orderCount += count.getValue();
         }
 
         //取精度范围内的注册量
-        List<Pair<Integer, Integer>> registerCounter = counterService.getCounter(Constant.REGISTER_COUNTER,precision);
+        List<Pair<Integer, Integer>> registerCounter = counterService.getCounter(Constant.REGISTER_COUNTER, precision);
         for (Pair<Integer, Integer> count : registerCounter) {
             registerCount += count.getValue();
         }
 
         //取精度范围内的注册量
-        List<Pair<Integer, Integer>> onlineUserCounter = counterService.getCounter(Constant.ONLINE_USER_COUNTER,precision);
+        List<Pair<Integer, Integer>> onlineUserCounter = counterService.getCounter(Constant.ONLINE_USER_COUNTER, precision);
         for (Pair<Integer, Integer> count : onlineUserCounter) {
             onlineUserCount += count.getValue();
         }
 
         //取精度范围内的注册量
-        List<Pair<Integer, Integer>> diskReadCounter = counterService.getCounter(Constant.DISK_READ_COUNTER,precision);
+        List<Pair<Integer, Integer>> diskReadCounter = counterService.getCounter(Constant.DISK_READ_COUNTER, precision);
         for (Pair<Integer, Integer> count : diskReadCounter) {
             diskReadCount += count.getValue();
         }

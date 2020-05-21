@@ -27,14 +27,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 【请填写功能名称】Controller
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-04-16
  */
 @Controller
 @RequestMapping("/product")
-public class SysProductController extends BaseController
-{
+public class SysProductController extends BaseController {
     private String prefix = "project/product";
 
     @Autowired
@@ -51,14 +50,13 @@ public class SysProductController extends BaseController
 
     @RequiresPermissions("system:product:view")
     @GetMapping("/productAdmin")
-    public String product(ModelMap modelMap)
-    {
+    public String product(ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get product admin page",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get product admin page", Constant.INFO, Constant.LOG_TIMEOUT);
         SysProductType productType = new SysProductType();
 
         List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
-        modelMap.put("productTypeList",productTypeList);
+        modelMap.put("productTypeList", productTypeList);
         return prefix + "/product";
     }
 
@@ -72,7 +70,7 @@ public class SysProductController extends BaseController
     @GetMapping("/findProductByType")
     public ModelAndView findProductByType(int id, String name) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get category page",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get category page", Constant.INFO, Constant.LOG_TIMEOUT);
         ModelAndView modelAndView = sysProductService.findProductByType(id, name);
         return modelAndView;
     }
@@ -86,7 +84,7 @@ public class SysProductController extends BaseController
     @GetMapping("/findProductByKey")
     public ModelAndView findProductByKey(String key) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"search product by keyword",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "search product by keyword", Constant.INFO, Constant.LOG_TIMEOUT);
         ModelAndView modelAndView = sysProductService.findProductByKey(key);
         return modelAndView;
     }
@@ -99,10 +97,10 @@ public class SysProductController extends BaseController
     @GetMapping("/getHightCommentProducts")
     public String getHightCommentProducts(ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get hight comment products",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get hight comment products", Constant.INFO, Constant.LOG_TIMEOUT);
         List<Map<String, String>> list = sysProductService.getHightCommentProducts();
-        modelMap.put("list",list);
-        modelMap.put("type","好评商品榜单 TOP50");
+        modelMap.put("list", list);
+        modelMap.put("type", "好评商品榜单 TOP50");
         return prefix + "/hcomment";
     }
 
@@ -114,10 +112,10 @@ public class SysProductController extends BaseController
     @GetMapping("/getHotProducts")
     public String getHotProducts(ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get hot products",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get hot products", Constant.INFO, Constant.LOG_TIMEOUT);
         List<Map<String, String>> list = sysProductService.getHotProducts();
-        modelMap.put("type","热度商品榜单 TOP50");
-        modelMap.put("list",list);
+        modelMap.put("type", "热度商品榜单 TOP50");
+        modelMap.put("list", list);
         return prefix + "/hcomment";
     }
 
@@ -128,9 +126,9 @@ public class SysProductController extends BaseController
      * @return org.springframework.web.servlet.ModelAndView 返回视图
      */
     @GetMapping("/detail")
-    public String productDetail(String id,ModelMap modelMap) {
+    public String productDetail(String id, ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get product's detail",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get product's detail", Constant.INFO, Constant.LOG_TIMEOUT);
         String productFlag = "product:";
         SysProduct product = sysProductService.getProductDetail(id);
         //获取该商品的购物车购买次数
@@ -138,13 +136,13 @@ public class SysProductController extends BaseController
         double addCartNum = 1;
 
         //若该商品存在购买记录
-        if (redisUtil.hexists(Constant.ADD_BY_CAR_KEY,productFlag+id)){
-        buyCount = Double.parseDouble(redisUtil.hget(Constant.ADD_BY_CAR_KEY,productFlag + id));
-        addCartNum = Double.parseDouble(redisUtil.hget(productFlag+id,"addCarNum"));
+        if (redisUtil.hexists(Constant.ADD_BY_CAR_KEY, productFlag + id)) {
+            buyCount = Double.parseDouble(redisUtil.hget(Constant.ADD_BY_CAR_KEY, productFlag + id));
+            addCartNum = Double.parseDouble(redisUtil.hget(productFlag + id, "addCarNum"));
         }
-        double buyRate = (buyCount/addCartNum)*100;
-        modelMap.put("product",product);
-        modelMap.put("buyRate",buyRate);
+        double buyRate = (buyCount / addCartNum) * 100;
+        modelMap.put("product", product);
+        modelMap.put("buyRate", buyRate);
         return prefix + "/productDetail";
     }
 
@@ -154,10 +152,9 @@ public class SysProductController extends BaseController
     @RequiresPermissions("system:product:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(SysProduct sysProduct)
-    {
+    public TableDataInfo list(SysProduct sysProduct) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"list products",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "list products", Constant.INFO, Constant.LOG_TIMEOUT);
         startPage();
         List<SysProduct> list = sysProductService.selectSysProductList(sysProduct);
         return getDataTable(list);
@@ -170,8 +167,7 @@ public class SysProductController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(SysProduct sysProduct)
-    {
+    public AjaxResult export(SysProduct sysProduct) {
         List<SysProduct> list = sysProductService.selectSysProductList(sysProduct);
         ExcelUtil<SysProduct> util = new ExcelUtil<SysProduct>(SysProduct.class);
         return util.exportExcel(list, "product");
@@ -181,14 +177,13 @@ public class SysProductController extends BaseController
      * 新增【请填写功能名称】
      */
     @GetMapping("/add")
-    public String add(ModelMap modelMap)
-    {
+    public String add(ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get add product's page",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get add product's page", Constant.INFO, Constant.LOG_TIMEOUT);
         SysProductType productType = new SysProductType();
 
         List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
-        modelMap.put("productTypeList",productTypeList);
+        modelMap.put("productTypeList", productTypeList);
         return prefix + "/add";
     }
 
@@ -199,40 +194,39 @@ public class SysProductController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(@RequestParam("file")MultipartFile file, SysProduct sysProduct)
-    {
+    public AjaxResult addSave(@RequestParam("file") MultipartFile file, SysProduct sysProduct) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"add product",Constant.INFO,Constant.LOG_TIMEOUT);
-        return toAjax(sysProductService.insertSysProduct(file,sysProduct));
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "add product", Constant.INFO, Constant.LOG_TIMEOUT);
+        return toAjax(sysProductService.insertSysProduct(file, sysProduct));
     }
 
     @PostMapping("/like")
     @ResponseBody
-    public Result like(String id){
+    public Result like(String id) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"hit like btn for product",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "hit like btn for product", Constant.INFO, Constant.LOG_TIMEOUT);
         return sysProductService.like(id);
     }
 
     @PostMapping("/subscribe")
     @ResponseBody
-    public Result subscribe(String id){
+    public Result subscribe(String id) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"subscribe product",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "subscribe product", Constant.INFO, Constant.LOG_TIMEOUT);
         return sysProductService.subscribe(id);
     }
+
     /**
      * 修改【请填写功能名称】
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") String id, ModelMap mmap)
-    {
+    public String edit(@PathVariable("id") String id, ModelMap mmap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get edit product page",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get edit product page", Constant.INFO, Constant.LOG_TIMEOUT);
         SysProduct sysProduct = sysProductService.selectSysProductById(id);
         SysProductType productType = new SysProductType();
         List<SysProductType> productTypeList = productTypeService.selectSysProductTypeList(productType);
-        mmap.put("productTypeList",productTypeList);
+        mmap.put("productTypeList", productTypeList);
         mmap.put("sysProduct", sysProduct);
         return prefix + "/edit";
     }
@@ -244,11 +238,10 @@ public class SysProductController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(@RequestParam("file")MultipartFile file,SysProduct sysProduct)
-    {
+    public AjaxResult editSave(@RequestParam("file") MultipartFile file, SysProduct sysProduct) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"edit product",Constant.INFO,Constant.LOG_TIMEOUT);
-        return toAjax(sysProductService.updateSysProduct(file,sysProduct));
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "edit product", Constant.INFO, Constant.LOG_TIMEOUT);
+        return toAjax(sysProductService.updateSysProduct(file, sysProduct));
     }
 
     /**
@@ -256,12 +249,11 @@ public class SysProductController extends BaseController
      */
     @RequiresPermissions("system:product:remove")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.DELETE)
-    @PostMapping( "/remove")
+    @PostMapping("/remove")
     @ResponseBody
-    public AjaxResult remove(String ids)
-    {
+    public AjaxResult remove(String ids) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"remove product",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "remove product", Constant.INFO, Constant.LOG_TIMEOUT);
         return toAjax(sysProductService.deleteSysProductByIds(ids));
     }
 }

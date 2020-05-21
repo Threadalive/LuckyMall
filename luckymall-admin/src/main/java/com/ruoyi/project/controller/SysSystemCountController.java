@@ -26,14 +26,13 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * counterController
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-05-18
  */
 @Controller
 @RequestMapping("/counter")
-public class SysSystemCountController extends BaseController
-{
+public class SysSystemCountController extends BaseController {
     private String prefix = "project/counter";
 
     @Autowired
@@ -44,15 +43,14 @@ public class SysSystemCountController extends BaseController
 
     @RequiresPermissions("project:counter:view")
     @GetMapping()
-    public String counter(ModelMap modelMap)
-    {
+    public String counter(ModelMap modelMap) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"admin access the counter page",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "admin access the counter page", Constant.INFO, Constant.LOG_TIMEOUT);
         List<Integer> precisionList = new ArrayList<>();
-        for (int i : SysCounterServiceImpl.PRECISION){
+        for (int i : SysCounterServiceImpl.PRECISION) {
             precisionList.add(i);
         }
-        modelMap.put("precisionList",precisionList);
+        modelMap.put("precisionList", precisionList);
 
         return prefix + "/counter";
     }
@@ -63,10 +61,9 @@ public class SysSystemCountController extends BaseController
     @RequiresPermissions("project:counter:list")
     @PostMapping("/list")
     @ResponseBody
-    public TableDataInfo list(String precision)
-    {
+    public TableDataInfo list(String precision) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get counter data",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get counter data", Constant.INFO, Constant.LOG_TIMEOUT);
         startPage();
         List<SysSystemCount> list = sysSystemCountService.selectSysSystemCountList(Integer.parseInt(precision));
         return getDataTable(list);

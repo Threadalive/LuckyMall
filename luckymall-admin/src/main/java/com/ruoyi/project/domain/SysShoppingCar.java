@@ -7,87 +7,90 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 购物车对象 sys_shopping_car
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-05-08
  */
-public class SysShoppingCar extends BaseEntity
-{
+public class SysShoppingCar extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /** 购物车id */
+    /**
+     * 购物车id
+     */
     private String id;
 
-    /** 添加时间 */
+    /**
+     * 添加时间
+     */
     @Excel(name = "添加时间")
     private String addTime;
 
-    /** 商品数量 */
+    /**
+     * 商品数量
+     */
     @Excel(name = "商品数量")
     private Long number;
 
-    /** 对应商品id */
+    /**
+     * 对应商品id
+     */
     @Excel(name = "对应商品id")
     private String productId;
 
-    /** 对应用户id */
+    /**
+     * 对应用户id
+     */
     @Excel(name = "对应用户id")
     private Long userId;
 
-    public void setId(String id) 
-    {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getId() 
-    {
+    public String getId() {
         return id;
     }
-    public void setAddTime(String addTime) 
-    {
+
+    public void setAddTime(String addTime) {
         this.addTime = addTime;
     }
 
-    public String getAddTime() 
-    {
+    public String getAddTime() {
         return addTime;
     }
-    public void setNumber(Long number) 
-    {
+
+    public void setNumber(Long number) {
         this.number = number;
     }
 
-    public Long getNumber() 
-    {
+    public Long getNumber() {
         return number;
     }
-    public void setProductId(String productId) 
-    {
+
+    public void setProductId(String productId) {
         this.productId = productId;
     }
 
-    public String getProductId() 
-    {
+    public String getProductId() {
         return productId;
     }
-    public void setUserId(Long userId) 
-    {
+
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public Long getUserId() 
-    {
+    public Long getUserId() {
         return userId;
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("addTime", getAddTime())
-            .append("number", getNumber())
-            .append("productId", getProductId())
-            .append("userId", getUserId())
-            .toString();
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId())
+                .append("addTime", getAddTime())
+                .append("number", getNumber())
+                .append("productId", getProductId())
+                .append("userId", getUserId())
+                .toString();
     }
 }

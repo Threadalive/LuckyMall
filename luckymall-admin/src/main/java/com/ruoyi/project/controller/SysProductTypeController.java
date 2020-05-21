@@ -27,14 +27,13 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 
 /**
  * 【请填写功能名称】Controller
- * 
+ *
  * @author ruoyi
  * @date 2020-05-04
  */
 @Controller
 @RequestMapping("/productType")
-public class SysProductTypeController extends BaseController
-{
+public class SysProductTypeController extends BaseController {
     private String prefix = "system/type";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SysProductTypeController.class);
@@ -46,8 +45,7 @@ public class SysProductTypeController extends BaseController
 
     @RequiresPermissions("system:type:view")
     @GetMapping()
-    public String type()
-    {
+    public String type() {
         return prefix + "/type";
     }
 
@@ -57,10 +55,9 @@ public class SysProductTypeController extends BaseController
     @RequiresPermissions("system:type:list")
     @PostMapping("/listType")
     @ResponseBody
-    public Result<List<SysProductType>> list()
-    {
+    public Result<List<SysProductType>> list() {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"get product's type",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "get product's type", Constant.INFO, Constant.LOG_TIMEOUT);
         Result<List<SysProductType>> result = new Result<>();
         SysProductType sysProductType = new SysProductType();
         List<SysProductType> list = sysProductTypeService.selectSysProductTypeList(sysProductType);
@@ -81,8 +78,7 @@ public class SysProductTypeController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ResponseBody
-    public AjaxResult export(SysProductType sysProductType)
-    {
+    public AjaxResult export(SysProductType sysProductType) {
         List<SysProductType> list = sysProductTypeService.selectSysProductTypeList(sysProductType);
         ExcelUtil<SysProductType> util = new ExcelUtil<SysProductType>(SysProductType.class);
         return util.exportExcel(list, "type");
@@ -92,8 +88,7 @@ public class SysProductTypeController extends BaseController
      * 新增【请填写功能名称】
      */
     @GetMapping("/add")
-    public String add()
-    {
+    public String add() {
         return prefix + "/add";
     }
 
@@ -104,8 +99,7 @@ public class SysProductTypeController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.INSERT)
     @PostMapping("/add")
     @ResponseBody
-    public AjaxResult addSave(SysProductType sysProductType)
-    {
+    public AjaxResult addSave(SysProductType sysProductType) {
         return toAjax(sysProductTypeService.insertSysProductType(sysProductType));
     }
 
@@ -113,8 +107,7 @@ public class SysProductTypeController extends BaseController
      * 修改【请填写功能名称】
      */
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap mmap)
-    {
+    public String edit(@PathVariable("id") Long id, ModelMap mmap) {
         SysProductType sysProductType = sysProductTypeService.selectSysProductTypeById(id);
         mmap.put("sysProductType", sysProductType);
         return prefix + "/edit";
@@ -127,8 +120,7 @@ public class SysProductTypeController extends BaseController
     @Log(title = "【请填写功能名称】", businessType = BusinessType.UPDATE)
     @PostMapping("/edit")
     @ResponseBody
-    public AjaxResult editSave(SysProductType sysProductType)
-    {
+    public AjaxResult editSave(SysProductType sysProductType) {
         return toAjax(sysProductTypeService.updateSysProductType(sysProductType));
     }
 
@@ -137,10 +129,9 @@ public class SysProductTypeController extends BaseController
      */
     @RequiresPermissions("system:type:remove")
     @Log(title = "【请填写功能名称】", businessType = BusinessType.DELETE)
-    @PostMapping( "/remove")
+    @PostMapping("/remove")
     @ResponseBody
-    public AjaxResult remove(String ids)
-    {
+    public AjaxResult remove(String ids) {
         return toAjax(sysProductTypeService.deleteSysProductTypeByIds(ids));
     }
 }

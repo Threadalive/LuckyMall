@@ -38,7 +38,8 @@ public class EmailServiceImpl implements IEmailService {
 
     /**
      * 简单文本邮件
-     * @param to 收件人
+     *
+     * @param to      收件人
      * @param subject 主题
      * @param content 内容
      */
@@ -60,7 +61,8 @@ public class EmailServiceImpl implements IEmailService {
 
     /**
      * html邮件
-     * @param to 收件人
+     *
+     * @param to      收件人
      * @param subject 主题
      * @param content 内容
      */
@@ -90,9 +92,10 @@ public class EmailServiceImpl implements IEmailService {
 
     /**
      * 带附件的邮件
-     * @param to 收件人
-     * @param subject 主题
-     * @param content 内容
+     *
+     * @param to       收件人
+     * @param subject  主题
+     * @param content  内容
      * @param filePath 附件
      */
     @Override

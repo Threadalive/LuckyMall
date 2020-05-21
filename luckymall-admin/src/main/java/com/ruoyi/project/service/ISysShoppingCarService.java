@@ -10,17 +10,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 购物车Service接口
- * 
+ *
  * @author zhenxing.dong
  * @date 2020-05-08
  */
-public interface ISysShoppingCarService 
-{
+public interface ISysShoppingCarService {
 
-    public Map<SysProduct,SysShoppingCar> userCar();
+    public Map<SysProduct, SysShoppingCar> userCar();
+
     /**
      * 查询购物车
-     * 
+     *
      * @param id 购物车ID
      * @return 购物车
      */
@@ -28,7 +28,7 @@ public interface ISysShoppingCarService
 
     /**
      * 查询购物车列表
-     * 
+     *
      * @param sysShoppingCar 购物车
      * @return 购物车集合
      */
@@ -36,7 +36,7 @@ public interface ISysShoppingCarService
 
     /**
      * 新增购物车
-     * 
+     *
      * @param sysShoppingCar 购物车
      * @return 结果
      */
@@ -44,7 +44,7 @@ public interface ISysShoppingCarService
 
     /**
      * 修改购物车
-     * 
+     *
      * @param sysShoppingCar 购物车
      * @return 结果
      */
@@ -52,7 +52,7 @@ public interface ISysShoppingCarService
 
     /**
      * 批量删除购物车
-     * 
+     *
      * @param ids 需要删除的数据ID
      * @return 结果
      */
@@ -60,7 +60,7 @@ public interface ISysShoppingCarService
 
     /**
      * 删除购物车信息
-     * 
+     *
      * @param id 购物车ID
      * @return 结果
      */

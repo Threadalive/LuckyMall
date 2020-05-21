@@ -31,13 +31,12 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 【请填写功能名称】Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2020-04-16
  */
 @Service
-public class SysProductServiceImpl implements ISysProductService
-{
+public class SysProductServiceImpl implements ISysProductService {
     /**
      * logger
      */
@@ -114,6 +113,7 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 根据关键字搜索商品，增加相关商品热度值
+     *
      * @param key
      * @return
      */
@@ -121,16 +121,16 @@ public class SysProductServiceImpl implements ISysProductService
     public ModelAndView findProductByKey(String key) {
         LOGGER.info("===============按种类查找商品==============");
         ModelAndView modelAndView = new ModelAndView("project/product/category");
-        long now = System.currentTimeMillis()/1000;
+        long now = System.currentTimeMillis() / 1000;
 
         List<SysProduct> productList = sysProductMapper.findProductByName(key);
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         String product = "product:";
-        for (SysProduct sysProduct:productList){
+        for (SysProduct sysProduct : productList) {
             product += sysProduct.getId();
-            if (null != redisUtil.zscore("hot:",product)){
+            if (null != redisUtil.zscore("hot:", product)) {
                 redisUtil.zincrby("hot:", Constant.VOTE_SCORE, product);
-            }else {
+            } else {
                 redisUtil.zadd("hot:", now + Constant.VOTE_SCORE, product);
             }
         }
@@ -142,31 +142,31 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 查询【请填写功能名称】
-     * 
+     *
      * @param id 【请填写功能名称】ID
      * @return 【请填写功能名称】
      */
     @Override
-    public SysProduct selectSysProductById(String id)
-    {
+    public SysProduct selectSysProductById(String id) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.selectSysProductById(id);
     }
 
     /**
      * 获取商品详情
+     *
      * @param id
      * @return
      */
     @Override
     public SysProduct getProductDetail(String id) {
         //当前时间秒数
-        long now = System.currentTimeMillis()/1000;
+        long now = System.currentTimeMillis() / 1000;
         String product = "product:" + id;
         //若首次浏览，根据当前时间给与热度值，否则浏览添加热度值432
-        if (null != redisUtil.zscore("hot:",product)){
+        if (null != redisUtil.zscore("hot:", product)) {
             redisUtil.zincrby("hot:", Constant.VOTE_SCORE, product);
-        }else {
+        } else {
             redisUtil.zadd("hot:", now + Constant.VOTE_SCORE, product);
         }
         //更新商品数据库中浏览数
@@ -177,19 +177,19 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 查询【请填写功能名称】列表
-     * 
+     *
      * @param sysProduct 【请填写功能名称】
      * @return 【请填写功能名称】
      */
     @Override
-    public List<SysProduct> selectSysProductList(SysProduct sysProduct)
-    {
+    public List<SysProduct> selectSysProductList(SysProduct sysProduct) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.selectSysProductList(sysProduct);
     }
 
     /**
      * 获取好评前五十的商品
+     *
      * @return
      */
     @Override
@@ -199,7 +199,7 @@ public class SysProductServiceImpl implements ISysProductService
 
         List<Map<String, String>> products = new ArrayList<Map<String, String>>();
         for (String id : ids) {
-            Map<String, String> productData = redisUtil.hgetall(id,0);
+            Map<String, String> productData = redisUtil.hgetall(id, 0);
             products.add(productData);
         }
         return products;
@@ -207,6 +207,7 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 获取热度商品
+     *
      * @return
      */
     @Override
@@ -216,7 +217,7 @@ public class SysProductServiceImpl implements ISysProductService
 
         List<Map<String, String>> products = new ArrayList<Map<String, String>>();
         for (String id : ids) {
-            Map<String, String> productData = redisUtil.hgetall(id,0);
+            Map<String, String> productData = redisUtil.hgetall(id, 0);
             products.add(productData);
         }
         return products;
@@ -224,6 +225,7 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 对商品进行点赞
+     *
      * @param id
      * @return
      */
@@ -239,9 +241,9 @@ public class SysProductServiceImpl implements ISysProductService
         //获取当前用户
         HttpSession session = request.getSession();
         SysUser user = (SysUser) session.getAttribute("user");
-        if (null == user){
+        if (null == user) {
             result.setMsg(Constant.NOUSER_MSG);
-        }else {
+        } else {
             //若商品上架时间超过一周，不可点赞
             if (redisUtil.zscore("time:", product) < cutoff) {
                 result.setMsg("overtime");
@@ -255,7 +257,7 @@ public class SysProductServiceImpl implements ISysProductService
                 //更新点赞数
                 redisUtil.hincrBy(product, "likeNum", 1);
                 result.setMsg(Constant.SUCCESS_MSG);
-            }else {
+            } else {
                 result.setMsg("voted");
             }
         }
@@ -264,6 +266,7 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 订阅商品
+     *
      * @param id 商品id
      * @return
      */
@@ -273,16 +276,16 @@ public class SysProductServiceImpl implements ISysProductService
         HttpSession session = request.getSession();
         SysUser user = (SysUser) session.getAttribute("user");
         //存储在redis中的key值，subscribe:商品id
-        String subscribeKey = "subscribe:"+id;
+        String subscribeKey = "subscribe:" + id;
         //是否已存在
-        if (redisUtil.sismember(subscribeKey,String.valueOf(user.getUserId()))){
+        if (redisUtil.sismember(subscribeKey, String.valueOf(user.getUserId()))) {
             result.setMsg("subscribed");
-        }else {
+        } else {
             //存储对应商品的订阅用户
             long flag = redisUtil.sadd(subscribeKey, String.valueOf(user.getUserId()));
             if (flag > 0) {
                 result.setMsg(Constant.SUCCESS_MSG);
-            }else {
+            } else {
                 result.setMsg(Constant.ERROR_MSG);
             }
         }
@@ -291,14 +294,13 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 新增商品
-     * 
+     *
      * @param sysProduct 商品实体
      * @return 结果
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insertSysProduct(MultipartFile file, SysProduct sysProduct)
-    {
+    public int insertSysProduct(MultipartFile file, SysProduct sysProduct) {
         LOGGER.info("===============添加商品==============");
         LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
 
@@ -312,9 +314,9 @@ public class SysProductServiceImpl implements ISysProductService
         sysProduct.setId(productId);
 
         //添加已点赞集合
-        String voted = "voted:"+productId;
-        redisUtil.sadd(voted,String.valueOf(user.getUserId()));
-        redisUtil.expire(voted,Constant.ONE_WEEK_IN_SECONDS,0);
+        String voted = "voted:" + productId;
+        redisUtil.sadd(voted, String.valueOf(user.getUserId()));
+        redisUtil.expire(voted, Constant.ONE_WEEK_IN_SECONDS, 0);
 
         long now = System.currentTimeMillis() / 1000;
         String product = "product:" + productId;
@@ -325,9 +327,9 @@ public class SysProductServiceImpl implements ISysProductService
         productData.put("link", sysProduct.getId());
         productData.put("postTime", String.valueOf(now));
         productData.put("likeNum", "1");
-        productData.put("addCarNum","0");
-        productData.put("view","0");
-        redisUtil.hmset(product, productData,0);
+        productData.put("addCarNum", "0");
+        productData.put("view", "0");
+        redisUtil.hmset(product, productData, 0);
         //分值排序zset
         redisUtil.zadd("score:", now + Constant.VOTE_SCORE, product);
         //时间排序的zset
@@ -338,19 +340,18 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 修改【请填写功能名称】
-     * 
+     *
      * @param sysProduct 【请填写功能名称】
      * @return 结果
      */
     @Override
-    public int updateSysProduct(MultipartFile file,SysProduct sysProduct)
-    {
+    public int updateSysProduct(MultipartFile file, SysProduct sysProduct) {
         LOGGER.info("===============编辑商品==============");
         LOGGER.info("商品信息：" + JSON.toJSONString(sysProduct));
         HttpSession session = request.getSession();
         SysUser user = (SysUser) session.getAttribute("user");
         //存储在redis中的key值
-        String subscribeKey = "subscribe:"+sysProduct.getId();
+        String subscribeKey = "subscribe:" + sysProduct.getId();
 
         String imageUrl = FileUploadUtil.savaFile(file, Constant.PRODUCT_IMAGE_PATH);
         sysProduct.setProductPhoto(imageUrl);
@@ -358,10 +359,10 @@ public class SysProductServiceImpl implements ISysProductService
         SysProduct product = sysProductMapper.selectSysProductById(sysProduct.getId());
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         //若为上架操作
-        if (0 == product.getProductStatus() && 1 == sysProduct.getProductStatus()){
+        if (0 == product.getProductStatus() && 1 == sysProduct.getProductStatus()) {
             //若该商品存在订阅用户,遍历发送邮件通知
-            if (redisUtil.exists(subscribeKey)){
-                kafkaTemplate.send("emailUsers",JSON.toJSONString(sysProduct));
+            if (redisUtil.exists(subscribeKey)) {
+                kafkaTemplate.send("emailUsers", JSON.toJSONString(sysProduct));
             }
         }
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
@@ -370,26 +371,24 @@ public class SysProductServiceImpl implements ISysProductService
 
     /**
      * 删除【请填写功能名称】对象
-     * 
+     *
      * @param ids 需要删除的数据ID
      * @return 结果
      */
     @Override
-    public int deleteSysProductByIds(String ids)
-    {
+    public int deleteSysProductByIds(String ids) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.deleteSysProductByIds(Convert.toStrArray(ids));
     }
 
     /**
      * 删除【请填写功能名称】信息
-     * 
+     *
      * @param id 【请填写功能名称】ID
      * @return 结果
      */
     @Override
-    public int deleteSysProductById(String id)
-    {
+    public int deleteSysProductById(String id) {
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         return sysProductMapper.deleteSysProductById(id);
     }

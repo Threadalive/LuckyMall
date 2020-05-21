@@ -30,7 +30,6 @@ import javax.servlet.http.HttpSession;
 /**
  * @Description: 用户控制层
  * @Author: zhenxing.dong
- *
  * @Date: 2019/8/2 9:46
  */
 @Controller
@@ -87,9 +86,10 @@ public class UserController {
     @GetMapping("/login")
     public String login() {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the login page",Constant.INFO,Constant.LOG_TIMEOUT);
-        return PREFIX+"/login";
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the login page", Constant.INFO, Constant.LOG_TIMEOUT);
+        return PREFIX + "/login";
     }
+
     /**
      * 方法说明：用户登录验证
      *
@@ -101,31 +101,31 @@ public class UserController {
     @ResponseBody
     public Result loginUser(String userName, String password) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user do login",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user do login", Constant.INFO, Constant.LOG_TIMEOUT);
         Result result = new Result();
         //根据用户名记录尝试登录次数
-        redisUtil.incr(SHIRO_LOGIN_COUNT+userName);
+        redisUtil.incr(SHIRO_LOGIN_COUNT + userName);
         //若尝试次数大于限定值
-        if (Integer.parseInt(redisUtil.get(SHIRO_LOGIN_COUNT+userName,0)) >= MAX_RETRY_COUNT){
+        if (Integer.parseInt(redisUtil.get(SHIRO_LOGIN_COUNT + userName, 0)) >= MAX_RETRY_COUNT) {
             //记录锁定标记，5分钟后过期,删除两项记录
-            redisUtil.set(SHIRO_IS_LOCK+userName,"LOCKED",0);
-            redisUtil.expire(SHIRO_IS_LOCK+userName,300,0);
-            redisUtil.expire(SHIRO_LOGIN_COUNT+userName,300,0);
+            redisUtil.set(SHIRO_IS_LOCK + userName, "LOCKED", 0);
+            redisUtil.expire(SHIRO_IS_LOCK + userName, 300, 0);
+            redisUtil.expire(SHIRO_LOGIN_COUNT + userName, 300, 0);
         }
         // 根据用户名和密码查找用户
         result = userService.loginUser(userName, password);
 
         //登陆成功，则删除标记,记录登录信息
-        if (Constant.SUCCESS_MSG.equals(result.getMsg())){
-            redisUtil.del(SHIRO_LOGIN_COUNT+userName);
-            redisUtil.del(SHIRO_IS_LOCK+userName);
+        if (Constant.SUCCESS_MSG.equals(result.getMsg())) {
+            redisUtil.del(SHIRO_LOGIN_COUNT + userName);
+            redisUtil.del(SHIRO_IS_LOCK + userName);
             AsyncManager.me().execute(AsyncFactory.recordLogininfor(userName, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
 //            //获取记录在线用户信息
 //            OnlineSession session = (OnlineSession) request.getAttribute(ShiroConstants.ONLINE_SESSION);
 //            AsyncManager.me().execute(AsyncFactory.syncSessionToDb(session));
             counterService.updateCounter(Constant.ONLINE_USER_COUNTER);
         }
-        if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK+userName,0))){
+        if ("LOCKED".equals(redisUtil.get(SHIRO_IS_LOCK + userName, 0))) {
             result.setMsg("locked");
         }
         return result;
@@ -141,7 +141,7 @@ public class UserController {
     @ResponseBody
     public Result register(SysUser user) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user do register",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user do register", Constant.INFO, Constant.LOG_TIMEOUT);
         Result result = new Result();
         HttpSession session = request.getSession();
         boolean flag = userService.registerUser(user);
@@ -154,6 +154,7 @@ public class UserController {
         session.setAttribute("user", user);
         return result;
     }
+
     /**
      * 方法说明：跳转注册界面
      *
@@ -162,8 +163,8 @@ public class UserController {
     @GetMapping("/registerUser")
     public String register() {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user get register page",Constant.INFO,Constant.LOG_TIMEOUT);
-        return PREFIX+"/register";
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user get register page", Constant.INFO, Constant.LOG_TIMEOUT);
+        return PREFIX + "/register";
     }
 
     /**
@@ -174,9 +175,10 @@ public class UserController {
     @GetMapping("/editUser")
     public String userEdit() {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the edit page",Constant.INFO,Constant.LOG_TIMEOUT);
-        return PREFIX+"/editUser";
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the edit page", Constant.INFO, Constant.LOG_TIMEOUT);
+        return PREFIX + "/editUser";
     }
+
     /**
      * 方法说明：用户信息修改
      *
@@ -188,7 +190,7 @@ public class UserController {
     @ResponseBody
     public Result editUser(MultipartFile file, SysUser user) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user edit msg",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user edit msg", Constant.INFO, Constant.LOG_TIMEOUT);
         Result result = new Result();
         result = userService.updateUser(file, user);
         return result;
@@ -202,8 +204,8 @@ public class UserController {
     @GetMapping("/editPassword")
     public String passwordEdit() {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access the password_edit page",Constant.INFO,Constant.LOG_TIMEOUT);
-        return PREFIX+"/editPassword";
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access the password_edit page", Constant.INFO, Constant.LOG_TIMEOUT);
+        return PREFIX + "/editPassword";
     }
 
     /**
@@ -217,7 +219,7 @@ public class UserController {
     @ResponseBody
     public Result editPassword(String oldPassword, String password) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user edit password",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user edit password", Constant.INFO, Constant.LOG_TIMEOUT);
         Result result;
         result = userService.editPassword(oldPassword, password);
         return result;
@@ -232,7 +234,7 @@ public class UserController {
     @RequestMapping("/orderDetail")
     public ModelAndView userOrderDetail(String orderId) {
         //频繁日志记录
-        logAnalyseService.logCommon(Constant.CURRENCY_LOG,"user access order detail",Constant.INFO,Constant.LOG_TIMEOUT);
+        logAnalyseService.logCommon(Constant.CURRENCY_LOG, "user access order detail", Constant.INFO, Constant.LOG_TIMEOUT);
         ModelAndView modelAndView = sysOrderService.userOrderDetail(orderId);
         return modelAndView;
     }
