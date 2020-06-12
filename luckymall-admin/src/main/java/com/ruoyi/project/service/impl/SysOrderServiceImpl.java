@@ -196,19 +196,13 @@ public class SysOrderServiceImpl implements ISysOrderService {
             orderItem.setProductId(productId);
             orderItem.setOrderId(order.getOrderCode());
 
-            try {
                 ListenableFuture<SendResult<Integer, String>> future = kafkaTemplate.send("insertOrderItem", JSON.toJSONString(orderItem));
                 //这里我们可以获取到生产者消息是否提交成功
-                SendResult<Integer, String> integerStringSendResult = future.get();
-                RecordMetadata recordMetadata = integerStringSendResult.getRecordMetadata();
-                if (null != recordMetadata) {
+//                SendResult<Integer, String> integerStringSendResult = future.get();
+//                RecordMetadata recordMetadata = integerStringSendResult.getRecordMetadata();
+//                if (null != recordMetadata) {
                     orderItemFlags[j] = 1;
-                }
-            } catch (InterruptedException e) {
-                LOGGER.error("{}", e);
-            } catch (ExecutionException e) {
-                LOGGER.error("{}", e);
-            }
+//                }
 //            orderItemFlags[j] = sysOrderItemMapper.insertSysOrderItem(orderItem);
             counterService.updateCounter(Constant.DISK_READ_COUNTER);
             // 更新商品库存
@@ -222,7 +216,7 @@ public class SysOrderServiceImpl implements ISysOrderService {
         // 清空用户购物车
         sysShoppingCarMapper.deleteSysShoppingCarByUserId(user.getUserId());
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
-        //情况购物车缓存
+        //清空购物车缓存
         redisUtil.del(userCartFlag);
 
         // 判断所有操作是否成功(标志是否都为1)
@@ -285,7 +279,9 @@ public class SysOrderServiceImpl implements ISysOrderService {
         order.setTotalPrice(totalPrice);
 
         //先插入数据库，后期加入队列
-        int orderFlag = sysOrderMapper.insertSysOrder(order);
+//        int orderFlag = sysOrderMapper.insertSysOrder(order);
+        kafkaTemplate.send("insertOrder", JSON.toJSONString(order));
+
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 生成订单项
         SysOrderItem orderItem = new SysOrderItem();
@@ -293,14 +289,15 @@ public class SysOrderServiceImpl implements ISysOrderService {
         orderItem.setOrderId(order.getOrderCode());
         orderItem.setProductId(id);
         orderItem.setProductNum(number);
-        int orderItemFlag = sysOrderItemMapper.insertSysOrderItem(orderItem);
+        kafkaTemplate.send("insertOrderItem", JSON.toJSONString(orderItem));
+//        int orderItemFlag = sysOrderItemMapper.insertSysOrderItem(orderItem);
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 更新商品库存
         product.setProductCount(product.getProductCount() - number);
         int productFlag = sysProductMapper.updateSysProduct(product);
         counterService.updateCounter(Constant.DISK_READ_COUNTER);
         // 判断所有操作是否成功(标志是否都为1)
-        if (orderFlag == 1 && productFlag == 1 && orderItemFlag == 1) {
+        if (productFlag == 1) {
             result.setMsg(Constant.SUCCESS_MSG);
             //更新订单量
             redisUtil.incrBy(Constant.ORDER_COUNT, Integer.toUnsignedLong(1));
