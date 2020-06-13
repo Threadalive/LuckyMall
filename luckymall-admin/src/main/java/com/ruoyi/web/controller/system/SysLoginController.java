@@ -59,7 +59,7 @@ public class SysLoginController extends BaseController
         {
             subject.login(token);
             // 用户访问系统即开启清理计数器的守护进程
-            CleanCountersThread thread = new CleanCountersThread(redisUtil, 100, 5);
+            CleanCountersThread thread = new CleanCountersThread(redisUtil, 100, 5000);
             thread.start();
             return success();
         }
